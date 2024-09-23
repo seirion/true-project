@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.trueedu.project.ui.theme.TrueProjectTheme
+import com.trueedu.project.ui.topbar.TopBar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,7 +22,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TrueProjectTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    topBar = {
+                        TopBar()
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                ) { innerPadding ->
                     Greeting(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
