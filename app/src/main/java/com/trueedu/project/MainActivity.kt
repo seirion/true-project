@@ -11,7 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.theme.TrueProjectTheme
@@ -26,6 +26,8 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var local: Local
     @Inject
+    lateinit var screen: ScreenControl
+    @Inject
     lateinit var authRemote: AuthRemote
 
     private val vm by viewModels<MainViewModel>()
@@ -36,7 +38,10 @@ class MainActivity : AppCompatActivity() {
         vm.init()
         enableEdgeToEdge()
         setContent {
-            TrueProjectTheme {
+            TrueProjectTheme(
+                n = screen.theme.intValue,
+                forceDark = screen.forceDark.value
+            ) {
                 Scaffold(
                     topBar = {
                         TopBar(::onSetting)
@@ -63,12 +68,4 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         text = "Hello $name!",
         modifier = modifier
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TrueProjectTheme {
-        Greeting("Android")
-    }
 }

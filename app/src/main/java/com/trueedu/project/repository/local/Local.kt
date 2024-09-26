@@ -1,6 +1,7 @@
 package com.trueedu.project.repository.local
 
 import android.content.SharedPreferences
+import com.trueedu.project.extensions.boolean
 import com.trueedu.project.extensions.int
 import com.trueedu.project.extensions.long
 import com.trueedu.project.extensions.string
@@ -21,4 +22,8 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
     var accessToken by preferences.string("")
 
     var refreshToken by preferences.string("")
+
+    // UI
+    var forceDark by preferences.boolean(false)
+    var theme by preferences.int(1)
 }
