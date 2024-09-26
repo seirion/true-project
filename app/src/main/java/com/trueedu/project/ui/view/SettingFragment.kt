@@ -7,12 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -26,12 +31,13 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.treuedu.project.R
-import com.trueedu.project.Greeting
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.theme.TrueProjectTheme
-import com.trueedu.project.ui.topbar.TopBar
+import com.trueedu.project.ui.view.setting.AppKeyInputFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SettingFragment: BottomSheetDialogFragment() {
     companion object {
         fun show(
@@ -73,9 +79,13 @@ class SettingFragment: BottomSheetDialogFragment() {
                             .background(color = MaterialTheme.colorScheme.background),
                     ) { innerPadding ->
                         Column(
-                            modifier = Modifier.fillMaxSize().padding(innerPadding)
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding)
                         ) {
-                            SettingItem("appkey 설정", {})
+                            SettingItem("appkey 설정") {
+                                AppKeyInputFragment.show(parentFragmentManager)
+                            }
                         }
                     }
                 }
@@ -91,17 +101,24 @@ fun SettingItem(
     onClick: () -> Unit = {},
 ) {
     Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
             .padding(horizontal = 10.dp)
-            .height(60.dp)
+            .height(56.dp)
     ) {
         BasicText(
             s = text,
-            fontSize = 14,
+            fontSize = 16,
             color = MaterialTheme.colorScheme.primary,
+        )
+        Icon(
+            modifier = Modifier.size(28.dp),
+            imageVector = Icons.Outlined.ChevronRight,
+            tint = MaterialTheme.colorScheme.tertiary,
+            contentDescription = "next"
         )
     }
     DividerHorizontal()
