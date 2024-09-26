@@ -54,6 +54,7 @@ flipper-network-plugin = { group = "com.facebook.flipper", name = "flipper-netwo
 flipper-noop = { group = "com.github.theGlenn", name = "flipper-android-no-op", version = "0.10.0" }
 soloader = { group = "com.facebook.soloader", name = "soloader", version = "0.11.0" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+material-extended = { group = "androidx.compose.material", name ="material-icons-extended", version = "1.7.2" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
