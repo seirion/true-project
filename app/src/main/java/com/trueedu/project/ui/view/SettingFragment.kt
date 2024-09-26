@@ -30,11 +30,13 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.treuedu.project.BuildConfig
 import com.treuedu.project.R
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.view.setting.AppKeyInputFragment
+import com.trueedu.project.ui.view.setting.ColorPaletteFragmentFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -85,6 +87,12 @@ class SettingFragment: BottomSheetDialogFragment() {
                         ) {
                             SettingItem("appkey 설정") {
                                 AppKeyInputFragment.show(parentFragmentManager)
+                            }
+
+                            if (BuildConfig.DEBUG) {
+                                SettingItem("color scheme") {
+                                    ColorPaletteFragmentFragment.show(parentFragmentManager)
+                                }
                             }
                         }
                     }
