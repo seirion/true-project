@@ -1,10 +1,10 @@
 package com.trueedu.project
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -16,11 +16,12 @@ import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.TopBar
+import com.trueedu.project.ui.view.SettingFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var local: Local
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
             TrueProjectTheme {
                 Scaffold(
                     topBar = {
-                        TopBar()
+                        TopBar(::onSetting)
                     },
                     modifier = Modifier.fillMaxSize(),
                 ) { innerPadding ->
@@ -49,6 +50,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun onSetting() {
+        SettingFragment.show(supportFragmentManager)
     }
 }
 
