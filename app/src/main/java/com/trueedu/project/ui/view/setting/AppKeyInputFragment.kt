@@ -46,6 +46,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.treuedu.project.R
+import com.trueedu.project.extensions.getClipboardText
 import com.trueedu.project.model.dto.TokenRequest
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
@@ -130,6 +131,8 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
                                 .padding(innerPadding)
                         ) {
                             AppKeySecretInput(
+                                pasteAppKey = ::pasteAppKey,
+                                pasteAppSecret = ::pasteAppSecret,
                                 onAppKeyChanged = ::onAppKeyChanged,
                                 onAppSecretChanged = ::onAppSecretChanged
                             )
@@ -150,19 +153,26 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
         checkUpdate()
     }
 
+    private fun pasteAppKey() {
+        val text = getClipboardText(requireContext()) ?: return
+        onAppKeyChanged(text)
+    }
+
+    private fun pasteAppSecret() {
+        val text = getClipboardText(requireContext()) ?: return
+        onAppSecretChanged(text)
+    }
+
     private fun checkUpdate() {
         buttonEnabled.value = appKey.value.isNotBlank() && appSecret.value.isNotBlank() &&
                 (appKey.value != appKeyOrg || appSecret.value != appSecretOrg)
     }
 
     private fun onSave() {
-        local.appKey = appKey.value
-        local.appKey = appKey.value
-
         val request = TokenRequest(
             grantType = "client_credentials",
-            appKey = local.appKey,
-            appSecret = local.appSecret,
+            appKey = appKey.value,
+            appSecret = appSecret.value,
         )
         authRemote.refreshToken(request)
             .catch {
@@ -171,6 +181,8 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
             }
             .onEach {
                 local.accessToken = it.accessToken
+                local.appKey = appKey.value
+                local.appSecret = appSecret.value
                 Log.d(TAG, "new token: $it")
                 Toast.makeText(requireContext(), "토큰 정상 발급 완료", Toast.LENGTH_SHORT).show()
                 dismissAllowingStateLoss()
@@ -180,6 +192,8 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
 
     @Composable
     private fun AppKeySecretInput(
+        pasteAppKey: () -> Unit,
+        pasteAppSecret: () -> Unit,
         onAppKeyChanged: (String) -> Unit,
         onAppSecretChanged: (String) -> Unit
     ) {
@@ -203,7 +217,7 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                 )
                 Margin(8)
-                TouchIcon(Icons.Filled.ContentPaste) {}
+                TouchIcon(Icons.Filled.ContentPaste, pasteAppKey)
             }
             Margin(4)
             Row(
@@ -220,7 +234,7 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                 )
                 Margin(8)
-                TouchIcon(Icons.Filled.ContentPaste) {}
+                TouchIcon(Icons.Filled.ContentPaste, pasteAppSecret)
             }
         }
     }
