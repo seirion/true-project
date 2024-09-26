@@ -42,9 +42,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.treuedu.project.R
+import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ColorPaletteFragmentFragment: BottomSheetDialogFragment() {
@@ -57,6 +59,9 @@ class ColorPaletteFragmentFragment: BottomSheetDialogFragment() {
             return fragment
         }
     }
+
+    @Inject
+    lateinit var screen: ScreenControl
 
     private var behavior: BottomSheetBehavior<*>? = null
 
@@ -83,7 +88,10 @@ class ColorPaletteFragmentFragment: BottomSheetDialogFragment() {
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
             setContent {
-                TrueProjectTheme {
+                TrueProjectTheme(
+                    n = screen.theme.intValue,
+                    forceDark = screen.forceDark.value
+                ) {
                     Scaffold(
                         topBar = { TopBar(::dismissAllowingStateLoss) },
                         modifier = Modifier

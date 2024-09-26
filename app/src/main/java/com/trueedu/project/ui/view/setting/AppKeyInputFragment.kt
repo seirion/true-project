@@ -8,35 +8,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,12 +35,15 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.treuedu.project.R
+import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.extensions.getClipboardText
 import com.trueedu.project.model.dto.TokenRequest
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
+import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
+import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
@@ -73,6 +65,9 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
             return fragment
         }
     }
+
+    @Inject
+    lateinit var screen: ScreenControl
 
     private val appKey = mutableStateOf("")
     private val appSecret = mutableStateOf("")
@@ -117,9 +112,12 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
             setContent {
-                TrueProjectTheme {
+                TrueProjectTheme(
+                    n = screen.theme.intValue,
+                    forceDark = screen.forceDark.value
+                ) {
                     Scaffold(
-                        topBar = { TopBar(::dismissAllowingStateLoss) },
+                        topBar = { BackTitleTopBar("appkey 설정", ::dismissAllowingStateLoss) },
                         bottomBar = { BottomBar(buttonEnabled.value, ::onSave) },
                         modifier = Modifier
                             .fillMaxSize()
@@ -217,7 +215,7 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                 )
                 Margin(8)
-                TouchIcon(Icons.Filled.ContentPaste, pasteAppKey)
+                TouchIcon24(Icons.Filled.ContentPaste, pasteAppKey)
             }
             Margin(4)
             Row(
@@ -234,42 +232,10 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                 )
                 Margin(8)
-                TouchIcon(Icons.Filled.ContentPaste, pasteAppSecret)
+                TouchIcon24(Icons.Filled.ContentPaste, pasteAppSecret)
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-@Composable
-private fun TopBar(
-    onBack: () -> Unit = {},
-) {
-    TopAppBar(
-        navigationIcon = {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .clickable { onBack() },
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    imageVector = Icons.Filled.ChevronLeft,
-                    tint = MaterialTheme.colorScheme.tertiary,
-                    contentDescription = "icon"
-                )
-            }
-        },
-        title = { BasicText("appkey 설정", 20) },
-        colors = TopAppBarDefaults.smallTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            titleContentColor = MaterialTheme.colorScheme.primary,
-        ),
-    )
 }
 
 @Preview(showBackground = true)
@@ -292,28 +258,5 @@ private fun BottomBar(
             MaterialTheme.colorScheme.inverseSurface
         }
         BasicText(s = "저장", fontSize = 20, color = buttonColor)
-    }
-}
-
-
-@Composable
-fun TouchIcon(
-    icon: ImageVector,
-    onClick: () -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .size(40.dp)
-            .clip(CircleShape)
-            .clickable { onClick() },
-    ) {
-        Icon(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            imageVector = icon,
-            tint = MaterialTheme.colorScheme.tertiary,
-            contentDescription = "icon"
-        )
     }
 }

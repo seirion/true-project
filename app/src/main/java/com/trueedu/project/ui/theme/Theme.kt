@@ -17,8 +17,8 @@ private val LightColorScheme = lightColorScheme()
 
 @Composable
 fun TrueProjectTheme(
-    n: Int = 1,
-    forceDark: Boolean = false,
+    n: Int,
+    forceDark: Boolean,
     content: @Composable () -> Unit
 ) {
     val darkTheme = forceDark || isSystemInDarkTheme()
@@ -28,6 +28,7 @@ fun TrueProjectTheme(
         else -> TrueProjectThemeDefault(darkTheme, false, content) // default
     }
 }
+
 
 @Composable
 fun TrueProjectThemeDefault(

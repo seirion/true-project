@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.view
+package com.trueedu.project.ui.view.setting
 
 import android.app.Dialog
 import android.os.Bundle
@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,13 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -30,33 +28,36 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.treuedu.project.BuildConfig
 import com.treuedu.project.R
 import com.trueedu.project.data.ScreenControl
+import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
-import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.theme.TrueProjectTheme
-import com.trueedu.project.ui.view.setting.AppKeyInputFragment
-import com.trueedu.project.ui.view.setting.ColorPaletteFragmentFragment
-import com.trueedu.project.ui.view.setting.ScreenSettingFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SettingFragment: BottomSheetDialogFragment() {
+class ScreenSettingFragment: BottomSheetDialogFragment() {
     companion object {
+        private val TAG = ScreenSettingFragment::class.java.simpleName
+
         fun show(
             fragmentManager: FragmentManager
-        ): SettingFragment {
-            val fragment = SettingFragment()
-            fragment.show(fragmentManager, "setting")
+        ): ScreenSettingFragment {
+            val fragment = ScreenSettingFragment()
+            fragment.show(fragmentManager, "screen")
             return fragment
         }
     }
 
     @Inject
     lateinit var screen: ScreenControl
+
+    @Inject
+    lateinit var local: Local
+
+    val a = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +69,7 @@ class SettingFragment: BottomSheetDialogFragment() {
             (this as? BottomSheetDialog)?.behavior?.run {
                 this.skipCollapsed = true
                 this.state = BottomSheetBehavior.STATE_EXPANDED
-                this.isDraggable = false
+                this.isDraggable = true
             }
         }
     }
@@ -85,7 +86,7 @@ class SettingFragment: BottomSheetDialogFragment() {
                     forceDark = screen.forceDark.value
                 ) {
                     Scaffold(
-                        topBar = { BackTitleTopBar("설정", ::dismissAllowingStateLoss) },
+                        topBar = { BackTitleTopBar("스크린 설정", ::dismissAllowingStateLoss) },
                         modifier = Modifier
                             .fillMaxSize()
                             .background(color = MaterialTheme.colorScheme.background),
@@ -95,17 +96,22 @@ class SettingFragment: BottomSheetDialogFragment() {
                                 .fillMaxSize()
                                 .padding(innerPadding)
                         ) {
-                            SettingItem("appkey 설정") {
-                                AppKeyInputFragment.show(parentFragmentManager)
-                            }
-                            SettingItem("Screen 설정") {
-                                ScreenSettingFragment.show(parentFragmentManager)
-                            }
-
-                            if (BuildConfig.DEBUG) {
-                                SettingItem("color scheme") {
-                                    ColorPaletteFragmentFragment.show(parentFragmentManager)
-                                }
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp)
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                BasicText("강제 다크모드", fontSize = 16, color = MaterialTheme.colorScheme.primary)
+                                MySwitch(
+                                    checked = screen.forceDark.value,
+                                    onCheckedChange = {
+                                        screen.forceDark.value = it
+                                        local.forceDark = it
+                                    }
+                                )
                             }
                         }
                     }
@@ -117,30 +123,23 @@ class SettingFragment: BottomSheetDialogFragment() {
 
 @Preview(showBackground = true)
 @Composable
-fun SettingItem(
-    text: String = "나의 설정",
-    onClick: () -> Unit = {},
+private fun MySwitch(
+    checked: Boolean = true,
+    onCheckedChange: (Boolean) -> Unit = {},
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 10.dp)
-            .height(56.dp)
-    ) {
-        BasicText(
-            s = text,
-            fontSize = 16,
-            color = MaterialTheme.colorScheme.primary,
+    Switch(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        colors = SwitchDefaults.colors(
+            checkedThumbColor = MaterialTheme.colorScheme.primary,
+            uncheckedThumbColor = MaterialTheme.colorScheme.outlineVariant,
+            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+            uncheckedTrackColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.38f),
+            disabledCheckedThumbColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+            disabledUncheckedThumbColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.12f),
+            disabledCheckedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+            disabledUncheckedTrackColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.12f)
         )
-        Icon(
-            modifier = Modifier.size(28.dp),
-            imageVector = Icons.Outlined.ChevronRight,
-            tint = MaterialTheme.colorScheme.tertiary,
-            contentDescription = "next"
-        )
-    }
-    DividerHorizontal()
+    )
+
 }
