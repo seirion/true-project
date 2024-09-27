@@ -5,15 +5,24 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
+import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.TopBar
 import com.trueedu.project.ui.view.SettingFragment
@@ -48,10 +57,16 @@ class MainActivity : AppCompatActivity() {
                     },
                     modifier = Modifier.fillMaxSize(),
                 ) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                    ) {
+                        HomeItem(
+                            name = "거래량 순위",
+                            ::gotoVolumeRanking
+                        )
+                    }
                 }
             }
         }
@@ -60,12 +75,26 @@ class MainActivity : AppCompatActivity() {
     private fun onSetting() {
         SettingFragment.show(supportFragmentManager)
     }
+
+    private fun gotoVolumeRanking() {
+        VolumeRankingFragment.show(supportFragmentManager)
+    }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
+private fun HomeItem(
+    name: String = "종목 보기",
+    onClick: () -> Unit = {}
+) {
+    BasicText(
+        s = name,
+        fontSize = 18,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 16.dp)
     )
+    HorizontalDivider()
 }

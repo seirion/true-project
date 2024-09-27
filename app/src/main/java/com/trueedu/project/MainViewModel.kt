@@ -7,6 +7,7 @@ import com.trueedu.project.model.dto.RevokeTokenRequest
 import com.trueedu.project.model.dto.TokenRequest
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
+import com.trueedu.project.repository.remote.RankingRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val local: Local,
     private val authRemote: AuthRemote,
+    private val rankingRemote: RankingRemote,
 ): ViewModel() {
 
     companion object {
@@ -26,6 +28,7 @@ class MainViewModel @Inject constructor(
     fun init() {
         val accessToken = local.accessToken
         Log.d(TAG,"accessToken: $accessToken")
+        // TODO: 만료되면 다시 토큰을 받아야 함
         if (accessToken.isEmpty()) {
             issueAccessToken()
         }

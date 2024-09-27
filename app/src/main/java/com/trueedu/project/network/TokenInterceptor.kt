@@ -12,9 +12,14 @@ class TokenInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val appKey = local.appKey
         val appSecret = local.appSecret
-        // val accessToken = local.accessToken
+        val accessToken = local.accessToken
 
-        val headers = getApiHeaders(appKey, appSecret)
+        val headers0 = chain.request().headers
+        val headers1 = getApiHeaders(appKey, appSecret, accessToken)
+
+        val headers = headers0.newBuilder()
+            .addAll(headers1)
+            .build()
 
         val request = chain.request().newBuilder()
             .headers(headers)
