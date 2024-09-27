@@ -1,11 +1,13 @@
 package com.trueedu.project.di
 
-import android.os.Build
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.repository.remote.AuthRemoteImpl
+import com.trueedu.project.repository.remote.RankingRemote
+import com.trueedu.project.repository.remote.RankingRemoteImpl
 import com.trueedu.project.repository.remote.service.AuthService
+import com.trueedu.project.repository.remote.service.RankingService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,13 +32,18 @@ object RemoteModule {
 
     @Provides
     @Singleton
+    @NormalService
+    fun providesRankingService(retrofit: Retrofit): RankingService {
+        return retrofit.create(RankingService::class.java)
+    }
+
+    @Provides
+    @Singleton
     @TokenRefreshService
     fun providesTokenRefreshService(
         @BaseUrl baseUrl: String,
         httpLoggingInterceptor: HttpLoggingInterceptor,
         chuckerInterceptor: ChuckerInterceptor,
-        @AppVersion appVersion: String?,
-        @AppVersionCode appVersionCode: Long
     ): AuthService {
         val contentType = "application/json".toMediaType()
         val json = Json {
@@ -72,11 +79,19 @@ object RemoteModule {
         @NormalService
         authService: AuthService
     ): AuthRemote = AuthRemoteImpl(authService = authService)
+
+    @Singleton
+    @Provides
+    fun providesRankingRemote(
+        @NormalService
+        rankingService: RankingService
+    ): RankingRemote = RankingRemoteImpl(rankingService = rankingService)
 }
 
 fun getApiHeaders(
     appKey: String,
     apSecret: String,
+    accessToken: String,
 ): Headers {
     val headers = Headers.Builder()
 
@@ -84,22 +99,10 @@ fun getApiHeaders(
         "content-type" to "application/json",
         "appkey" to appKey,
         "appsecret" to apSecret,
+        "authorization" to "Bearer $accessToken",
     ).forEach { (key, value) ->
-        headers.set(key, value)
+        headers[key] = value
     }
 
-    return headers
-        .build()
-}
-
-private fun checkHeaderValid(value: String): Boolean {
-    var result = true
-    for (i in value.indices) {
-        val c = value[i]
-        if (!(c == '\t' || c in '\u0020'..'\u007e')) {
-            result = false
-            break
-        }
-    }
-    return result
+    return headers.build()
 }
