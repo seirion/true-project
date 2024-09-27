@@ -74,23 +74,21 @@ object RemoteModule {
     ): AuthRemote = AuthRemoteImpl(authService = authService)
 }
 
-fun getApiHeaders(accessToken: String? = null, appVersion: String?, appVersionCode: Long): Headers {
+fun getApiHeaders(
+    appKey: String,
+    apSecret: String,
+): Headers {
     val headers = Headers.Builder()
 
-    accessToken?.takeIf {
-        checkHeaderValid(it) && it.isNotBlank()
-    }?.let {
-        headers.set("Authorization", "Bearer $it")
+    listOf(
+        "content-type" to "application/json",
+        "appkey" to appKey,
+        "appsecret" to apSecret,
+    ).forEach { (key, value) ->
+        headers.set(key, value)
     }
 
     return headers
-        .set(
-            "X-USERAGENT",
-            "$appVersion" +
-                    "/$appVersionCode Android" +
-                    "/${Build.VERSION.SDK_INT}" +
-                    "/${Build.MANUFACTURER}-${Build.MODEL.trim().replace(" ", "")}"
-        )
         .build()
 }
 
