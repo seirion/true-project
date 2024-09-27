@@ -1,5 +1,7 @@
 package com.trueedu.project.repository.remote.service
 
+import com.trueedu.project.model.dto.HashKeyRequest
+import com.trueedu.project.model.dto.HashKeyResponse
 import com.trueedu.project.model.dto.RevokeTokenRequest
 import com.trueedu.project.model.dto.RevokeTokenResponse
 import com.trueedu.project.model.dto.TokenRequest
@@ -15,4 +17,7 @@ interface AuthService {
 
     @POST("oauth2/revokeP")
     suspend fun revokeToken(@Body request: RevokeTokenRequest): Response<RevokeTokenResponse>
+
+    @POST("uapi/hashkey")
+    suspend fun hashKey(@Body request: HashKeyRequest): Response<HashKeyResponse>
 }

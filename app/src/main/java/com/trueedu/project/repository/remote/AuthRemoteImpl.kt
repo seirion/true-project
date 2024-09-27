@@ -1,6 +1,7 @@
 package com.trueedu.project.repository.remote
 
 import com.trueedu.project.di.NormalService
+import com.trueedu.project.model.dto.HashKeyRequest
 import com.trueedu.project.model.dto.RevokeTokenRequest
 import com.trueedu.project.model.dto.TokenRequest
 import com.trueedu.project.network.apiCallFlow
@@ -16,5 +17,9 @@ class AuthRemoteImpl(
 
     override fun revokeToken(request: RevokeTokenRequest) = apiCallFlow {
         authService.revokeToken(request)
+    }
+
+    override fun hashKey(request: HashKeyRequest) = apiCallFlow {
+        authService.hashKey(request)
     }
 }
