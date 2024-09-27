@@ -1,0 +1,99 @@
+# 릴리즈 빌드 후 playstore 업로드 (배포용)
+name: Release - playstore
+
+on: workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: [self-hosted, android]  #ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        submodules: true
+    - name: set up JDK 17
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Generate Keystore file from Github Secrets
+      run: |
+        echo "$KEYSTORE" > ./keystore.b64
+        base64 -d -i ./keystore.b64 > ./app/upload-keystore.jks
+      env:
+        KEYSTORE: ${{secrets.UPLOAD_KEYSTORE_JKS_BASE64}}
+
+    - name: Build with Gradle
+      env:
+        OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+        OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+      run: ./gradlew build
+
+    - name: Build Release APK
+      id: buildRelease
+      env:
+        OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+        OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+      run: ./gradlew assembleRelease
+
+    - name: Signing APK
+      id: sign
+      uses: r0adkll/sign-android-release@v1
+      with:
+        releaseDirectory: app/build/outputs/apk/release
+        signingKeyBase64: ${{ secrets.ANDROID_RELEASE_KEY_BASE64 }}
+        alias: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
+        keyStorePassword: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
+      env:
+        # override default build-tools version (29.0.3) -- optional
+        BUILD_TOOLS_VERSION: "34.0.0"
+
+    - name: Upload APK
+      id: uploadArtifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: app
+        path: app/build/outputs/apk/release/app-release.apk
+        
+    - name: Create service_account.json
+      id: createServiceAccount
+      run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+        
+    - name: Deploy to Play Store
+      id: deploy
+      uses: r0adkll/upload-google-play@v1.0.19
+      with:
+        serviceAccountJson: service_account.json
+        packageName: com.favv.neo
+        releaseFiles: app/build/outputs/apk/release/app-release.apk
+        track: internal
+        status: completed
+
+    - name: Msg - All jobs complete
+      run: |
+        VERSIONNAME=$(/usr/bin/git describe --tags)
+        BUILDNUM=$(/usr/bin/git tag | wc -l)
+        BUILDNUM=$((BUILDNUM+40))
+        BUILDCODE=$(echo $VERSIONNAME | cut -d '-' -f1)
+        curl -s -d "payload={\"attachments\":[{\"author_name\":\"DominoDevAndroid\",\"author_icon\":\"https://freelogopng.com/images/all_img/1664285914google-play-logo-png.png\",\"text\":\"$BUILDCODE ($BUILDNUM) 플레이스토어 업로드 완료되었습니다.\",\"color\":\"#36a64f\"}]}" "https://hooks.slack.com/services/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"
+      if: success()
+
+    - name: Msg - Job failed
+      run: |
+        VERSIONNAME=$(/usr/bin/git describe --tags)
+        BUILDNUM=$(/usr/bin/git tag | wc -l)
+        BUILDNUM=$((BUILDNUM+40))
+        BUILDCODE=$(echo $VERSIONNAME | cut -d '-' -f1)
+        curl -s -d "payload={\"attachments\":[{\"author_name\":\"DominoDevAndroid\",\"author_icon\":\"https://freelogopng.com/images/all_img/1664285914google-play-logo-png.png\",\"text\":\"$BUILDCODE ($BUILDNUM) 플레이스토어 업로드 실패.\",\"color\":\"#ff0000\"}]}" "https://hooks.slack.com/services/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"
+      if: failure()
+

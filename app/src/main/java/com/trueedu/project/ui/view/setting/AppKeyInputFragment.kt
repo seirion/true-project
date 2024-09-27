@@ -210,7 +210,13 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
                     onValueChange = {
                         onAppKeyChanged(it)
                     },
-                    label = { BasicText("appkey", 14) },
+                    label = {
+                        BasicText(
+                            s = "appkey",
+                            fontSize = 14,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    },
                     modifier = Modifier.weight(1f),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                 )
@@ -227,7 +233,13 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
                     onValueChange = {
                         onAppSecretChanged(it)
                     },
-                    label = { BasicText("appsecret", 14) },
+                    label = {
+                        BasicText(
+                            s = "appsecret",
+                            fontSize = 14,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    },
                     modifier = Modifier.weight(1f),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                 )
