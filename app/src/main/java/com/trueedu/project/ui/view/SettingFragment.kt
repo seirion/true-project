@@ -30,8 +30,8 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.treuedu.project.BuildConfig
-import com.treuedu.project.R
+import com.trueedu.project.BuildConfig
+import com.trueedu.project.R
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.ui.common.BackTitleTopBar

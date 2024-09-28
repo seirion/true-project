@@ -41,7 +41,7 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.treuedu.project.R
+import com.trueedu.project.R
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.theme.TrueProjectTheme
