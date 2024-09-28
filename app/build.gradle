@@ -94,6 +94,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.logger)
+    implementation(libs.amplitude)
 
     debugImplementation(libs.flipper)
     debugImplementation(libs.flipper.network.plugin)

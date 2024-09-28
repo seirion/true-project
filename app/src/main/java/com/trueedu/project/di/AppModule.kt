@@ -1,10 +1,12 @@
 package com.trueedu.project.di
 
+import android.app.Application
 import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
+import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.repository.local.Local
 import dagger.Module
 import dagger.Provides
@@ -67,6 +69,14 @@ object AppModuleProvider {
         @ApplicationContext context: Context
     ): Local {
         return Local(context.getSharedPreferences("local", Context.MODE_PRIVATE))
+    }
+
+    @Provides
+    @Singleton
+    fun providesTrueAnalytics(
+        @ApplicationContext context: Context,
+    ): TrueAnalytics {
+        return TrueAnalytics(context as Application)
     }
 
     @Provides
