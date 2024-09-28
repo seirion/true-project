@@ -8,7 +8,7 @@ import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.orhanobut.logger.Logger
-import com.treuedu.project.BuildConfig
+import com.trueedu.project.BuildConfig
 import com.trueedu.project.network.TokenAuthenticator
 import com.trueedu.project.network.TokenInterceptor
 import com.trueedu.project.network.addHttpLoggingInterceptor

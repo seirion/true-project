@@ -9,11 +9,11 @@ plugins {
 apply from: 'versions.gradle'
 
 android {
-    namespace 'com.treuedu.project'
+    namespace 'com.trueedu.project'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.treuedu.project"
+        applicationId "com.trueedu.project"
         minSdk 29
         targetSdk 34
         versionCode getNeoVersionCode()

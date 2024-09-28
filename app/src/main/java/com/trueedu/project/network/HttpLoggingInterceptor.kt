@@ -1,7 +1,7 @@
 package com.trueedu.project.network
 
 import com.orhanobut.logger.Logger
-import com.treuedu.project.BuildConfig
+import com.trueedu.project.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONException
