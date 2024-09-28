@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
@@ -38,11 +39,15 @@ class MainActivity : AppCompatActivity() {
     lateinit var screen: ScreenControl
     @Inject
     lateinit var authRemote: AuthRemote
+    @Inject
+    lateinit var trueAnalytics: TrueAnalytics
 
     private val vm by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        trueAnalytics.enterView("main__enter")
 
         vm.init()
         enableEdgeToEdge()
@@ -73,9 +78,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onSetting() {
+        trueAnalytics.clickButton("home__setting__click")
         SettingFragment.show(supportFragmentManager)
     }
 
+    // 테스트용
     private fun gotoVolumeRanking() {
         VolumeRankingFragment.show(supportFragmentManager)
     }

@@ -32,6 +32,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.treuedu.project.BuildConfig
 import com.treuedu.project.R
+import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
@@ -57,10 +58,14 @@ class SettingFragment: BottomSheetDialogFragment() {
 
     @Inject
     lateinit var screen: ScreenControl
+    @Inject
+    lateinit var trueAnalytics: TrueAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.FillScreenSheetTheme)
+
+        trueAnalytics.enterView("setting__enter")
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -96,9 +101,11 @@ class SettingFragment: BottomSheetDialogFragment() {
                                 .padding(innerPadding)
                         ) {
                             SettingItem("appkey 설정") {
+                                trueAnalytics.enterView("setting__appkey_setting__click")
                                 AppKeyInputFragment.show(parentFragmentManager)
                             }
                             SettingItem("Screen 설정") {
+                                trueAnalytics.enterView("setting__screen_setting__click")
                                 ScreenSettingFragment.show(parentFragmentManager)
                             }
 
