@@ -29,6 +29,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.treuedu.project.R
+import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -57,11 +58,16 @@ class ScreenSettingFragment: BottomSheetDialogFragment() {
     @Inject
     lateinit var local: Local
 
+    @Inject
+    lateinit var trueAnalytics: TrueAnalytics
+
     val a = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.FillScreenSheetTheme)
+
+        trueAnalytics.enterView("screen_setting__enter")
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -110,6 +116,7 @@ class ScreenSettingFragment: BottomSheetDialogFragment() {
                                     onCheckedChange = {
                                         screen.forceDark.value = it
                                         local.forceDark = it
+                                        trueAnalytics.clickToggleButton("screen_setting__force_dark__click", !it)
                                     }
                                 )
                             }
