@@ -6,7 +6,7 @@ on: workflow_dispatch
 jobs:
   build:
 
-    runs-on: [self-hosted, android]  #ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -34,16 +34,10 @@ jobs:
         KEYSTORE: ${{secrets.UPLOAD_KEYSTORE_JKS_BASE64}}
 
     - name: Build with Gradle
-      env:
-        OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-        OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
       run: ./gradlew build
 
     - name: Build Release APK
       id: buildRelease
-      env:
-        OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-        OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
       run: ./gradlew assembleRelease
 
     - name: Signing APK
@@ -78,22 +72,4 @@ jobs:
         releaseFiles: app/build/outputs/apk/release/app-release.apk
         track: internal
         status: completed
-
-    - name: Msg - All jobs complete
-      run: |
-        VERSIONNAME=$(/usr/bin/git describe --tags)
-        BUILDNUM=$(/usr/bin/git tag | wc -l)
-        BUILDNUM=$((BUILDNUM+40))
-        BUILDCODE=$(echo $VERSIONNAME | cut -d '-' -f1)
-        curl -s -d "payload={\"attachments\":[{\"author_name\":\"DominoDevAndroid\",\"author_icon\":\"https://freelogopng.com/images/all_img/1664285914google-play-logo-png.png\",\"text\":\"$BUILDCODE ($BUILDNUM) 플레이스토어 업로드 완료되었습니다.\",\"color\":\"#36a64f\"}]}" "https://hooks.slack.com/services/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"
-      if: success()
-
-    - name: Msg - Job failed
-      run: |
-        VERSIONNAME=$(/usr/bin/git describe --tags)
-        BUILDNUM=$(/usr/bin/git tag | wc -l)
-        BUILDNUM=$((BUILDNUM+40))
-        BUILDCODE=$(echo $VERSIONNAME | cut -d '-' -f1)
-        curl -s -d "payload={\"attachments\":[{\"author_name\":\"DominoDevAndroid\",\"author_icon\":\"https://freelogopng.com/images/all_img/1664285914google-play-logo-png.png\",\"text\":\"$BUILDCODE ($BUILDNUM) 플레이스토어 업로드 실패.\",\"color\":\"#ff0000\"}]}" "https://hooks.slack.com/services/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"
-      if: failure()
 
