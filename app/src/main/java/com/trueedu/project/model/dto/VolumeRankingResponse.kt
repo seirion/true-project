@@ -49,7 +49,7 @@ data class VolumeRankingOutput(
     @SerialName("avrg_tr_pbmn")
     val avgTurnover: String, // 평균 거래대금
     @SerialName("tr_pbmn_tnrt")
-    val turnoverTurnover: String, // 거래대금 회전율
+    val turnoverRatio: String, // 거래대금 회전율
     @SerialName("nday_tr_pbmn_tnrt")
     val turnoverDaysTurnover: String, // N일 거래대금 회전율
     @SerialName("acml_tr_pbmn")
