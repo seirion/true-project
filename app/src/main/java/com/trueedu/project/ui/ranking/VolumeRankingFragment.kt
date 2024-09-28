@@ -24,7 +24,7 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.treuedu.project.R
+import com.trueedu.project.R
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.model.dto.VolumeRankingOutput
 import com.trueedu.project.ui.common.BackTitleTopBar
