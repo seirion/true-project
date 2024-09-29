@@ -22,7 +22,7 @@ import kotlinx.serialization.Serializable
  * ※ API 호출 시, 접근토큰유형 "Bearer" 입력. ex) "Bearer eyJ...."
  * expires_in	접근토큰 유효기간	Number	Y	10	유효기간(초)
  * ex) 7776000
- * acess_token_token_expired	접근토큰 유효기간(일시표시)	String	Y	50	유효기간(년:월:일 시:분:초)
+ * access_token_token_expired	접근토큰 유효기간(일시표시)	String	Y	50	유효기간(년:월:일 시:분:초)
  * ex) "2022-08-30 08:10:10"
  */
 @Serializable

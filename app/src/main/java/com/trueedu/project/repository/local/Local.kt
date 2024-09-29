@@ -21,6 +21,9 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
 
     var accessToken by preferences.string("")
 
+    // 토큰 만료 예정 시각
+    var accessTokenExpiredAt by preferences.long(0L)
+
     var refreshToken by preferences.string("")
 
     // UI
