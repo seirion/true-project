@@ -3,11 +3,11 @@ package com.trueedu.project
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.trueedu.project.data.UserInfo
 import com.trueedu.project.model.dto.RevokeTokenRequest
 import com.trueedu.project.model.dto.TokenRequest
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
-import com.trueedu.project.repository.remote.RankingRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -17,8 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val local: Local,
+    private val userInfo: UserInfo,
     private val authRemote: AuthRemote,
-    private val rankingRemote: RankingRemote,
 ): ViewModel() {
 
     companion object {
@@ -28,10 +28,7 @@ class MainViewModel @Inject constructor(
     fun init() {
         val accessToken = local.accessToken
         Log.d(TAG,"accessToken: $accessToken")
-        // TODO: 만료되면 다시 토큰을 받아야 함
-        if (accessToken.isEmpty()) {
-            issueAccessToken()
-        }
+        issueAccessToken()
     }
 
     private fun issueAccessToken() {
@@ -42,6 +39,11 @@ class MainViewModel @Inject constructor(
             Log.d(TAG, "appKey appSecret is empty")
             return
         }
+        if (userInfo.hasValidToken()) {
+            Log.d(TAG, "token is valid")
+            return
+        }
+
         val request = TokenRequest(
             grantType = "client_credentials",
             appKey = local.appKey,
@@ -54,7 +56,7 @@ class MainViewModel @Inject constructor(
                 // service not available
             }
             .onEach {
-                local.accessToken = it.accessToken
+                userInfo.setAccessToken(it)
                 Log.d(TAG, "new token: $it")
             }
             .launchIn(viewModelScope)

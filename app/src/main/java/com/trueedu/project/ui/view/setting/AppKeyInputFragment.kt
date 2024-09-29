@@ -36,6 +36,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.trueedu.project.R
 import com.trueedu.project.data.ScreenControl
+import com.trueedu.project.data.UserInfo
 import com.trueedu.project.extensions.getClipboardText
 import com.trueedu.project.model.dto.TokenRequest
 import com.trueedu.project.repository.local.Local
@@ -66,6 +67,8 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
         }
     }
 
+    @Inject
+    lateinit var userInfo: UserInfo
     @Inject
     lateinit var screen: ScreenControl
 
@@ -178,7 +181,7 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
                 // service not available
             }
             .onEach {
-                local.accessToken = it.accessToken
+                userInfo.setAccessToken(it)
                 local.appKey = appKey.value
                 local.appSecret = appSecret.value
                 Log.d(TAG, "new token: $it")
