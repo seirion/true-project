@@ -12,7 +12,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        submodules: true
     - name: set up JDK 17
       uses: actions/setup-java@v2
       with:
@@ -23,21 +22,18 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v2
 
+    - name: Create google-services.json
+      id: createGoogleService
+      run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > ./app/google-services.json
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew assembleDebug
     - name: Upload artifact to Firebase App Distribution
-      run: |
-        INPUT_APPID=${{secrets.FIREBASE_APP_ID}}
-        FIREBASE_TOKEN=${{secrets.FIREBASE_TOKEN}}
-        INPUT_GROUPS="users"
-        INPUT_FILE="app/build/outputs/apk/debug/app-debug.apk"
-        RELEASE_NOTES="$(git log -1 --pretty=short)"
-        firebase \
-          appdistribution:distribute \
-          "$INPUT_FILE" \
-          --app "$INPUT_APPID" \
-          --token "$FIREBASE_TOKEN" \
-          --groups "$INPUT_GROUPS" \
-          ${RELEASE_NOTES:+ --release-notes "${RELEASE_NOTES}"}
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      with:
+        appId: ${{secrets.FIREBASE_APP_ID}}
+        serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+        groups: users
+        file: app/build/outputs/apk/debug/app-debug.apk
