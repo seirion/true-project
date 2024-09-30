@@ -26,7 +26,7 @@ open class BaseFragment: BottomSheetDialogFragment() {
 
     protected var behavior: BottomSheetBehavior<*>? = null
 
-    private fun screenName(): String {
+    protected fun screenName(): String {
         val simpleName = this::class.java.simpleName
         return simpleName
             .substring(0, simpleName.length - "Fragment".length)
@@ -55,6 +55,7 @@ open class BaseFragment: BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        init()
         return ComposeView(requireContext()).apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -69,6 +70,10 @@ open class BaseFragment: BottomSheetDialogFragment() {
                 }
             }
         }
+    }
+
+    open fun init() {
+
     }
 
     @Composable
