@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,7 +24,7 @@ import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
-import com.trueedu.project.ui.topbar.TopBar
+import com.trueedu.project.ui.topbar.MainTopBar
 import com.trueedu.project.ui.view.SettingFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -58,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 Scaffold(
                     topBar = {
-                        TopBar(::onSetting)
+                        MainTopBar(::onUserInfo, ::onSetting)
                     },
                     modifier = Modifier.fillMaxSize(),
                 ) { innerPadding ->
@@ -75,6 +74,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun onUserInfo() {
+        trueAnalytics.clickButton("home__user_info__click")
+        //UserInfoFragment.show(supportFragmentManager)
     }
 
     private fun onSetting() {
