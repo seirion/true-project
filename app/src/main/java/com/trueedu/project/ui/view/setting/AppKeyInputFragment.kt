@@ -1,6 +1,5 @@
 package com.trueedu.project.ui.view.setting
 
-import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -26,26 +25,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.trueedu.project.R
-import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.UserInfo
 import com.trueedu.project.extensions.getClipboardText
 import com.trueedu.project.model.dto.TokenRequest
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
+import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
-import com.trueedu.project.ui.theme.TrueProjectTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.catch
@@ -54,7 +47,7 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AppKeyInputFragment: BottomSheetDialogFragment() {
+class AppKeyInputFragment: BaseFragment() {
     companion object {
         private val TAG = AppKeyInputFragment::class.java.simpleName
 
@@ -69,8 +62,6 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
 
     @Inject
     lateinit var userInfo: UserInfo
-    @Inject
-    lateinit var screen: ScreenControl
 
     private val appKey = mutableStateOf("")
     private val appSecret = mutableStateOf("")
@@ -85,21 +76,6 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
     @Inject
     lateinit var authRemote: AuthRemote
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.FillScreenSheetTheme)
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return super.onCreateDialog(savedInstanceState).apply {
-            (this as? BottomSheetDialog)?.behavior?.run {
-                this.skipCollapsed = true
-                this.state = BottomSheetBehavior.STATE_EXPANDED
-                this.isDraggable = true
-            }
-        }
-    }
-
     private fun init() {
         appKeyOrg = local.appKey
         appSecretOrg = local.appSecret
@@ -108,38 +84,31 @@ class AppKeyInputFragment: BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        init()
-        return ComposeView(requireContext()).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-            setContent {
-                TrueProjectTheme(
-                    n = screen.theme.intValue,
-                    forceDark = screen.forceDark.value
-                ) {
-                    Scaffold(
-                        topBar = { BackTitleTopBar("appkey 설정", ::dismissAllowingStateLoss) },
-                        bottomBar = { BottomBar(buttonEnabled.value, ::onSave) },
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = MaterialTheme.colorScheme.background),
-                    ) { innerPadding ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(innerPadding)
-                        ) {
-                            AppKeySecretInput(
-                                pasteAppKey = ::pasteAppKey,
-                                pasteAppSecret = ::pasteAppSecret,
-                                onAppKeyChanged = ::onAppKeyChanged,
-                                onAppSecretChanged = ::onAppSecretChanged
-                            )
-                        }
-                    }
-                }
+        return super.onCreateView(inflater, container, savedInstanceState).also {
+            init()
+        }
+    }
+
+    @Composable
+    override fun BodyScreen() {
+        Scaffold(
+            topBar = { BackTitleTopBar("appkey 설정", ::dismissAllowingStateLoss) },
+            bottomBar = { BottomBar(buttonEnabled.value, ::onSave) },
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background),
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                AppKeySecretInput(
+                    pasteAppKey = ::pasteAppKey,
+                    pasteAppSecret = ::pasteAppSecret,
+                    onAppKeyChanged = ::onAppKeyChanged,
+                    onAppSecretChanged = ::onAppSecretChanged
+                )
             }
         }
     }
