@@ -1,47 +1,31 @@
 package com.trueedu.project.ui.topbar
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import com.trueedu.project.ui.common.TouchIcon32
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun TopBar(
-    onClick: () -> Unit = {}
+fun MainTopBar(
+    onUserInfoClick: () -> Unit = {},
+    onSettingClick: () -> Unit = {}
 ) {
     TopAppBar(
+        navigationIcon = {
+            TouchIcon32(Icons.Outlined.AccountCircle, onUserInfoClick)
+        },
         actions = {
-            Box(
-                modifier = Modifier.size(48.dp)
-                    .clip(CircleShape)
-                    .clickable { onClick() },
-            ) {
-                Icon(
-                    modifier = Modifier.fillMaxSize()
-                        .padding(8.dp),
-                    imageVector = Icons.Outlined.Settings,
-                    tint = MaterialTheme.colorScheme.outline,
-                    contentDescription = "icon"
-                )
-            }
+            TouchIcon32(Icons.Outlined.Settings, onSettingClick)
         },
         title = { TopBarTitle("True Project") },
         colors = TopAppBarDefaults.smallTopAppBarColors(
