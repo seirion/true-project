@@ -1,10 +1,6 @@
 package com.trueedu.project.ui.view.setting
 
-import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,12 +8,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentPaste
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -26,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.data.UserInfo
@@ -37,6 +30,7 @@ import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.BottomBar
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
 import dagger.hilt.android.AndroidEntryPoint
@@ -76,24 +70,18 @@ class AppKeyInputFragment: BaseFragment() {
     @Inject
     lateinit var authRemote: AuthRemote
 
-    private fun init() {
+    override fun init() {
         appKeyOrg = local.appKey
         appSecretOrg = local.appSecret
         appKey.value = local.appKey
         appSecret.value = local.appSecret
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return super.onCreateView(inflater, container, savedInstanceState).also {
-            init()
-        }
-    }
-
     @Composable
     override fun BodyScreen() {
         Scaffold(
             topBar = { BackTitleTopBar("appkey 설정", ::dismissAllowingStateLoss) },
-            bottomBar = { BottomBar(buttonEnabled.value, ::onSave) },
+            bottomBar = { BottomBar("저장", buttonEnabled.value, ::onSave) },
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background),
@@ -219,28 +207,5 @@ class AppKeyInputFragment: BaseFragment() {
                 TouchIcon24(Icons.Filled.ContentPaste, pasteAppSecret)
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun BottomBar(
-    buttonEnabled: Boolean = true,
-    onClick: () -> Unit = {},
-) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-            .padding(bottom = 16.dp)
-            .height(56.dp)
-            .padding(horizontal = 24.dp),
-        enabled = buttonEnabled,
-    ) {
-        val buttonColor = if (buttonEnabled) {
-            MaterialTheme.colorScheme.inversePrimary
-        } else {
-            MaterialTheme.colorScheme.inverseSurface
-        }
-        BasicText(s = "저장", fontSize = 20, color = buttonColor)
     }
 }

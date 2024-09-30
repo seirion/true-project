@@ -26,6 +26,7 @@ import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
 import com.trueedu.project.ui.view.SettingFragment
+import com.trueedu.project.ui.view.UserInfoFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onUserInfo() {
         trueAnalytics.clickButton("home__user_info__click")
-        //UserInfoFragment.show(supportFragmentManager)
+        UserInfoFragment.show(supportFragmentManager)
     }
 
     private fun onSetting() {
