@@ -1,10 +1,5 @@
 package com.trueedu.project.ui.view.setting
 
-import android.app.Dialog
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
@@ -34,22 +28,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.trueedu.project.R
-import com.trueedu.project.data.ScreenControl
+import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BasicText
-import com.trueedu.project.ui.theme.TrueProjectTheme
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class ColorPaletteFragmentFragment: BottomSheetDialogFragment() {
+class ColorPaletteFragmentFragment: BaseFragment() {
     companion object {
         fun show(
             fragmentManager: FragmentManager
@@ -60,53 +47,20 @@ class ColorPaletteFragmentFragment: BottomSheetDialogFragment() {
         }
     }
 
-    @Inject
-    lateinit var screen: ScreenControl
-
-    private var behavior: BottomSheetBehavior<*>? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.FillScreenSheetTheme)
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return super.onCreateDialog(savedInstanceState).apply {
-            (this as? BottomSheetDialog)?.behavior?.run {
-                this@ColorPaletteFragmentFragment.behavior = this
-                this.skipCollapsed = true
-                this.state = BottomSheetBehavior.STATE_EXPANDED
-                this.isDraggable = true
-            }
-        }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return ComposeView(requireContext()).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-            setContent {
-                TrueProjectTheme(
-                    n = screen.theme.intValue,
-                    forceDark = screen.forceDark.value
-                ) {
-                    Scaffold(
-                        topBar = { TopBar(::dismissAllowingStateLoss) },
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = MaterialTheme.colorScheme.background),
-                    ) { innerPadding ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(innerPadding)
-                        ) {
-                            ColorView()
-                        }
-                    }
-                }
+    @Composable
+    override fun BodyScreen() {
+        Scaffold(
+            topBar = { TopBar(::dismissAllowingStateLoss) },
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background),
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                ColorView()
             }
         }
     }
