@@ -10,6 +10,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,6 +27,9 @@ import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.home.AccountInfo
+import com.trueedu.project.ui.home.EmptyHome
+import com.trueedu.project.ui.home.StockItem
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
@@ -66,15 +74,30 @@ class MainActivity : AppCompatActivity() {
                     },
                     modifier = Modifier.fillMaxSize(),
                 ) { innerPadding ->
-                    Column(
+                    val state = rememberLazyListState()
+                    LazyColumn(
+                        state = state,
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
+                            .padding(16.dp)
                     ) {
+                        vm.account.value?.output2?.firstOrNull()?.let {
+                            item { AccountInfo(it) }
+                        } ?: item { EmptyHome() }
+
+                        vm.account.value?.output1?.let {
+                            itemsIndexed(it, { _, item -> item.code} ) { index, item ->
+                                StockItem(item)
+                            }
+                        }
+
+                        /*
                         HomeItem(
                             name = "거래량 순위",
                             ::gotoVolumeRanking
                         )
+                         */
                     }
                 }
             }

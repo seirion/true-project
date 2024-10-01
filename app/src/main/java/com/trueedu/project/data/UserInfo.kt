@@ -4,11 +4,13 @@ import android.util.Log
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AccountRemote
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,20 +41,27 @@ class UserInfo @Inject constructor(
         val accessToken = local.accessToken
         Log.d(TAG,"accessToken: $accessToken")
         tokenControl.issueAccessToken {
-            loadAccount()
+            loadAccount(local.currentAccountNumber)
         }
     }
 
-    private fun loadAccount() {
-        val accountNum = local.currentAccountNumber
-        if (accountNum.isEmpty()) return
-
+    fun loadAccount(
+        accountNum: String? = null,
+        onSuccess: () -> Unit = {},
+        onFail: (Throwable) -> Unit = {},
+    ) {
+        if (accountNum.isNullOrEmpty()) return
         accountRemote.getAccount(accountNum)
             .catch {
-
+                withContext(Dispatchers.Main) {
+                    onFail(it)
+                }
             }
             .onEach {
                 account.emit(it)
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
             }
             .launchIn(MainScope())
     }
