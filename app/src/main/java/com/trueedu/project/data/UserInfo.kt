@@ -1,34 +1,33 @@
 package com.trueedu.project.data
 
-import com.trueedu.project.model.dto.auth.TokenResponse
+import android.util.Log
 import com.trueedu.project.repository.local.Local
-import com.trueedu.project.utils.parseDateString
-import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UserInfo @Inject constructor(
-    val local: Local,
+    private val local: Local,
+    private val tokenControl: TokenControl,
 ) {
-    fun setAccessToken(tokenResponse: TokenResponse) {
-        local.accessToken = tokenResponse.accessToken
-        local.accessTokenExpiredAt = parseDateString(tokenResponse.accessTokenTokenExpired)?.time ?: 0L
+    companion object {
+        private val TAG = UserInfo::class.java.simpleName
     }
 
-    fun hasValidToken(): Boolean {
-
-        if (local.accessToken.isEmpty()) return false
-
-        val tokenExpirationTime = Date(local.accessTokenExpiredAt)
-        val calendar = Calendar.getInstance()
-        calendar.time = tokenExpirationTime
-        calendar.add(Calendar.MINUTE, -5) // 5 minutes to the token expiration time
-        val bufferedExpirationTime = calendar.time
-        val currentTime = Date()
-
-        return bufferedExpirationTime.after(currentTime)
+    // 앱이 foreground 상태가 될 때
+    fun start() {
+        Log.d(TAG, "start")
+        init()
     }
 
+    // 앱이 background 상태가 될 때
+    fun stop() {
+        Log.d(TAG, "stop")
+    }
+
+    fun init() {
+        val accessToken = local.accessToken
+        Log.d(TAG,"accessToken: $accessToken")
+        tokenControl.issueAccessToken()
+    }
 }
