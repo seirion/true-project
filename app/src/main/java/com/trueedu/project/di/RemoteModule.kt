@@ -2,10 +2,13 @@ package com.trueedu.project.di
 
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.trueedu.project.repository.remote.AccountRemote
+import com.trueedu.project.repository.remote.AccountRemoteImpl
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.repository.remote.AuthRemoteImpl
 import com.trueedu.project.repository.remote.RankingRemote
 import com.trueedu.project.repository.remote.RankingRemoteImpl
+import com.trueedu.project.repository.remote.service.AccountService
 import com.trueedu.project.repository.remote.service.AuthService
 import com.trueedu.project.repository.remote.service.RankingService
 import dagger.Module
@@ -28,6 +31,13 @@ object RemoteModule {
     @NormalService
     fun providesAuthService(retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    @NormalService
+    fun providesAccountService(retrofit: Retrofit): AccountService {
+        return retrofit.create(AccountService::class.java)
     }
 
     @Provides
@@ -79,6 +89,13 @@ object RemoteModule {
         @NormalService
         authService: AuthService
     ): AuthRemote = AuthRemoteImpl(authService = authService)
+
+    @Singleton
+    @Provides
+    fun providesAccountRemote(
+        @NormalService
+        accountService: AccountService
+    ): AccountRemote = AccountRemoteImpl(accountService = accountService)
 
     @Singleton
     @Provides
