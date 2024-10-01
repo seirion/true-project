@@ -22,9 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
-import com.trueedu.project.data.UserInfo
+import com.trueedu.project.data.TokenControl
 import com.trueedu.project.extensions.getClipboardText
-import com.trueedu.project.model.dto.auth.TokenRequest
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.BaseFragment
@@ -34,10 +33,6 @@ import com.trueedu.project.ui.common.BottomBar
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -55,7 +50,7 @@ class AppKeyInputFragment: BaseFragment() {
     }
 
     @Inject
-    lateinit var userInfo: UserInfo
+    lateinit var tokenControl: TokenControl
 
     private val appKey = mutableStateOf("")
     private val appSecret = mutableStateOf("")
@@ -112,11 +107,13 @@ class AppKeyInputFragment: BaseFragment() {
     }
 
     private fun pasteAppKey() {
+        trueAnalytics.clickButton("${screenName()}__paste_app_key__click")
         val text = getClipboardText(requireContext()) ?: return
         onAppKeyChanged(text)
     }
 
     private fun pasteAppSecret() {
+        trueAnalytics.clickButton("${screenName()}__paste_app_secret__click")
         val text = getClipboardText(requireContext()) ?: return
         onAppSecretChanged(text)
     }
@@ -127,25 +124,21 @@ class AppKeyInputFragment: BaseFragment() {
     }
 
     private fun onSave() {
-        val request = TokenRequest(
-            grantType = "client_credentials",
+        trueAnalytics.clickButton("${screenName()}__bottom_btn__click")
+
+        tokenControl.issueAccessToken(
             appKey = appKey.value,
             appSecret = appSecret.value,
-        )
-        authRemote.refreshToken(request)
-            .catch {
-                Log.e(TAG, "failed to get AccessToken: $it")
-                // service not available
-            }
-            .onEach {
-                userInfo.setAccessToken(it)
-                local.appKey = appKey.value
-                local.appSecret = appSecret.value
-                Log.d(TAG, "new token: $it")
+            onSuccess = {
+                Log.d(TAG, "new token issued")
                 Toast.makeText(requireContext(), "토큰 정상 발급 완료", Toast.LENGTH_SHORT).show()
                 dismissAllowingStateLoss()
+            },
+            onFailed = {
+                Log.d(TAG, "failed: $it")
+                Toast.makeText(requireContext(), "토큰 발급 실패", Toast.LENGTH_SHORT).show()
             }
-            .launchIn(MainScope())
+        )
     }
 
     @Composable

@@ -6,6 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.data.UserInfo
 import com.trueedu.project.repository.local.Local
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
@@ -24,6 +25,7 @@ class App : Application(), LifecycleEventObserver {
     @InstallIn(SingletonComponent::class)
     interface InjectModule {
         fun getLocal(): Local
+        fun getUserInfo(): UserInfo
         fun getTrueAnalytics(): TrueAnalytics
     }
 
@@ -33,6 +35,7 @@ class App : Application(), LifecycleEventObserver {
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        val userInfo = entryPointInjector(InjectModule::class.java).getUserInfo()
         val trueAnalytics = entryPointInjector(InjectModule::class.java).getTrueAnalytics()
 
         when (event) {
@@ -41,10 +44,12 @@ class App : Application(), LifecycleEventObserver {
 
             Lifecycle.Event.ON_START -> {
                 foreground = true
+                userInfo.start()
             }
 
             Lifecycle.Event.ON_STOP -> {
                 foreground = false
+                userInfo.stop()
             }
 
             Lifecycle.Event.ON_DESTROY -> {
