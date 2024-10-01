@@ -1,7 +1,14 @@
 package com.trueedu.project.data
 
 import android.util.Log
+import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.repository.local.Local
+import com.trueedu.project.repository.remote.AccountRemote
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -9,10 +16,13 @@ import javax.inject.Singleton
 class UserInfo @Inject constructor(
     private val local: Local,
     private val tokenControl: TokenControl,
+    private val accountRemote: AccountRemote,
 ) {
     companion object {
         private val TAG = UserInfo::class.java.simpleName
     }
+
+    val account = MutableSharedFlow<AccountResponse>(1)
 
     // 앱이 foreground 상태가 될 때
     fun start() {
@@ -28,6 +38,22 @@ class UserInfo @Inject constructor(
     fun init() {
         val accessToken = local.accessToken
         Log.d(TAG,"accessToken: $accessToken")
-        tokenControl.issueAccessToken()
+        tokenControl.issueAccessToken {
+            loadAccount()
+        }
+    }
+
+    private fun loadAccount() {
+        val accountNum = local.currentAccountNumber
+        if (accountNum.isEmpty()) return
+
+        accountRemote.getAccount(accountNum)
+            .catch {
+
+            }
+            .onEach {
+                account.emit(it)
+            }
+            .launchIn(MainScope())
     }
 }

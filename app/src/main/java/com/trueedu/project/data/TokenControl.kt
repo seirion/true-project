@@ -12,6 +12,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.Date
@@ -41,16 +42,20 @@ class TokenControl @Inject constructor(
         return bufferedExpirationTime.after(currentTime)
     }
 
-    fun issueAccessToken() {
+    fun issueAccessToken(onSuccess: () -> Unit) {
         Log.d(TAG, "appKey: ${local.appKey}")
         Log.d(TAG, "appSecret: ${local.appSecret}")
-        issueAccessToken(appKey = local.appKey, appSecret = local.appSecret)
+        issueAccessToken(
+            appKey = local.appKey,
+            appSecret = local.appSecret,
+            onSuccess = onSuccess
+        )
     }
 
     fun issueAccessToken(
         appKey: String,
         appSecret: String,
-        onSuccess: (TokenResponse) -> Unit = {},
+        onSuccess: () -> Unit = {},
         onFailed: (Throwable) -> Unit = {},
     ) {
         if (appKey.isEmpty() || appSecret.isEmpty()) {
@@ -59,6 +64,9 @@ class TokenControl @Inject constructor(
         }
         if (hasValidToken()) {
             Log.d(TAG, "token is valid")
+            MainScope().launch {
+                onSuccess()
+            }
             return
         }
 
@@ -79,7 +87,7 @@ class TokenControl @Inject constructor(
             .onEach {
                 setAccessToken(it)
                 withContext(Dispatchers.Main) {
-                    onSuccess(it)
+                    onSuccess()
                 }
                 Log.d(TAG, "new token: $it")
             }
