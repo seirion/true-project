@@ -1,6 +1,6 @@
 package com.trueedu.project.repository.remote.service
 
-import com.trueedu.project.model.dto.VolumeRankingResponse
+import com.trueedu.project.model.dto.rank.VolumeRankingResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.HeaderMap

@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.data.UserInfo
 import com.trueedu.project.extensions.getClipboardText
-import com.trueedu.project.model.dto.TokenRequest
+import com.trueedu.project.model.dto.auth.TokenRequest
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.BaseFragment

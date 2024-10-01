@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.trueedu.project.model.dto.VolumeRankingOutput
+import com.trueedu.project.model.dto.rank.VolumeRankingOutput
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.RankingRemote
 import dagger.hilt.android.lifecycle.HiltViewModel

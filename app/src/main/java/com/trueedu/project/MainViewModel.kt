@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.UserInfo
-import com.trueedu.project.model.dto.RevokeTokenRequest
-import com.trueedu.project.model.dto.TokenRequest
+import com.trueedu.project.model.dto.auth.RevokeTokenRequest
+import com.trueedu.project.model.dto.auth.TokenRequest
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import dagger.hilt.android.lifecycle.HiltViewModel

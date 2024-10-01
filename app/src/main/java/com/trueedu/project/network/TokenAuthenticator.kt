@@ -1,10 +1,9 @@
 package com.trueedu.project.network
 
 import android.content.Context
-import android.util.Log
 import com.trueedu.project.di.TokenRefreshService
-import com.trueedu.project.model.dto.TokenRequest
-import com.trueedu.project.model.dto.TokenResponse
+import com.trueedu.project.model.dto.auth.TokenRequest
+import com.trueedu.project.model.dto.auth.TokenResponse
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.service.AuthService
 import dagger.hilt.android.qualifiers.ApplicationContext

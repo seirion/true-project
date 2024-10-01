@@ -1,4 +1,4 @@
-package com.trueedu.project.model.dto
+package com.trueedu.project.model.dto.rank
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

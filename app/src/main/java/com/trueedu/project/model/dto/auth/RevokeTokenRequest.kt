@@ -1,15 +1,13 @@
-package com.trueedu.project.model.dto
+package com.trueedu.project.model.dto.auth
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
 @Serializable
-data class TokenRequest(
-    @SerialName(value = "grant_type")
-    val grantType: String,
+data class RevokeTokenRequest(
     @SerialName(value = "appkey")
     val appKey: String,
     @SerialName(value = "appsecret")
     val appSecret: String,
+    val token: String,
 )

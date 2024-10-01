@@ -1,6 +1,6 @@
 package com.trueedu.project.data
 
-import com.trueedu.project.model.dto.TokenResponse
+import com.trueedu.project.model.dto.auth.TokenResponse
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.utils.parseDateString
 import java.util.Calendar
