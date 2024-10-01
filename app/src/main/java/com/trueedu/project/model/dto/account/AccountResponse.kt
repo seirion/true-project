@@ -81,9 +81,9 @@ data class AccountOutput2(
     @SerialName("dnca_tot_amt")
     val depositAccountTotalAmount: String, // 예수금총금액
     @SerialName("nxdy_excc_amt")
-    val nextDayExcessAmount: String, // 익일정산금액
+    val nextDayExcessAmount: String, // 익일정산금액 - D+1 예수금
     @SerialName("prvs_rcdl_excc_amt")
-    val previousRedemptionExcessAmount: String, // 가수도정산금액
+    val previousRedemptionExcessAmount: String, // 가수도정산금액 - D+2 예수금
     @SerialName("cma_evlu_amt")
     val cmaEvaluationAmount: String, // CMA평가금액
     @SerialName("bfdy_buy_amt")
@@ -113,7 +113,7 @@ data class AccountOutput2(
             // 신용융자 매수체결 시점에서는 융자비율을 매매대금 100%로 계산 하였다가
             // 수도결제일에 보증금에 해당하는 금액을 고객의 현금으로 충당하여 융자금을 감소시키는 업무
     @SerialName("pchs_amt_smtl_amt")
-    val purchaseAmountSumTotalAmount: String, //매입금액합계금액
+    val purchaseAmountSumTotalAmount: String, //매입금액합계금액 (원금)
     @SerialName("evlu_amt_smtl_amt")
     val evaluationAmountSumTotalAmount: String, //평가금액합계금액
     @SerialName("evlu_pfls_smtl_amt")
@@ -126,4 +126,16 @@ data class AccountOutput2(
     val assetChangeAmount: String, // 자산증감액 (Asset Increase/Decrease Amount)
     @SerialName("asst_icdc_erng_rt")
     val assetChangeRate: String, // 자산증감율 (Asset Increase/Decrease Earning Rate)
-)
+) {
+    fun totalProfitRate(): Double {
+        try {
+            val cost = purchaseAmountSumTotalAmount.toDouble() // 원금
+            val value = evaluationAmountSumTotalAmount.toDouble() // 평가액
+
+            if (cost == 0.0) return 0.0
+            return (value - cost) / cost * 100
+        } catch (_: Exception) {
+            return 0.0
+        }
+    }
+}
