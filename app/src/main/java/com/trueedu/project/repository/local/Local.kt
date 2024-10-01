@@ -42,4 +42,5 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
     // UI
     var forceDark by preferences.boolean(false)
     var theme by preferences.int(1)
+    var keepScreenOn by preferences.boolean(false)
 }

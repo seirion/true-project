@@ -55,26 +55,44 @@ class ScreenSettingFragment: BaseFragment() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .padding(horizontal = 16.dp)
-                ) {
-                    BasicText("강제 다크모드", fontSize = 16, color = MaterialTheme.colorScheme.primary)
-                    MySwitch(
-                        checked = screen.forceDark.value,
-                        onCheckedChange = {
-                            screen.forceDark.value = it
-                            local.forceDark = it
-                            trueAnalytics.clickToggleButton("screen_setting__force_dark__click", !it)
-                        }
-                    )
-                }
+                OnOffSetting("강제 다크모드", screen.forceDark.value, ::setForceDarkMode)
+                OnOffSetting("항상 화면 켜두기", screen.keepScreenOn.value, ::setKeepScreenOn)
             }
         }
+    }
+
+    private fun setForceDarkMode(on: Boolean) {
+        screen.forceDark.value = on
+        local.forceDark = on
+        trueAnalytics.clickToggleButton("${screenName()}__force_dark__click", !on)
+    }
+
+    private fun setKeepScreenOn(on: Boolean) {
+        screen.keepScreenOn.value = on
+        local.keepScreenOn = on
+        trueAnalytics.clickToggleButton("${screenName()}__keep_screen__click", !on)
+    }
+}
+
+@Composable
+fun OnOffSetting(
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .padding(horizontal = 16.dp)
+    ) {
+        BasicText(s = title, fontSize = 16, color = MaterialTheme.colorScheme.primary)
+        MySwitch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
     }
 }
 

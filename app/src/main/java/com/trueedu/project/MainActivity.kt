@@ -1,27 +1,27 @@
 package com.trueedu.project
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.repository.local.Local
@@ -36,10 +36,15 @@ import com.trueedu.project.ui.topbar.MainTopBar
 import com.trueedu.project.ui.view.SettingFragment
 import com.trueedu.project.ui.view.UserInfoFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    companion object {
+        private val TAG = MainActivity::class.java.simpleName
+    }
 
     @Inject
     lateinit var local: Local
@@ -52,11 +57,34 @@ class MainActivity : AppCompatActivity() {
 
     private val vm by viewModels<MainViewModel>()
 
+    override fun onStart() {
+        super.onStart()
+        if (screen.keepScreenOn.value) {
+            keepScreenOnOff(true)
+        }
+    }
+
+    private fun keepScreenOnOff(on: Boolean) {
+        if (on) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (screen.keepScreenOn.value) {
+            keepScreenOnOff(false)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         trueAnalytics.enterView("main__enter")
 
+        observingScreenSettings()
         vm.init()
         enableEdgeToEdge()
         setContent {
@@ -117,6 +145,15 @@ class MainActivity : AppCompatActivity() {
     // 테스트용
     private fun gotoVolumeRanking() {
         VolumeRankingFragment.show(supportFragmentManager)
+    }
+
+    private fun observingScreenSettings() {
+        lifecycleScope.launch {
+            snapshotFlow { screen.keepScreenOn.value }
+                .collectLatest {
+                    keepScreenOnOff(it)
+                }
+        }
     }
 }
 
