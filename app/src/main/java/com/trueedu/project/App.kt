@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.UserInfo
 import com.trueedu.project.repository.local.Local
@@ -32,6 +33,7 @@ class App : Application(), LifecycleEventObserver {
     override fun onCreate() {
         super.onCreate()
         // init here
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

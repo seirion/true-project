@@ -58,7 +58,11 @@ class MainActivity : AppCompatActivity() {
             ) {
                 Scaffold(
                     topBar = {
-                        MainTopBar(::onUserInfo, ::onSetting)
+                        MainTopBar(
+                            vm.accountNum.value,
+                            ::onUserInfo,
+                            ::onSetting
+                        )
                     },
                     modifier = Modifier.fillMaxSize(),
                 ) { innerPadding ->
