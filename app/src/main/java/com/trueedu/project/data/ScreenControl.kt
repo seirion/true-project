@@ -12,4 +12,5 @@ class ScreenControl @Inject constructor(
 ) {
     val forceDark = mutableStateOf(local.forceDark)
     val theme = mutableIntStateOf(local.theme)
+    val keepScreenOn = mutableStateOf(local.keepScreenOn)
 }
