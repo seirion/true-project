@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.view
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,8 +21,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.extensions.getClipboardText
 import com.trueedu.project.repository.local.Local
+import com.trueedu.project.repository.remote.AccountRemote
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
@@ -29,11 +32,16 @@ import com.trueedu.project.ui.common.BottomBar
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserInfoFragment: BaseFragment() {
     companion object {
+        private val TAG = UserInfoFragment::class.java.simpleName
+
         private const val ACCOUNT_NUM_LENGTH = 10
 
         fun show(
@@ -47,6 +55,8 @@ class UserInfoFragment: BaseFragment() {
 
     @Inject
     lateinit var local: Local
+    @Inject
+    lateinit var accountRemote: AccountRemote
 
     // 계좌 번호
     private val accountNumber = mutableStateOf("")
@@ -90,6 +100,17 @@ class UserInfoFragment: BaseFragment() {
 
     private fun onConfirm() {
         trueAnalytics.clickButton("${screenName()}__bottom_btn__click")
+
+        accountRemote.getAccount(accountNumber.value)
+            .catch {
+                Log.d(TAG, "failed to get account: $it")
+            }
+            .onEach {
+                Log.d(TAG, "account: $it")
+                // 성공했을 때만 저장
+                local.currentAccountNumber = accountNumber.value
+            }
+            .launchIn(lifecycleScope)
     }
 
     // 계좌번호 입력하기
