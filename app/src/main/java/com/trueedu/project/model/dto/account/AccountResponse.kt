@@ -63,9 +63,9 @@ data class AccountOutput1(
     @SerialName("expd_dt")
     val expirationDate: String, // 만기일자
     @SerialName("fltt_rt")
-    val priceChangeRate: String, // 등락율
+    val priceChangeRate: String, // 전일 대비 등락율
     @SerialName("bfdy_cprs_icdc")
-    val priceChange: String, // 전일대비증감
+    val priceChange: String, // 전일대비증감 (주식 가격)
     @SerialName("item_mgna_rt_name")
     val itemMarginRateName: String, // 종목증거금율명
     @SerialName("grta_rt_name")
@@ -123,10 +123,11 @@ data class AccountOutput2(
     @SerialName("bfdy_tot_asst_evlu_amt")
     val previousTotalAssetEvaluationAmount: String, //전일총자산평가금액
     @SerialName("asst_icdc_amt")
-    val assetChangeAmount: String, // 자산증감액 (Asset Increase/Decrease Amount)
+    val assetChangeAmount: String, // 자산증감액 (Asset Increase/Decrease Amount) - 일간 수익
     @SerialName("asst_icdc_erng_rt")
-    val assetChangeRate: String, // 자산증감율 (Asset Increase/Decrease Earning Rate)
+    val assetChangeRate: String, // 자산증감율 (Asset Increase/Decrease Earning Rate) - 데이터 미제공
 ) {
+    // 총 수익률
     fun totalProfitRate(): Double {
         try {
             val cost = purchaseAmountSumTotalAmount.toDouble() // 원금
@@ -134,6 +135,20 @@ data class AccountOutput2(
 
             if (cost == 0.0) return 0.0
             return (value - cost) / cost * 100
+        } catch (_: Exception) {
+            return 0.0
+        }
+    }
+
+    // 전날 대비 수익률
+    fun dailyProfitRate(): Double {
+        try {
+            val profit = assetChangeAmount.toDouble()
+            // FIXME: 예수금 포함이라서 정확하지 않음
+            val cost = previousTotalAssetEvaluationAmount.toDouble() // 전일 자산
+
+            if (cost == 0.0) return 0.0
+            return profit / cost * 100
         } catch (_: Exception) {
             return 0.0
         }

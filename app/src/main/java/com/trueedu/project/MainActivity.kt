@@ -111,12 +111,12 @@ class MainActivity : AppCompatActivity() {
                             .padding(16.dp)
                     ) {
                         vm.account.value?.output2?.firstOrNull()?.let {
-                            item { AccountInfo(it) }
+                            item { AccountInfo(it, vm.dailyProfitMode.value, vm::onChangeDailyProfitMode) }
                         } ?: item { EmptyHome() }
 
                         vm.account.value?.output1?.let {
                             itemsIndexed(it, { _, item -> item.code} ) { index, item ->
-                                StockItem(item)
+                                StockItem(item, vm.dailyProfitMode.value)
                             }
                         }
 

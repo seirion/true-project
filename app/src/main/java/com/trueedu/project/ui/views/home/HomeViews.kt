@@ -18,6 +18,7 @@ import com.trueedu.project.model.dto.account.AccountOutput2
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.ui.widget.MySwitch
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
 
@@ -37,25 +38,56 @@ fun EmptyHome() {
 }
 
 @Composable
-fun AccountInfo(accountInfo: AccountOutput2) {
+fun AccountInfo(
+    accountInfo: AccountOutput2,
+    dailyProfitMode: Boolean,
+    onChangeDailyMode: (Boolean) -> Unit,
+) {
     val formatter = CashFormatter()
     val rateFormatter = RateFormatter()
     val total = accountInfo.totalEvaluationAmount.toDouble()
     val totalString = formatter.format(total)
 
-    // 총자산
-    BasicText(s = "Total", fontSize = 12, color = MaterialTheme.colorScheme.outline)
-    BasicText(s = totalString, fontSize = 24, color = MaterialTheme.colorScheme.primary)
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        // 총자산
+        Column {
+            BasicText(s = "Total", fontSize = 12, color = MaterialTheme.colorScheme.outline)
+            BasicText(s = totalString, fontSize = 24, color = MaterialTheme.colorScheme.primary)
+        }
 
-    // 1일 수익률
-    val totalProfit = accountInfo.profitLossSumTotalAmount.toDouble()
-    val totalProfitString = formatter.format(totalProfit, true)
-    val totalProfitRate = accountInfo.totalProfitRate()
-    val totalProfitRateString = rateFormatter.format(totalProfitRate, true)
+        Column(horizontalAlignment = Alignment.End) {
+            val text = if (dailyProfitMode) "일간수익" else "총수익"
+            BasicText(s = text, fontSize = 12, color = MaterialTheme.colorScheme.outline)
+            MySwitch(
+                checked = dailyProfitMode,
+                onCheckedChange = onChangeDailyMode
+            )
+        }
+    }
+
+    val profit = if (dailyProfitMode) {
+        accountInfo.assetChangeAmount.toDouble() // 일간 수익
+    } else {
+        accountInfo.profitLossSumTotalAmount.toDouble() // 총수익
+    }
+    val profitString = formatter.format(profit, true)
+
+    val profitRateString = if (dailyProfitMode) {
+        val dailyProfitRate = accountInfo.dailyProfitRate()
+        rateFormatter.format(dailyProfitRate, true)
+    } else {
+        val totalProfitRate = accountInfo.totalProfitRate()
+        rateFormatter.format(totalProfitRate, true)
+    }
     BasicText(
-        s = "$totalProfitString ($totalProfitRateString)",
+        s = "$profitString ($profitRateString)",
         fontSize = 14,
-        color = ChartColor.color(totalProfit)
+        color = ChartColor.color(profit)
     )
 
     Row {
@@ -107,7 +139,7 @@ private fun RowScope.BodyTitle(s: String) {
 }
 
 @Composable
-fun StockItem(item: AccountOutput1) {
+fun StockItem(item: AccountOutput1, dailyProfitMode: Boolean) {
     val formatter = CashFormatter()
     val rateFormatter = RateFormatter()
     Row(
@@ -140,9 +172,17 @@ fun StockItem(item: AccountOutput1) {
                 color = MaterialTheme.colorScheme.primary,
             )
 
-            val profit = item.profitLossAmount.toDouble()
+            val profit = if (dailyProfitMode) {
+                item.priceChange.toDouble() * item.holdingQuantity.toDouble()
+            } else {
+                item.profitLossAmount.toDouble()
+            }
             val profitString = formatter.format(profit, true)
-            val profitRate = item.profitLossRate.toDouble()
+            val profitRate = if (dailyProfitMode) {
+                item.priceChangeRate.toDouble()
+            } else {
+                item.profitLossRate.toDouble()
+            }
             val profitRateString = rateFormatter.format(profitRate, true)
             BasicText(
                 s = "$profitString ($profitRateString)",
