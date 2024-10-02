@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.view
+package com.trueedu.project.ui.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,9 +26,9 @@ import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.DividerHorizontal
-import com.trueedu.project.ui.view.setting.AppKeyInputFragment
-import com.trueedu.project.ui.view.setting.ColorPaletteFragmentFragment
-import com.trueedu.project.ui.view.setting.ScreenSettingFragment
+import com.trueedu.project.ui.views.setting.AppKeyInputFragment
+import com.trueedu.project.ui.views.setting.ColorPaletteFragmentFragment
+import com.trueedu.project.ui.views.setting.ScreenSettingFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

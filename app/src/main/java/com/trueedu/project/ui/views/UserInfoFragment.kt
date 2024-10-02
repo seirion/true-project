@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.view
+package com.trueedu.project.ui.views
 
 import android.util.Log
 import androidx.compose.foundation.background

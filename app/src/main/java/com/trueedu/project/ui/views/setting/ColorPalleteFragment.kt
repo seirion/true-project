@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.view.setting
+package com.trueedu.project.ui.views.setting
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
