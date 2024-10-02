@@ -27,14 +27,14 @@ import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.common.BasicText
-import com.trueedu.project.ui.views.home.AccountInfo
-import com.trueedu.project.ui.views.home.EmptyHome
-import com.trueedu.project.ui.views.home.StockItem
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
 import com.trueedu.project.ui.views.SettingFragment
-import com.trueedu.project.ui.views.UserInfoFragment
+import com.trueedu.project.ui.views.home.AccountInfo
+import com.trueedu.project.ui.views.home.EmptyHome
+import com.trueedu.project.ui.views.home.StockItem
+import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onUserInfo() {
         trueAnalytics.clickButton("home__user_info__click")
-        UserInfoFragment.show(supportFragmentManager)
+        AppKeyInputFragment.show(supportFragmentManager)
     }
 
     private fun onSetting() {
