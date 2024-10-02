@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.views.setting
 
+import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import com.trueedu.project.R
 import com.trueedu.project.data.TokenControl
 import com.trueedu.project.extensions.getClipboardText
 import com.trueedu.project.repository.local.Local
@@ -70,6 +72,11 @@ class AppKeyInputFragment: BaseFragment() {
         appSecretOrg = local.appSecret
         appKey.value = local.appKey
         appSecret.value = local.appSecret
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.FullScreenSheetKeyboardDialogTheme)
     }
 
     @Composable
@@ -171,7 +178,8 @@ class AppKeyInputFragment: BaseFragment() {
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    maxLines = 2,
                 )
                 Margin(8)
                 TouchIcon24(Icons.Filled.ContentPaste, pasteAppKey)
@@ -194,7 +202,8 @@ class AppKeyInputFragment: BaseFragment() {
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                    maxLines = 2,
                 )
                 Margin(8)
                 TouchIcon24(Icons.Filled.ContentPaste, pasteAppSecret)

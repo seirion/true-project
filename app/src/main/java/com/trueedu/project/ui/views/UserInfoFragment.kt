@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.views
 
+import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import com.trueedu.project.R
 import com.trueedu.project.data.UserInfo
 import com.trueedu.project.extensions.getClipboardText
 import com.trueedu.project.repository.local.Local
@@ -61,6 +63,11 @@ class UserInfoFragment: BaseFragment() {
 
     override fun init() {
         accountNumber.value = local.currentAccountNumber
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.FullScreenSheetKeyboardDialogTheme)
     }
 
     @Composable

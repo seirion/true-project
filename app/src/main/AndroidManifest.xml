@@ -19,7 +19,8 @@
             android:name="com.trueedu.project.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.TrueProject">
+            android:theme="@style/Theme.TrueProject"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
