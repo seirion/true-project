@@ -1,8 +1,10 @@
 package com.trueedu.project
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.UserInfo
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.repository.local.Local
@@ -15,6 +17,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val local: Local,
     private val userInfo: UserInfo,
+    private val trueAnalytics: TrueAnalytics,
 ): ViewModel() {
 
     companion object {
@@ -23,12 +26,15 @@ class MainViewModel @Inject constructor(
 
     val accountNum = mutableStateOf("")
     val account = mutableStateOf<AccountResponse?>(null)
+    val dailyProfitMode = mutableStateOf(local.dailyProfitMode)
 
     fun init() {
         viewModelScope.launch {
-            userInfo.account.collectLatest {
-                accountNum.value = accountNumFormat(local.currentAccountNumber)
-                account.value = it
+            launch {
+                userInfo.account.collectLatest {
+                    accountNum.value = accountNumFormat(local.currentAccountNumber)
+                    account.value = it
+                }
             }
         }
     }
@@ -39,5 +45,11 @@ class MainViewModel @Inject constructor(
         } else {
             str
         }
+    }
+
+    fun onChangeDailyProfitMode(state: Boolean) {
+        trueAnalytics.clickToggleButton("main__daily_profit_mode__click", !state)
+        local.dailyProfitMode = state
+        dailyProfitMode.value = state
     }
 }

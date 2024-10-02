@@ -43,4 +43,7 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
     var forceDark by preferences.boolean(false)
     var theme by preferences.int(1)
     var keepScreenOn by preferences.boolean(false)
+
+    // 홈 설정
+    var dailyProfitMode by preferences.boolean(false)
 }
