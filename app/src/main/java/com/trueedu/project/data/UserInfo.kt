@@ -43,6 +43,10 @@ class UserInfo @Inject constructor(
         tokenControl.issueAccessToken {
             loadAccount(local.currentAccountNumber)
         }
+
+        tokenControl.issueWebSocketKey {
+            Log.d(TAG,"webSocketKey: ${local.webSocketKey}")
+        }
     }
 
     fun loadAccount(
