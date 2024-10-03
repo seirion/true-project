@@ -77,13 +77,12 @@ fun AccountInfo(
     }
     val profitString = formatter.format(profit, true)
 
-    val profitRateString = if (dailyProfitMode) {
-        val dailyProfitRate = accountInfo.dailyProfitRate()
-        rateFormatter.format(dailyProfitRate, true)
+    val rate = if (dailyProfitMode) {
+        accountInfo.dailyProfitRate()
     } else {
-        val totalProfitRate = accountInfo.totalProfitRate()
-        rateFormatter.format(totalProfitRate, true)
+        accountInfo.totalProfitRate()
     }
+    val profitRateString = rateFormatter.format(rate, true)
     BasicText(
         s = "$profitString ($profitRateString)",
         fontSize = 14,
