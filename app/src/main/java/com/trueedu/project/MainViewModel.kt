@@ -1,7 +1,6 @@
 package com.trueedu.project
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.analytics.TrueAnalytics
@@ -26,7 +25,7 @@ class MainViewModel @Inject constructor(
 
     val accountNum = mutableStateOf("")
     val account = mutableStateOf<AccountResponse?>(null)
-    val dailyProfitMode = mutableStateOf(local.dailyProfitMode)
+    val marketPriceMode = mutableStateOf(local.marketPriceMode)
 
     fun init() {
         viewModelScope.launch {
@@ -47,10 +46,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onChangeDailyProfitMode(selected: Int) {
+    fun onChangeMarketPriceMode(selected: Int) {
         val state = selected == 0
-        trueAnalytics.clickToggleButton("main__daily_profit_mode__click", !state)
-        local.dailyProfitMode = state
-        dailyProfitMode.value = state
+        trueAnalytics.log(
+            "main__daily_profit_mode__click",
+            mapOf("selected" to selected)
+        )
+        local.marketPriceMode = state
+        marketPriceMode.value = state
     }
 }
