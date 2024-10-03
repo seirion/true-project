@@ -4,6 +4,7 @@ import android.util.Log
 import com.trueedu.project.model.dto.auth.RevokeTokenRequest
 import com.trueedu.project.model.dto.auth.TokenRequest
 import com.trueedu.project.model.dto.auth.TokenResponse
+import com.trueedu.project.model.dto.auth.WebSocketKeyRequest
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.utils.parseDateString
@@ -50,6 +51,47 @@ class TokenControl @Inject constructor(
             appSecret = local.appSecret,
             onSuccess = onSuccess
         )
+    }
+
+    fun issueWebSocketKey(onSuccess: () -> Unit) {
+        issueWebSocketKey(
+            appKey = local.appKey,
+            appSecret = local.appSecret,
+            onSuccess = onSuccess
+        )
+    }
+
+    private fun issueWebSocketKey(
+        appKey: String,
+        appSecret: String,
+        onSuccess: () -> Unit,
+    ) {
+        if (local.webSocketKey.isNotEmpty()) {
+            Log.d(TAG, "websocket key exists: ${local.webSocketKey}")
+            return
+        }
+        if (appKey.isEmpty() || appSecret.isEmpty()) {
+            Log.d(TAG, "appKey appSecret is empty")
+            return
+        }
+        val request = WebSocketKeyRequest(
+            grantType = "client_credentials",
+            appKey = appKey,
+            secretKey = appSecret,
+        )
+
+        authRemote.webSocketKey(request)
+            .catch {
+                Log.e(TAG, "failed to get websocket key: $it")
+            }
+            .onEach {
+                local.webSocketKey = it.approvalKey
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+                Log.d(TAG, "new web socket key: $it")
+            }
+            .launchIn(MainScope())
     }
 
     fun issueAccessToken(
