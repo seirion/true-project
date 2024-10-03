@@ -45,5 +45,7 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
     var keepScreenOn by preferences.boolean(false)
 
     // 홈 설정
-    var dailyProfitMode by preferences.boolean(false)
+    var dailyProfitMode by preferences.boolean(false) // 사용 안 함
+    var marketPriceMode by preferences.boolean(false) // 시세 | 수익
+
 }

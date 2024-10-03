@@ -64,24 +64,16 @@ fun AccountInfo(
         Column(horizontalAlignment = Alignment.End) {
             MyToggleButton(
                 defaultValue = if (dailyProfitMode) 0 else 1,
-                textKeys = listOf( "일간", "총"),
+                textKeys = listOf( "시세", "수익"),
                 toggleClick = onChangeDailyMode,
             )
         }
     }
 
-    val profit = if (dailyProfitMode) {
-        accountInfo.assetChangeAmount.toDouble() // 일간 수익
-    } else {
-        accountInfo.profitLossSumTotalAmount.toDouble() // 총수익
-    }
+    val profit = accountInfo.profitLossSumTotalAmount.toDouble()
     val profitString = formatter.format(profit, true)
 
-    val rate = if (dailyProfitMode) {
-        accountInfo.dailyProfitRate()
-    } else {
-        accountInfo.totalProfitRate()
-    }
+    val rate = accountInfo.totalProfitRate()
     val profitRateString = rateFormatter.format(rate, true)
     BasicText(
         s = "$profitString ($profitRateString)",
@@ -138,7 +130,7 @@ private fun RowScope.BodyTitle(s: String) {
 }
 
 @Composable
-fun StockItem(item: AccountOutput1, dailyProfitMode: Boolean) {
+fun StockItem(item: AccountOutput1, marketPriceMode: Boolean) {
     val formatter = CashFormatter()
     val rateFormatter = RateFormatter()
     Row(
@@ -163,7 +155,13 @@ fun StockItem(item: AccountOutput1, dailyProfitMode: Boolean) {
         }
 
         Column(horizontalAlignment = Alignment.End) {
-            val totalValue = item.evaluationAmount.toDouble()
+            val totalValue = if (marketPriceMode) {
+                // 시세 (현재 가격)
+                item.currentPrice.toDouble()
+            } else {
+                // 평가금액
+                item.evaluationAmount.toDouble()
+            }
             val totalValueString = formatter.format(totalValue)
             BasicText(
                 s = totalValueString,
@@ -171,13 +169,15 @@ fun StockItem(item: AccountOutput1, dailyProfitMode: Boolean) {
                 color = MaterialTheme.colorScheme.primary,
             )
 
-            val profit = if (dailyProfitMode) {
-                item.priceChange.toDouble() * item.holdingQuantity.toDouble()
+            val profit = if (marketPriceMode) {
+                // 시세 변동
+                item.priceChange.toDouble()
             } else {
+                // 총수익 금액
                 item.profitLossAmount.toDouble()
             }
             val profitString = formatter.format(profit, true)
-            val profitRate = if (dailyProfitMode) {
+            val profitRate = if (marketPriceMode) {
                 item.priceChangeRate.toDouble()
             } else {
                 item.profitLossRate.toDouble()
