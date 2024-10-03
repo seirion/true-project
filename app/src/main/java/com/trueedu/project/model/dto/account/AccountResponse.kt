@@ -135,7 +135,7 @@ data class AccountOutput2(
 
             if (cost == 0.0) return 0.0
             return (value - cost) / cost * 100
-        } catch (_: Exception) {
+        } catch (_: NumberFormatException) {
             return 0.0
         }
     }
