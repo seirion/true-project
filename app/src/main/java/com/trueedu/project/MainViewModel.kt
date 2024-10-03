@@ -47,7 +47,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onChangeDailyProfitMode(state: Boolean) {
+    fun onChangeDailyProfitMode(selected: Int) {
+        val state = selected == 0
         trueAnalytics.clickToggleButton("main__daily_profit_mode__click", !state)
         local.dailyProfitMode = state
         dailyProfitMode.value = state

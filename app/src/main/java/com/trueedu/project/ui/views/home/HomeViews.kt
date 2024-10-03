@@ -18,7 +18,7 @@ import com.trueedu.project.model.dto.account.AccountOutput2
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
-import com.trueedu.project.ui.widget.MySwitch
+import com.trueedu.project.ui.widget.MyToggleButton
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
 
@@ -41,7 +41,7 @@ fun EmptyHome() {
 fun AccountInfo(
     accountInfo: AccountOutput2,
     dailyProfitMode: Boolean,
-    onChangeDailyMode: (Boolean) -> Unit,
+    onChangeDailyMode: (Int) -> Unit,
 ) {
     val formatter = CashFormatter()
     val rateFormatter = RateFormatter()
@@ -49,6 +49,7 @@ fun AccountInfo(
     val totalString = formatter.format(total)
 
     Row(
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
@@ -61,11 +62,10 @@ fun AccountInfo(
         }
 
         Column(horizontalAlignment = Alignment.End) {
-            val text = if (dailyProfitMode) "일간수익" else "총수익"
-            BasicText(s = text, fontSize = 12, color = MaterialTheme.colorScheme.outline)
-            MySwitch(
-                checked = dailyProfitMode,
-                onCheckedChange = onChangeDailyMode
+            MyToggleButton(
+                defaultValue = if (dailyProfitMode) 0 else 1,
+                textKeys = listOf( "일간", "총"),
+                toggleClick = onChangeDailyMode,
             )
         }
     }
