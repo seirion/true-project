@@ -68,6 +68,7 @@ class TokenControl @Inject constructor(
     ) {
         if (local.webSocketKey.isNotEmpty()) {
             Log.d(TAG, "websocket key exists: ${local.webSocketKey}")
+            onSuccess()
             return
         }
         if (appKey.isEmpty() || appSecret.isEmpty()) {

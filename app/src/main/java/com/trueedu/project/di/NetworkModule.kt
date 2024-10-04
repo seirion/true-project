@@ -14,6 +14,8 @@ import com.trueedu.project.network.TokenInterceptor
 import com.trueedu.project.network.addHttpLoggingInterceptor
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.service.AuthService
+import com.trueedu.project.repository.remote.service.MyWebSocketService
+import com.trueedu.project.repository.remote.service.WebSocketService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -167,5 +169,14 @@ object NetworkModule {
                 }
             }
         }
+    }
+
+
+    // websocket 관련
+
+    @Provides
+    @Singleton
+    fun provideWebSocketService(okHttpClient: OkHttpClient): WebSocketService {
+        return MyWebSocketService(okHttpClient)
     }
 }
