@@ -53,6 +53,12 @@ object NetworkModule {
     }
 
     @Provides
+    @WebSocketUrl
+    fun providesWebsocketUrl(): String {
+        return "ws://ops.koreainvestment.com:21000"
+    }
+
+    @Provides
     @Singleton
     fun providesLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor(PrettyPrintLogger()).apply {
@@ -176,7 +182,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideWebSocketService(okHttpClient: OkHttpClient): WebSocketService {
-        return MyWebSocketService(okHttpClient)
+    fun provideWebSocketService(
+        @WebSocketUrl webSocketUrl: String,
+        okHttpClient: OkHttpClient,
+    ): WebSocketService {
+        return MyWebSocketService(webSocketUrl, okHttpClient)
     }
 }
