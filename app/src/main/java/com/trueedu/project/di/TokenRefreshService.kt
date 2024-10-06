@@ -21,3 +21,7 @@ annotation class TokenRefreshService
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class NormalService
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class WebSocketUrl

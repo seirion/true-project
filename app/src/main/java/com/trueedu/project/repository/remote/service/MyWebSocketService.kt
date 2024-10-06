@@ -7,9 +7,9 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import javax.inject.Inject
 
-private const val webSocketUrl = "ws://ops.koreainvestment.com:21000"
 
 class MyWebSocketService @Inject constructor(
+    private val webSocketUrl: String,
     private val okHttpClient: OkHttpClient,
 ) : WebSocketService {
 
