@@ -5,11 +5,17 @@ import com.trueedu.project.model.dto.auth.RevokeTokenRequest
 import com.trueedu.project.model.dto.auth.TokenRequest
 import com.trueedu.project.model.dto.auth.TokenResponse
 import com.trueedu.project.model.dto.auth.WebSocketKeyRequest
+import com.trueedu.project.model.event.AuthEvent
+import com.trueedu.project.model.event.TokenIssued
+import com.trueedu.project.model.event.TokenRevoked
+import com.trueedu.project.model.event.WebSocketKeyIssued
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.utils.parseDateString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -27,6 +33,13 @@ class TokenControl @Inject constructor(
 ) {
     companion object {
         private val TAG = TokenControl::class.java.simpleName
+    }
+
+    // auth 관련 이벤트 구독을 위함
+    private val event = MutableSharedFlow<AuthEvent>(1)
+
+    fun observeAuthEvent(): Flow<AuthEvent> {
+        return event
     }
 
     private fun hasValidToken(): Boolean {
@@ -87,6 +100,7 @@ class TokenControl @Inject constructor(
             }
             .onEach {
                 local.webSocketKey = it.approvalKey
+                event.emit(WebSocketKeyIssued())
                 withContext(Dispatchers.Main) {
                     onSuccess()
                 }
@@ -129,6 +143,7 @@ class TokenControl @Inject constructor(
             }
             .onEach {
                 setAccessToken(it)
+                event.emit(TokenIssued())
                 withContext(Dispatchers.Main) {
                     onSuccess()
                 }
@@ -153,6 +168,7 @@ class TokenControl @Inject constructor(
                 // service not available
             }
             .onEach {
+                event.emit(TokenRevoked())
                 Log.d(TAG, "revoke ok: $it")
             }
             .launchIn(MainScope())
