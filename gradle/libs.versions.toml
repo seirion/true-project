@@ -17,6 +17,7 @@ okhttp-bom = "4.11.0"
 flipper = "0.240.0"
 material = "1.12.0"
 lifecycleProcess = "2.8.6"
+firebaseAuthKtx = "23.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -60,6 +61,10 @@ material-extended = { group = "androidx.compose.material", name ="material-icons
 amplitude = { module = "com.amplitude:android-sdk", version = "2.23.2" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
 
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version = "33.4.0" }
+firebase-database = { module = "com.google.firebase:firebase-database-ktx" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
@@ -80,4 +85,8 @@ ksps = [
 hilt = [
     "hilt",
     "hilt-navigation-compose"
+]
+
+firebase = [
+    "firebase-database"
 ]
