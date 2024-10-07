@@ -1,11 +1,13 @@
 package com.trueedu.project
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.UserInfo
 import com.trueedu.project.model.dto.account.AccountResponse
+import com.trueedu.project.repository.FirebaseRealtimeDatabase
 import com.trueedu.project.repository.local.Local
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -17,6 +19,7 @@ class MainViewModel @Inject constructor(
     private val local: Local,
     private val userInfo: UserInfo,
     private val trueAnalytics: TrueAnalytics,
+    private val firebaseDatabase: FirebaseRealtimeDatabase,
 ): ViewModel() {
 
     companion object {
@@ -26,9 +29,16 @@ class MainViewModel @Inject constructor(
     val accountNum = mutableStateOf("")
     val account = mutableStateOf<AccountResponse?>(null)
     val marketPriceMode = mutableStateOf(local.marketPriceMode)
+    val forceUpdateVisible = mutableStateOf(false)
 
     fun init() {
         viewModelScope.launch {
+            launch {
+                if (firebaseDatabase.needForceUpdate()) {
+                    Log.d(TAG, "need app update")
+                    forceUpdateVisible.value = true
+                }
+            }
             launch {
                 userInfo.account.collectLatest {
                     accountNum.value = accountNumFormat(local.currentAccountNumber)

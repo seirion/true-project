@@ -1,5 +1,7 @@
 package com.trueedu.project
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
@@ -33,6 +35,7 @@ import com.trueedu.project.ui.topbar.MainTopBar
 import com.trueedu.project.ui.views.SettingFragment
 import com.trueedu.project.ui.views.home.AccountInfo
 import com.trueedu.project.ui.views.home.EmptyHome
+import com.trueedu.project.ui.views.home.ForceUpdateView
 import com.trueedu.project.ui.views.home.StockItem
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -92,6 +95,10 @@ class MainActivity : AppCompatActivity() {
                 n = screen.theme.intValue,
                 forceDark = screen.forceDark.value
             ) {
+                if (vm.forceUpdateVisible.value) {
+                    ForceUpdateView(::gotoPlayStore)
+                    return@TrueProjectTheme
+                }
                 Scaffold(
                     topBar = {
                         MainTopBar(
@@ -102,6 +109,7 @@ class MainActivity : AppCompatActivity() {
                     },
                     modifier = Modifier.fillMaxSize(),
                 ) { innerPadding ->
+
                     val state = rememberLazyListState()
                     LazyColumn(
                         state = state,
@@ -140,6 +148,16 @@ class MainActivity : AppCompatActivity() {
     private fun onSetting() {
         trueAnalytics.clickButton("home__setting__click")
         SettingFragment.show(supportFragmentManager)
+    }
+
+    private fun gotoPlayStore() {
+        startActivity(
+            Intent(Intent.ACTION_VIEW).apply {
+                addCategory(Intent.CATEGORY_DEFAULT)
+                data =
+                    Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+            }
+        )
     }
 
     // 테스트용
