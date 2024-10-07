@@ -1,6 +1,7 @@
-package com.trueedu.project.data
+package com.trueedu.project.data.ws
 
 import android.util.Log
+import com.trueedu.project.data.TokenControl
 import com.trueedu.project.model.event.WebSocketKeyIssued
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.service.WebSocketService

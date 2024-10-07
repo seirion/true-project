@@ -8,7 +8,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.UserInfo
-import com.trueedu.project.data.WsMessageHandler
+import com.trueedu.project.data.ws.WsMessageHandler
 import com.trueedu.project.repository.local.Local
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
