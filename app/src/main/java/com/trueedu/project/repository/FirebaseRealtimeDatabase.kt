@@ -7,6 +7,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.trueedu.project.BuildConfig
+import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.repository.local.Local
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -22,10 +23,12 @@ class FirebaseRealtimeDatabase @Inject constructor(
 
     // Firebase Realtime Database 인스턴스 가져오기
     private val database = FirebaseDatabase.getInstance()
-    private val configRef = database.getReference("app_config")
+    private val configRef = database.getReference("app_config") // 앱 속성 관련
+    private val stocksRef = database.getReference("stocks") // 종목 데이터
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
+
     init {
-        configRef.addValueEventListener(object: ValueEventListener {
+        stocksRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
             }
 
@@ -66,5 +69,28 @@ class FirebaseRealtimeDatabase @Inject constructor(
         }
 
         return 0
+    }
+
+    suspend fun loadStocks(): Pair<Int, List<StockInfo>> {
+        try {
+            val snapshot = stocksRef.get().await()
+            val lastUpdatedAt = snapshot.child("lastUpdatedAt").getValue(Int::class.java)
+
+            if (lastUpdatedAt == null) {
+                Log.d(TAG, "cannot read values: \"lastUpdatedAt\"")
+                return 0 to emptyList()
+            }
+            Log.d(TAG, "lastUpdatedAt: $lastUpdatedAt")
+
+            return lastUpdatedAt to emptyList()
+        } catch (e: Exception) {
+            // 오류 처리
+            Log.e(TAG, "Failed to get stocks", e)
+            return 0 to emptyList()
+        }
+    }
+
+    private suspend fun setStocks(stocks: List<StockInfo>) {
+
     }
 }

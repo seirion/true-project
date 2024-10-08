@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -45,6 +46,8 @@ class SettingFragment: BaseFragment() {
         }
     }
 
+    private val vm by viewModels<SettingViewModel>()
+
     @Inject
     lateinit var stockInfoDownloader: StockInfoDownloader
 
@@ -61,21 +64,23 @@ class SettingFragment: BaseFragment() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                SettingItem("appkey 설정") {
+                SettingItem("appkey 설정", true) {
                     trueAnalytics.enterView("setting__appkey_setting__click")
                     AppKeyInputFragment.show(parentFragmentManager)
                 }
-                SettingItem("Screen 설정") {
+                SettingItem("Screen 설정", true) {
                     trueAnalytics.enterView("setting__screen_setting__click")
                     ScreenSettingFragment.show(parentFragmentManager)
                 }
-                SettingItem("종목 정보 업데이트") {
+
+                val label = "종목 정보 업데이트" + vm.stockUpdateLabel.value
+                SettingItem(label, vm.updateAvailable.value) {
                     trueAnalytics.enterView("setting__update_stock_info__click")
                     updateStockInfo()
                 }
 
                 if (BuildConfig.DEBUG) {
-                    SettingItem("color scheme") {
+                    SettingItem("color scheme", true) {
                         ColorPaletteFragmentFragment.show(parentFragmentManager)
                     }
                 }
@@ -92,6 +97,7 @@ class SettingFragment: BaseFragment() {
 @Composable
 fun SettingItem(
     text: String = "나의 설정",
+    enabled: Boolean = true,
     onClick: () -> Unit = {},
 ) {
     Row(
@@ -99,7 +105,7 @@ fun SettingItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable(enabled = enabled) { onClick() }
             .padding(horizontal = 10.dp)
             .height(56.dp)
     ) {
