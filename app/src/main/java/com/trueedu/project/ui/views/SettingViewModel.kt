@@ -25,18 +25,32 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             snapshotFlow { stockPool.status.value }
                 .collect { status ->
-                    if (status == StockPool.Status.SUCCESS) {
-                        updateAvailable.value = stockPool.needUpdate()
-                        stockUpdateLabel.value = if (updateAvailable.value) {
-                            ""
-                        } else {
-                            " - 최신 데이터"
+                    when (status) {
+                        StockPool.Status.LOADING -> {
+
                         }
-                    } else {
-                        updateAvailable.value = false
-                        stockUpdateLabel.value = " - 로딩 실패"
+                        StockPool.Status.SUCCESS -> {
+                            updateAvailable.value = stockPool.needUpdate()
+                            stockUpdateLabel.value = if (updateAvailable.value) {
+                                ""
+                            } else {
+                                " - 최신 데이터"
+                            }
+                        }
+                        StockPool.Status.UPDATING -> {
+                            updateAvailable.value = false
+                            stockUpdateLabel.value = " - 업데이트 중"
+                        }
+                        StockPool.Status.FAIL -> {
+                            updateAvailable.value = false
+                            stockUpdateLabel.value = " - 로딩 실패"
+                        }
                     }
                 }
         }
+    }
+
+    fun updateStocks() {
+        stockPool.updateStocks()
     }
 }

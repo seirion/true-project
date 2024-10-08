@@ -6,6 +6,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import com.trueedu.project.model.dto.StockInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,14 +48,15 @@ class StockInfoDownloader @Inject constructor(
         }
     }
 
-    fun begin() {
-        CoroutineScope(Dispatchers.IO).launch {
-            listOf(kospi, kosdaq).forEach {
-                val url = download(it) ?: return@forEach
-                val unzipped = unzipFile(url) ?: return@forEach
-                readUnzippedFile(unzipped)
-            }
+    suspend fun getStockInfoList(): List<StockInfo> {
+        val stocks = ArrayList<StockInfo>()
+        listOf(kospi, kosdaq).forEach {
+            val url = download(it) ?: return@forEach
+            val unzipped = unzipFile(url) ?: return@forEach
+            val stockInfo = readUnzippedFile(unzipped)
+            stocks.addAll(stockInfo)
         }
+        return stocks
     }
 
     @SuppressLint("Range")
@@ -147,19 +149,22 @@ class StockInfoDownloader @Inject constructor(
         }
     }
 
-    private fun readUnzippedFile(url: String) {
+    private fun readUnzippedFile(url: String): List<StockInfo> {
         Log.d(TAG, "read file: $url")
         val unzippedFile = File(url)
+        val out = ArrayList<StockInfo>()
         try {
             BufferedReader(InputStreamReader(FileInputStream(unzippedFile), Charset.forName("CP949"))).use { reader ->
                 var line: String?
                 while (reader.readLine().also { line = it } != null) {
-                    //Log.d(TAG, "> $line")
+                    out.add(StockInfo.from(line!!))
                 }
             }
+            return out
         } catch (e: IOException) {
             Log.d(TAG, "file open failed: $e")
             e.printStackTrace()
+            return emptyList()
         }
     }
 }
