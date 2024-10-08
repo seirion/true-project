@@ -29,7 +29,9 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.ui.views.setting.ColorPaletteFragmentFragment
 import com.trueedu.project.ui.views.setting.ScreenSettingFragment
+import com.trueedu.project.utils.StockInfoDownloader
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingFragment: BaseFragment() {
@@ -42,6 +44,9 @@ class SettingFragment: BaseFragment() {
             return fragment
         }
     }
+
+    @Inject
+    lateinit var stockInfoDownloader: StockInfoDownloader
 
     @Composable
     override fun BodyScreen() {
@@ -64,6 +69,10 @@ class SettingFragment: BaseFragment() {
                     trueAnalytics.enterView("setting__screen_setting__click")
                     ScreenSettingFragment.show(parentFragmentManager)
                 }
+                SettingItem("종목 정보 업데이트") {
+                    trueAnalytics.enterView("setting__update_stock_info__click")
+                    updateStockInfo()
+                }
 
                 if (BuildConfig.DEBUG) {
                     SettingItem("color scheme") {
@@ -72,6 +81,10 @@ class SettingFragment: BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun updateStockInfo() {
+        stockInfoDownloader.begin()
     }
 }
 
