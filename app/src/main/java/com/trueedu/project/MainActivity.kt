@@ -38,6 +38,7 @@ import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
 import com.trueedu.project.ui.views.SettingFragment
+import com.trueedu.project.ui.views.StockSearchFragment
 import com.trueedu.project.ui.views.home.AccountInfo
 import com.trueedu.project.ui.views.home.EmptyHome
 import com.trueedu.project.ui.views.home.ForceUpdateView
@@ -115,6 +116,7 @@ class MainActivity : AppCompatActivity() {
                         MainTopBar(
                             vm.accountNum.value,
                             ::onUserInfo,
+                            ::onSearch,
                             ::onSetting
                         )
                     },
@@ -159,6 +161,11 @@ class MainActivity : AppCompatActivity() {
     private fun onUserInfo() {
         trueAnalytics.clickButton("home__user_info__click")
         AppKeyInputFragment.show(supportFragmentManager)
+    }
+
+    private fun onSearch() {
+        trueAnalytics.clickButton("home__stock_search__click")
+        StockSearchFragment.show(supportFragmentManager)
     }
 
     private fun onSetting() {

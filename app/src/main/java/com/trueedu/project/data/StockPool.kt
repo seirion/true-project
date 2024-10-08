@@ -47,7 +47,7 @@ class StockPool @Inject constructor(
                     this@StockPool.lastUpdatedAt = lastUpdatedAt
                     this@StockPool.stocks = stocks
 
-                    Log.d(TAG, "stocks ${stocks.size} updated")
+                    Log.d(TAG, "stocks(${stocks.size}) loaded")
                 }
             }
         }
@@ -76,6 +76,14 @@ class StockPool @Inject constructor(
     // 업데이트가 필요한 지 여부
     fun needUpdate(): Boolean {
         return lastUpdatedAt < today()
+    }
+
+    fun search(keyword: String): List<StockInfo> {
+        val key = keyword.lowercase()
+        return stocks.values.filter {
+            // 일단 간단한 패턴 매칭
+            it.code.lowercase().contains(key) || it.nameKr.lowercase().contains(keyword)
+        }
     }
 
     private fun today(): Int {

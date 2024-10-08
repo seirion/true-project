@@ -3,6 +3,7 @@ package com.trueedu.project.ui.topbar
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,7 @@ import com.trueedu.project.ui.common.TouchIcon32
 fun MainTopBar(
     accountNum: String = "74341523-01",
     onUserInfoClick: () -> Unit = {},
+    onSearchClick: () -> Unit = {},
     onSettingClick: () -> Unit = {}
 ) {
     val title = accountNum.ifEmpty {
@@ -33,6 +35,7 @@ fun MainTopBar(
             TouchIcon32(Icons.Outlined.AccountCircle, onUserInfoClick)
         },
         actions = {
+            TouchIcon32(Icons.Outlined.Search, onSearchClick)
             TouchIcon32(Icons.Outlined.Settings, onSettingClick)
         },
         title = { TopBarTitle(title, onUserInfoClick) },
