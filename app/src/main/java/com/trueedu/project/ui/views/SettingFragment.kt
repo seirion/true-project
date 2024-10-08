@@ -30,9 +30,7 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.ui.views.setting.ColorPaletteFragmentFragment
 import com.trueedu.project.ui.views.setting.ScreenSettingFragment
-import com.trueedu.project.utils.StockInfoDownloader
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingFragment: BaseFragment() {
@@ -47,9 +45,6 @@ class SettingFragment: BaseFragment() {
     }
 
     private val vm by viewModels<SettingViewModel>()
-
-    @Inject
-    lateinit var stockInfoDownloader: StockInfoDownloader
 
     @Composable
     override fun BodyScreen() {
@@ -76,7 +71,7 @@ class SettingFragment: BaseFragment() {
                 val label = "종목 정보 업데이트" + vm.stockUpdateLabel.value
                 SettingItem(label, vm.updateAvailable.value) {
                     trueAnalytics.enterView("setting__update_stock_info__click")
-                    updateStockInfo()
+                    vm.updateStocks()
                 }
 
                 if (BuildConfig.DEBUG) {
@@ -86,10 +81,6 @@ class SettingFragment: BaseFragment() {
                 }
             }
         }
-    }
-
-    private fun updateStockInfo() {
-        stockInfoDownloader.begin()
     }
 }
 

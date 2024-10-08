@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.ValueEventListener
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.model.dto.StockInfo
@@ -71,26 +72,39 @@ class FirebaseRealtimeDatabase @Inject constructor(
         return 0
     }
 
-    suspend fun loadStocks(): Pair<Int, List<StockInfo>> {
+    suspend fun loadStocks(): Pair<Int, Map<String, StockInfo>> {
         try {
             val snapshot = stocksRef.get().await()
             val lastUpdatedAt = snapshot.child("lastUpdatedAt").getValue(Int::class.java)
+            val stocks = snapshot.child("list").getValue(object : GenericTypeIndicator<Map<String, StockInfo>>() {})
+                ?: emptyMap()
 
             if (lastUpdatedAt == null) {
                 Log.d(TAG, "cannot read values: \"lastUpdatedAt\"")
-                return 0 to emptyList()
+                return 0 to emptyMap()
             }
             Log.d(TAG, "lastUpdatedAt: $lastUpdatedAt")
 
-            return lastUpdatedAt to emptyList()
+            return lastUpdatedAt to stocks
         } catch (e: Exception) {
             // 오류 처리
             Log.e(TAG, "Failed to get stocks", e)
-            return 0 to emptyList()
+            return 0 to emptyMap()
         }
     }
 
-    private suspend fun setStocks(stocks: List<StockInfo>) {
+    fun uploadStockInfo(lastUpdatedAt: Int, stocks: Map<String, StockInfo>) {
+        try {
+            stocksRef.child("list").setValue(stocks)
+                .addOnSuccessListener {
 
+                }
+                .addOnFailureListener {
+
+                }
+            stocksRef.child("lastUpdatedAt").setValue(lastUpdatedAt)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to update stocks", e)
+        }
     }
 }

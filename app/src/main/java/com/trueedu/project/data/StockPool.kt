@@ -1,8 +1,10 @@
 package com.trueedu.project.data
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.repository.FirebaseRealtimeDatabase
+import com.trueedu.project.utils.StockInfoDownloader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,14 +18,20 @@ import javax.inject.Singleton
 @Singleton
 class StockPool @Inject constructor(
     private val firebaseRealtimeDatabase: FirebaseRealtimeDatabase,
+    private val stockInfoDownloader: StockInfoDownloader,
 ) {
+    companion object {
+        private val TAG = StockPool::class.java.simpleName
+    }
+
     private var lastUpdatedAt = 0
-    private val stocks = mutableListOf<StockInfo>()
+    private var stocks: Map<String, StockInfo> = emptyMap()
 
     enum class Status {
         LOADING,
         SUCCESS,
         FAIL,
+        UPDATING,
     }
     val status = mutableStateOf(Status.LOADING)
 
@@ -37,13 +45,32 @@ class StockPool @Inject constructor(
                 } else {
                     status.value = Status.SUCCESS
                     this@StockPool.lastUpdatedAt = lastUpdatedAt
+                    this@StockPool.stocks = stocks
+
+                    Log.d(TAG, "stocks ${stocks.size} updated")
                 }
             }
         }
     }
 
     fun updateStocks() {
+        if (!needUpdate()) return
 
+        status.value = Status.UPDATING
+        CoroutineScope(Dispatchers.IO).launch {
+            stocks = stockInfoDownloader.getStockInfoList()
+                .associateBy(StockInfo::code)
+            firebaseRealtimeDatabase.uploadStockInfo(today(), stocks)
+
+            withContext(Dispatchers.Main) {
+                if (stocks.isNotEmpty()) {
+                    lastUpdatedAt = today()
+                    status.value = Status.SUCCESS
+                } else {
+                    status.value = Status.FAIL
+                }
+            }
+        }
     }
 
     // 업데이트가 필요한 지 여부
