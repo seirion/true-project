@@ -1,12 +1,16 @@
 package com.trueedu.project
 
+import android.app.DownloadManager
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.broadcast.DownloadCompleteReceiver
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
@@ -57,6 +62,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var authRemote: AuthRemote
     @Inject
     lateinit var trueAnalytics: TrueAnalytics
+    @Inject
+    lateinit var downloadCompleteReceiver: DownloadCompleteReceiver
 
     private val vm by viewModels<MainViewModel>()
 
@@ -82,10 +89,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         trueAnalytics.enterView("main__enter")
+
+        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+        registerReceiver(downloadCompleteReceiver, filter, RECEIVER_EXPORTED)
 
         observingScreenSettings()
         vm.init()
@@ -138,6 +149,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(downloadCompleteReceiver)
     }
 
     private fun onUserInfo() {

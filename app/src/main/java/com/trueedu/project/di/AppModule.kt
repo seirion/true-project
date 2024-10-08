@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.broadcast.DownloadCompleteReceiver
 import com.trueedu.project.repository.local.Local
 import dagger.Module
 import dagger.Provides
@@ -25,6 +26,12 @@ object AppModuleProvider {
         @ApplicationContext context: Context
     ): ContentResolver {
         return context.contentResolver
+    }
+
+    @Provides
+    @Singleton
+    fun provideDownloadCompleteReceiver(): DownloadCompleteReceiver {
+        return DownloadCompleteReceiver()
     }
 
     @Provides
