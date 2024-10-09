@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.views.search
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.StockInfoKospi
 import com.trueedu.project.ui.common.BasicText
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,27 +82,34 @@ fun SearchBar(
 }
 
 @Composable
-fun SearchList(list: List<StockInfo>) {
+fun SearchList(
+    list: List<StockInfo>,
+    onItemClick: (StockInfo) -> Unit,
+) {
     val state = rememberLazyListState()
     LazyColumn(
         state = state,
         modifier = Modifier.fillMaxSize()
     ) {
-        itemsIndexed(list, key = { _, item -> item.code }) { index, item ->
-            SearchStockItem(item)
+        itemsIndexed(list, key = { _, item -> item.code }) { _, item ->
+            SearchStockItem(item) {
+                onItemClick(item)
+            }
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun SearchStockItem(
-    item: StockInfo = StockInfo("003456", "삼성전자", "")
+    item: StockInfo = StockInfoKospi("003456", "삼성전자", ""),
+    onClick: () -> Unit = {},
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .height(48.dp)
             .padding(horizontal = 16.dp)
     ) {
