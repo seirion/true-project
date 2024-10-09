@@ -53,6 +53,7 @@ class StockPool @Inject constructor(
         }
     }
 
+    // 종목 파일을 다운로드/파싱하여 firebase 에 저장하기
     fun updateStocks() {
         if (!needUpdate()) return
 
@@ -90,5 +91,9 @@ class StockPool @Inject constructor(
         val currentDate = Date()
         val formatter = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
         return formatter.format(currentDate).toInt()
+    }
+
+    fun get(code: String): StockInfo? {
+        return stocks[code]
     }
 }

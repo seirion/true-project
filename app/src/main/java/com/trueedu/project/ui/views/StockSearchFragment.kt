@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.trueedu.project.R
+import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.views.search.SearchBar
@@ -51,8 +52,12 @@ class StockSearchFragment: BaseFragment() {
                     .padding(innerPadding)
             ) {
                 SearchBar(searchText = vm.searchInput) {}
-                SearchList(vm.searchResult.value)
+                SearchList(vm.searchResult.value, ::gotoStockDetail)
             }
         }
+    }
+
+    private fun gotoStockDetail(stockInfo: StockInfo) {
+        StockDetailFragment.show(stockInfo, parentFragmentManager)
     }
 }

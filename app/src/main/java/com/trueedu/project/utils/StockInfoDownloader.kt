@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.StockInfoKosdaq
+import com.trueedu.project.model.dto.StockInfoKospi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,10 +52,10 @@ class StockInfoDownloader @Inject constructor(
 
     suspend fun getStockInfoList(): List<StockInfo> {
         val stocks = ArrayList<StockInfo>()
-        listOf(kospi, kosdaq).forEach {
-            val url = download(it) ?: return@forEach
+        listOf(kospi, kosdaq).forEach { exchange ->
+            val url = download(exchange) ?: return@forEach
             val unzipped = unzipFile(url) ?: return@forEach
-            val stockInfo = readUnzippedFile(unzipped)
+            val stockInfo = readUnzippedFile(unzipped, exchange)
             stocks.addAll(stockInfo)
         }
         return stocks
@@ -149,7 +151,7 @@ class StockInfoDownloader @Inject constructor(
         }
     }
 
-    private fun readUnzippedFile(url: String): List<StockInfo> {
+    private fun readUnzippedFile(url: String, exchange: String): List<StockInfo> {
         Log.d(TAG, "read file: $url")
         val unzippedFile = File(url)
         val out = ArrayList<StockInfo>()
@@ -157,7 +159,11 @@ class StockInfoDownloader @Inject constructor(
             BufferedReader(InputStreamReader(FileInputStream(unzippedFile), Charset.forName("CP949"))).use { reader ->
                 var line: String?
                 while (reader.readLine().also { line = it } != null) {
-                    out.add(StockInfo.from(line!!))
+                    if (exchange == kospi) {
+                        out.add(StockInfoKospi.from(line!!))
+                    } else {
+                        out.add(StockInfoKosdaq.from(line!!))
+                    }
                 }
             }
             return out

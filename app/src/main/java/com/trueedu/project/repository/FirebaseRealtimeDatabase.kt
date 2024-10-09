@@ -9,6 +9,8 @@ import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.ValueEventListener
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.StockInfoKosdaq
+import com.trueedu.project.model.dto.StockInfoKospi
 import com.trueedu.project.repository.local.Local
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -77,16 +79,18 @@ class FirebaseRealtimeDatabase @Inject constructor(
         try {
             val snapshot = stocksRef.get().await()
             val lastUpdatedAt = snapshot.child("lastUpdatedAt").getValue(Int::class.java)
-            val stocks = snapshot.child("list").getValue(object : GenericTypeIndicator<Map<String, StockInfo>>() {})
+            val kospi = snapshot.child("kospi").getValue(object : GenericTypeIndicator<Map<String, StockInfoKospi>>() {})
+                ?: emptyMap()
+            val kosdaq = snapshot.child("kosdaq").getValue(object : GenericTypeIndicator<Map<String, StockInfoKosdaq>>() {})
                 ?: emptyMap()
 
             if (lastUpdatedAt == null) {
                 Log.d(TAG, "cannot read values: \"lastUpdatedAt\"")
                 return 0 to emptyMap()
             }
-            Log.d(TAG, "lastUpdatedAt: $lastUpdatedAt")
+            Log.d(TAG, "loading stocks completed - lastUpdatedAt: $lastUpdatedAt")
 
-            return lastUpdatedAt to stocks
+            return lastUpdatedAt to (kospi + kosdaq)
         } catch (e: Exception) {
             // 오류 처리
             Log.e(TAG, "Failed to get stocks", e)
@@ -95,14 +99,11 @@ class FirebaseRealtimeDatabase @Inject constructor(
     }
 
     fun uploadStockInfo(lastUpdatedAt: Int, stocks: Map<String, StockInfo>) {
+        val kospi = stocks.filter { it.value.isKospi() }
+        val kosdaq = stocks.filter { it.value.isKosdaq() }
         try {
-            stocksRef.child("list").setValue(stocks)
-                .addOnSuccessListener {
-
-                }
-                .addOnFailureListener {
-
-                }
+            stocksRef.child("kospi").setValue(kospi)
+            stocksRef.child("kosdaq").setValue(kosdaq)
             stocksRef.child("lastUpdatedAt").setValue(lastUpdatedAt)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to update stocks", e)
