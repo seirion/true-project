@@ -70,7 +70,7 @@ class StockInfoDownloader @Inject constructor(
 
         val context = context.applicationContext
         val request = DownloadManager.Request(Uri.parse(url))
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
             .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, fileName)
             .setTitle("$fileName 다운로드")
             .setDescription("Downloading...")
