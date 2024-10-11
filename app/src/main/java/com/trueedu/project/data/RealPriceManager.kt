@@ -67,9 +67,8 @@ class RealPriceManager @Inject constructor(
         // 현재 요청 취소
         cancel()
 
-        requestStack.removeLast()
-
         if (requestStack.isNotEmpty()) {
+            requestStack.removeLast()
             requests.addAll(requestStack.last().second)
             request()
         }
