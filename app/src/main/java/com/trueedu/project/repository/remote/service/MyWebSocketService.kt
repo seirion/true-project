@@ -28,7 +28,8 @@ class MyWebSocketService @Inject constructor(
     }
 
     override fun sendMessage(message: String) {
-        val result = webSocket?.send("")
+        Log.d(TAG, "sendMessage: $message")
+        val result = webSocket?.send(message)
     }
 
     override fun disconnect() {

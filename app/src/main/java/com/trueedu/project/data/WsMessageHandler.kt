@@ -48,6 +48,7 @@ class WsMessageHandler @Inject constructor(
     // 앱이 background 상태가 될 때
     fun stop() {
         Log.d(TAG, "stop")
+        webSocketService.disconnect()
     }
 
     private fun startWebSocket() {
@@ -66,6 +67,11 @@ class WsMessageHandler @Inject constructor(
             override fun onMessage(webSocket: WebSocket, text: String) {
                 super.onMessage(webSocket, text)
                 Log.d(TAG, "onMessage: $text")
+                if (text[0] == '0' || text[0] == '1') { // 실시간체결 or 실시간호가
+                    // TODO
+                } else { // system message or PINGPONG
+                    // TODO
+                }
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
