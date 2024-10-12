@@ -14,11 +14,11 @@ data class WsRequestHeader(
     @SerialName("approval_key")
     val approvalKey: String,
     @SerialName("custtype")
-    val customerType: String = "P", // 고정 - 개인
+    val customerType: String, // 고정 - 개인
     @SerialName("tr_type")
     val transactionType: String, // 1-등록, 2-해제
     @SerialName("content-type")
-    val contentType: String = "utf-8", // 고정
+    val contentType: String, // 고정
 )
 
 @Serializable

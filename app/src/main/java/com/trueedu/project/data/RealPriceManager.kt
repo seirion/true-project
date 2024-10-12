@@ -6,7 +6,11 @@ import com.trueedu.project.model.ws.WsRequestBody
 import com.trueedu.project.model.ws.WsRequestBodyInput
 import com.trueedu.project.model.ws.WsRequestHeader
 import com.trueedu.project.repository.local.Local
-import com.trueedu.project.repository.remote.service.WebSocketService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -18,12 +22,14 @@ import javax.inject.Singleton
 @Singleton
 class RealPriceManager @Inject constructor(
     private val local: Local,
-    private val webSocketService: WebSocketService,
+    private val wsMessageHandler: WsMessageHandler
 ) {
 
     companion object {
         private const val MAX_SIZE = 20 // 최대 20개의 요청 가능
     }
+
+    private var job: Job? = null
 
     /**
      * screenName to List<ticker>
@@ -32,12 +38,29 @@ class RealPriceManager @Inject constructor(
 
     private val requests = mutableSetOf<String>() // key: ticker
 
+    private val decodeTool = mutableMapOf<String, DecodeTool>()
+
     fun start() {
+        job = MainScope().launch(Dispatchers.IO) {
+            wsMessageHandler.observeEvent()
+                .filter { it.header.transactionId == TransactionId.RealTimeQuotes }
+                .collect {
+                    if (it.body?.returnCode != "0") return@collect
+                    val code = it.body.transactionKey ?: return@collect
+                    val iv = it.body.output?.iv ?: return@collect
+                    val key = it.body.output.key ?: return@collect
+                    decodeTool[code] = DecodeTool(iv, key)
+                }
+        }
+
         request()
     }
 
     fun stop() {
         cancel()
+
+        job?.cancel()
+        job = null
     }
 
     /**
@@ -76,13 +99,13 @@ class RealPriceManager @Inject constructor(
 
     private fun request() {
         requests.forEach {
-            webSocketService.sendMessage(makeRequest(it, true))
+            wsMessageHandler.send(makeRequest(it, true))
         }
     }
 
     private fun cancel() {
         requests.forEach {
-            webSocketService.sendMessage(makeRequest(it, false))
+            wsMessageHandler.send(makeRequest(it, false))
         }
     }
 
@@ -96,7 +119,9 @@ class RealPriceManager @Inject constructor(
 
         val header = WsRequestHeader(
             approvalKey = local.webSocketKey,
+            customerType = "P",
             transactionType = transactionType,
+            contentType = "utf-8",
         )
         val input = WsRequestBodyInput(
             transactionId = TransactionId.RealTimeQuotes,
@@ -107,3 +132,8 @@ class RealPriceManager @Inject constructor(
     }
 
 }
+
+data class DecodeTool(
+    val iv: String,
+    val key: String,
+)

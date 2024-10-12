@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.UserInfo
 import com.trueedu.project.data.WsMessageHandler
 import com.trueedu.project.repository.local.Local
@@ -29,6 +30,7 @@ class App : Application(), LifecycleEventObserver {
         fun getLocal(): Local
         fun getUserInfo(): UserInfo
         fun getWsMessage(): WsMessageHandler
+        fun getRealPriceManager(): RealPriceManager
         fun getTrueAnalytics(): TrueAnalytics
     }
 
@@ -41,6 +43,7 @@ class App : Application(), LifecycleEventObserver {
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         val userInfo = entryPointInjector(InjectModule::class.java).getUserInfo()
         val wsMessage = entryPointInjector(InjectModule::class.java).getWsMessage()
+        val realPriceManager = entryPointInjector(InjectModule::class.java).getRealPriceManager()
         val trueAnalytics = entryPointInjector(InjectModule::class.java).getTrueAnalytics()
 
         when (event) {
@@ -51,12 +54,14 @@ class App : Application(), LifecycleEventObserver {
                 foreground = true
                 userInfo.start()
                 wsMessage.start()
+                realPriceManager.start()
             }
 
             Lifecycle.Event.ON_STOP -> {
                 foreground = false
                 userInfo.stop()
                 wsMessage.stop()
+                realPriceManager.stop()
             }
 
             Lifecycle.Event.ON_DESTROY -> {
