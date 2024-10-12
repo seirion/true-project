@@ -5,6 +5,8 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import android.util.Base64
+import java.security.InvalidKeyException
+import java.security.NoSuchAlgorithmException
 
 /**
  * AES 복호화를 수행해 반환합니다.
@@ -25,8 +27,10 @@ fun decryptAes(encryptedText: String, key: String, iv: String): String {
         val decryptedBytes = cipher.doFinal(decodedBytes)
 
         return String(decryptedBytes)
-    } catch (e: Exception) {
+    } catch (e: NoSuchAlgorithmException) {
         e.printStackTrace()
-        return "" // 또는 예외 처리
+    } catch (e: InvalidKeyException) {
+        e.printStackTrace()
     }
+    return "" // 또는 예외 처리
 }
