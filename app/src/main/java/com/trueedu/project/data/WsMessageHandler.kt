@@ -2,9 +2,15 @@ package com.trueedu.project.data
 
 import android.util.Log
 import com.trueedu.project.model.event.WebSocketKeyIssued
+import com.trueedu.project.model.ws.TransactionId
+import com.trueedu.project.model.ws.WsResponse
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.service.WebSocketService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.Response
@@ -22,6 +28,9 @@ class WsMessageHandler @Inject constructor(
     companion object {
         private val TAG = WsMessageHandler::class.java.simpleName
     }
+
+    private val event = MutableSharedFlow<WsResponse>()
+    fun observeEvent() = event.asSharedFlow()
 
     init {
         MainScope().launch {
@@ -51,6 +60,10 @@ class WsMessageHandler @Inject constructor(
         webSocketService.disconnect()
     }
 
+    fun send(jsonString: String) {
+        webSocketService.sendMessage(jsonString)
+    }
+
     private fun startWebSocket() {
         Log.d(TAG, "startWebSocket()")
 
@@ -70,7 +83,17 @@ class WsMessageHandler @Inject constructor(
                 if (text[0] == '0' || text[0] == '1') { // 실시간체결 or 실시간호가
                     // TODO
                 } else { // system message or PINGPONG
-                    // TODO
+                    val res = WsResponse.from(text)
+                    Log.d(TAG, "transactionId ${res.header.transactionId}")
+
+                    when (res.header.transactionId) {
+                        TransactionId.PingPong -> webSocketService.sendMessage(text)
+                        TransactionId.RealTimeQuotes -> {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                event.emit(res)
+                            }
+                        }
+                    }
                 }
             }
 
