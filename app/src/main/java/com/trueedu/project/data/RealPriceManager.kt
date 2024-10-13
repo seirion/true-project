@@ -26,6 +26,7 @@ class RealPriceManager @Inject constructor(
 ) {
 
     companion object {
+        private val TAG = RealPriceManager::class.java.simpleName
         private const val MAX_SIZE = 20 // 최대 20개의 요청 가능
     }
 
@@ -43,7 +44,7 @@ class RealPriceManager @Inject constructor(
     fun start() {
         job = MainScope().launch(Dispatchers.IO) {
             wsMessageHandler.observeEvent()
-                .filter { it.header.transactionId == TransactionId.RealTimeQuotes }
+                .filter { it.header.transactionId == TransactionId.RealTimeTrade }
                 .collect {
                     if (it.body?.returnCode != "0") return@collect
                     val code = it.body.transactionKey ?: return@collect
@@ -124,7 +125,7 @@ class RealPriceManager @Inject constructor(
             contentType = "utf-8",
         )
         val input = WsRequestBodyInput(
-            transactionId = TransactionId.RealTimeQuotes,
+            transactionId = TransactionId.RealTimeTrade,
             transactionKey = code,
         )
         val body = WsRequestBody(input)
