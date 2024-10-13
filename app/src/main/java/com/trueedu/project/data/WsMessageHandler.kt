@@ -88,10 +88,14 @@ class WsMessageHandler @Inject constructor(
 
                     when (res.header.transactionId) {
                         TransactionId.PingPong -> webSocketService.sendMessage(text)
-                        TransactionId.RealTimeQuotes -> {
+                        TransactionId.RealTimeQuotes,
+                        TransactionId.RealTimeTrade -> {
                             CoroutineScope(Dispatchers.IO).launch {
                                 event.emit(res)
                             }
+                        }
+                        TransactionId.TradeNotification -> {
+                            // TODO
                         }
                     }
                 }

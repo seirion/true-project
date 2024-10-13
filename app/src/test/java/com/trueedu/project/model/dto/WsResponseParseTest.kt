@@ -75,4 +75,36 @@ class WsResponseParseTest {
         // 주식매매 구분코드
         assertEquals("0", dataParsed[58])
     }
+
+    @Test
+    fun `실시간 가격 요청 성공에 대한 응답 처리`() {
+        val jsonString = """
+            {
+               "header":{
+                  "tr_id":"H0STCNT0",
+                  "tr_key":"005930",
+                  "encrypt":"N"
+               },
+               "body":{
+                  "rt_cd":"0",
+                  "msg_cd":"OPSP0000",
+                  "msg1":"SUBSCRIBE SUCCESS",
+                  "output":{
+                     "iv":"4509de06db7218b5",
+                     "key":"aodbeofjbfqbecrhgknoobaflnzgdabd"
+                  }
+               }
+            }
+        """
+        val json = Json { ignoreUnknownKeys = true }
+        val wsResponse = json.decodeFromString<WsResponse>(jsonString)
+        println(wsResponse)
+        assertEquals(TransactionId.RealTimeTrade, wsResponse.header.transactionId)
+        assertEquals("005930", wsResponse.header.transactionKey)
+
+        assertEquals("0", wsResponse.body?.returnCode)
+        assertEquals("OPSP0000", wsResponse.body?.msgCode)
+        assertEquals("4509de06db7218b5", wsResponse.body?.output?.iv)
+        assertEquals("aodbeofjbfqbecrhgknoobaflnzgdabd", wsResponse.body?.output?.key)
+    }
 }
