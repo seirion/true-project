@@ -107,4 +107,37 @@ class WsResponseParseTest {
         assertEquals("4509de06db7218b5", wsResponse.body?.output?.iv)
         assertEquals("aodbeofjbfqbecrhgknoobaflnzgdabd", wsResponse.body?.output?.key)
     }
+
+    @Test
+    fun `실시간 체결 데이터 처리`() {
+        val msg =
+            "0|H0STCNT0|001|066570^150550^98900^2^400^0.41^98826.69^99000^99400^98300^99000^98900^45^246334^24344205800^10052^4970^-5082^53.22^159109^84682^5^0.35^49.34^090014^5^-100^093207^5^-500^103516^2^600^20241014^20^N^2558^705^27882^26123^0.15^451481^54.56^0^^99000"
+        val parsed = msg.split("|")
+
+        val transactionId = parsed[1]
+        assertEquals("H0STCNT0", transactionId)
+        val data = parsed[3]
+        val dataParsed = data.split("^")
+        val filedName = "유가증권단축종목코드|주식체결시간|주식현재가|전일대비부호|전일대비|전일대비율|가중평균주식가격|주식시가|주식최고가|주식최저가|매도호가1|매수호가1|체결거래량|누적거래량|누적거래대금|매도체결건수|매수체결건수|순매수체결건수|체결강도|총매도수량|총매수수량|체결구분|매수비율|전일거래량대비등락율|시가시간|시가대비구분|시가대비|최고가시간|고가대비구분|고가대비|최저가시간|저가대비구분|저가대비|영업일자|신장운영구분코드|거래정지여부|매도호가잔량|매수호가잔량|총매도호가잔량|총매수호가잔량|거래량회전율|전일동시간누적거래량|전일동시간누적거래량비율|시간구분코드|임의종료구분코드|정적VI발동기준가"
+            .split('|')
+
+        /*
+        println(
+            filedName.zip(dataParsed).mapIndexed { index, (field, value) -> "$index. $field     $value" }
+                .joinToString("\n")
+        )
+         */
+
+        assertEquals(filedName.size, dataParsed.size)
+        // 단축코드
+        assertEquals("066570", dataParsed[0])
+        // 주식체결시간
+        assertEquals("150550", dataParsed[1])
+        // 주식현재가
+        assertEquals("98900", dataParsed[2])
+        // 전일대비
+        assertEquals("400", dataParsed[4])
+        // 전일대비율(%)
+        assertEquals("0.41", dataParsed[5])
+    }
 }
