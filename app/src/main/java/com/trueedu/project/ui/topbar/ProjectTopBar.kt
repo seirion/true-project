@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
@@ -32,6 +33,7 @@ fun MainTopBar(
     googleAccount: GoogleSignInAccount? = null,
     accountNum: String = "74341523-01",
     onUserInfoClick: () -> Unit = {},
+    onWatchListClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onSettingClick: () -> Unit = {}
 ) {
@@ -55,6 +57,7 @@ fun MainTopBar(
             }
         },
         actions = {
+            TouchIcon32(Icons.Outlined.StarOutline, onWatchListClick)
             TouchIcon32(Icons.Outlined.Search, onSearchClick)
             TouchIcon32(Icons.Outlined.Settings, onSettingClick)
         },
