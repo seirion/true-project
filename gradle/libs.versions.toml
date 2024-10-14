@@ -64,6 +64,8 @@ androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-p
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version = "33.4.0" }
 firebase-database = { module = "com.google.firebase:firebase-database-ktx" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+google-play-services = { group = "com.google.android.gms", name = "play-services-auth", version = "21.2.0" }
+coil-compose = { module = "io.coil-kt:coil-compose", version = "2.3.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

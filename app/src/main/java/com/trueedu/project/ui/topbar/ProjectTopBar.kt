@@ -1,6 +1,9 @@
 package com.trueedu.project.ui.topbar
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Search
@@ -11,17 +14,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.TouchIcon32
+import com.trueedu.project.utils.NetworkImage
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun MainTopBar(
+    googleAccount: GoogleSignInAccount? = null,
     accountNum: String = "74341523-01",
     onUserInfoClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
@@ -32,7 +40,19 @@ fun MainTopBar(
     }
     TopAppBar(
         navigationIcon = {
-            TouchIcon32(Icons.Outlined.AccountCircle, onUserInfoClick)
+            if (googleAccount == null) {
+                TouchIcon32(Icons.Outlined.AccountCircle, onUserInfoClick)
+            } else {
+                val imageUrl = googleAccount.photoUrl
+                NetworkImage(
+                    imageUrl = imageUrl.toString(),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clip(CircleShape)
+                        .size(32.dp)
+                        .clickable { onUserInfoClick() }
+                )
+            }
         },
         actions = {
             TouchIcon32(Icons.Outlined.Search, onSearchClick)

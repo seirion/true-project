@@ -111,6 +111,8 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
+    implementation(libs.google.play.services)
+    implementation(libs.coil.compose)
 
     debugImplementation(libs.flipper)
     debugImplementation(libs.flipper.network.plugin)

@@ -6,6 +6,7 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.broadcast.DownloadCompleteReceiver
+import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
@@ -61,6 +63,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var screen: ScreenControl
     @Inject
     lateinit var authRemote: AuthRemote
+    @Inject
+    lateinit var googleAccount: GoogleAccount
     @Inject
     lateinit var trueAnalytics: TrueAnalytics
     @Inject
@@ -94,6 +98,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        googleAccount.init(this)
         trueAnalytics.enterView("main__enter")
 
         val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
@@ -114,6 +119,7 @@ class MainActivity : AppCompatActivity() {
                 Scaffold(
                     topBar = {
                         MainTopBar(
+                            vm.googleSignInAccount.value,
                             vm.accountNum.value,
                             ::onUserInfo,
                             ::onSearch,
@@ -160,7 +166,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun onUserInfo() {
         trueAnalytics.clickButton("home__user_info__click")
-        AppKeyInputFragment.show(supportFragmentManager)
+        if (vm.googleSignInAccount.value == null) {
+            googleAccount.login(this)
+        } else {
+            AppKeyInputFragment.show(supportFragmentManager)
+        }
     }
 
     private fun onSearch() {
@@ -194,6 +204,14 @@ class MainActivity : AppCompatActivity() {
                 .collectLatest {
                     keepScreenOnOff(it)
                 }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d(TAG, "onActivityResult(): $requestCode $resultCode")
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == GoogleAccount.RC_SIGN_IN) {
+            googleAccount.handleActivityResult(requestCode, resultCode, data, this)
         }
     }
 }
