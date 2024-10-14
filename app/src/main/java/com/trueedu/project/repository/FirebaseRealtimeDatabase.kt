@@ -105,21 +105,20 @@ class FirebaseRealtimeDatabase @Inject constructor(
         val auth = FirebaseAuth.getInstance()
         var currentUser = auth.currentUser
 
-        if (currentUser == null && !googleAccount.loggedIn()) {
-            Log.d(TAG, "cannot write values: currentUser == null")
-            return
-        }
-
-        if (currentUser == null && googleAccount.loggedIn()) {
+        if (currentUser == null) {
+            if (!googleAccount.loggedIn()) {
+                Log.d(TAG, "cannot write values: currentUser == null")
+                return
+            }
             val idToken = googleAccount.getToken()
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             auth.signInWithCredential(credential).await()
             currentUser = auth.currentUser
-        }
-
-        if (currentUser == null) {
-            Log.d(TAG, "cannot write values: \"currentUser\"")
-            return
+            
+            if (currentUser == null) {
+                Log.d(TAG, """"cannot write values: "currentUser"""")
+                return
+            }
         }
 
         val kospi = stocks.filter { it.value.isKospi() }
