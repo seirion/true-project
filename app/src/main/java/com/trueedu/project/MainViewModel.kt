@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.UserInfo
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.repository.FirebaseRealtimeDatabase
@@ -18,6 +20,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val local: Local,
     private val userInfo: UserInfo,
+    private val googleAccount: GoogleAccount,
     private val trueAnalytics: TrueAnalytics,
     private val firebaseDatabase: FirebaseRealtimeDatabase,
 ): ViewModel() {
@@ -26,6 +29,7 @@ class MainViewModel @Inject constructor(
         private val TAG = MainViewModel::class.java.simpleName
     }
 
+    val googleSignInAccount = mutableStateOf<GoogleSignInAccount?>(null)
     val accountNum = mutableStateOf("")
     val account = mutableStateOf<AccountResponse?>(null)
     val marketPriceMode = mutableStateOf(local.marketPriceMode)
@@ -44,6 +48,12 @@ class MainViewModel @Inject constructor(
                     accountNum.value = accountNumFormat(local.currentAccountNumber)
                     account.value = it
                 }
+            }
+            launch {
+                googleAccount.loginSignal
+                    .collect {
+                        googleSignInAccount.value = googleAccount.googleSignInAccount
+                    }
             }
         }
     }
