@@ -54,6 +54,8 @@ class GoogleAccount @Inject constructor(
 
     fun loggedIn() = googleSignInAccount?.let { !it.isExpired } ?: false
 
+    fun getToken() = googleSignInAccount?.idToken
+
     fun getEmail() = googleSignInAccount?.email
 
     fun getProfileImage() = googleSignInAccount?.photoUrl

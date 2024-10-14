@@ -61,7 +61,7 @@ class StockPool @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             stocks = stockInfoDownloader.getStockInfoList()
                 .associateBy(StockInfo::code)
-            firebaseRealtimeDatabase.uploadStockInfo(today(), stocks)
+            firebaseRealtimeDatabase.writeStockInfo(today(), stocks)
 
             withContext(Dispatchers.Main) {
                 if (stocks.isNotEmpty()) {

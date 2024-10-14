@@ -2,12 +2,14 @@ package com.trueedu.project.repository
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.ValueEventListener
 import com.trueedu.project.BuildConfig
+import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.StockInfoKosdaq
 import com.trueedu.project.model.dto.StockInfoKospi
@@ -19,6 +21,7 @@ import javax.inject.Singleton
 @Singleton
 class FirebaseRealtimeDatabase @Inject constructor(
     private val local: Local,
+    private val googleAccount: GoogleAccount,
 ) {
     companion object {
         private val TAG = FirebaseRealtimeDatabase::class.java.simpleName
@@ -98,7 +101,27 @@ class FirebaseRealtimeDatabase @Inject constructor(
         }
     }
 
-    fun uploadStockInfo(lastUpdatedAt: Int, stocks: Map<String, StockInfo>) {
+    suspend fun writeStockInfo(lastUpdatedAt: Int, stocks: Map<String, StockInfo>) {
+        val auth = FirebaseAuth.getInstance()
+        var currentUser = auth.currentUser
+
+        if (currentUser == null && !googleAccount.loggedIn()) {
+            Log.d(TAG, "cannot write values: currentUser == null")
+            return
+        }
+
+        if (currentUser == null && googleAccount.loggedIn()) {
+            val idToken = googleAccount.getToken()
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            auth.signInWithCredential(credential).await()
+            currentUser = auth.currentUser
+        }
+
+        if (currentUser == null) {
+            Log.d(TAG, "cannot write values: \"currentUser\"")
+            return
+        }
+
         val kospi = stocks.filter { it.value.isKospi() }
         val kosdaq = stocks.filter { it.value.isKosdaq() }
         try {
