@@ -6,9 +6,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -24,6 +29,7 @@ import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.LoadingView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -57,7 +63,14 @@ class WatchListFragment: BaseFragment() {
                 }
         }
         Scaffold(
-            topBar = { BackTitleTopBar("관심 종목 ${currentPage.value}", ::dismissAllowingStateLoss) },
+            topBar = {
+                BackTitleTopBar(
+                    title = "관심 종목 ${currentPage.value}",
+                    onBack = ::dismissAllowingStateLoss,
+                    actionIcon = Icons.Filled.Search,
+                    onAction = ::onSearch
+                )
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background),
@@ -71,29 +84,40 @@ class WatchListFragment: BaseFragment() {
                 )
             }
 
+            if (vm.loading.value) {
+                LoadingView()
+                return@Scaffold
+            }
+
             HorizontalPager(
                 state = pagerState!!,
                 modifier = Modifier.fillMaxSize()
             ) { position ->
-                Column(
+                val state = rememberLazyListState()
+                LazyColumn(
+                    state = state,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
+                    val items = vm.getItems(position % vm.pageCount())
+                    itemsIndexed(items, key = { _, item -> item }) { _, item ->
                         BasicText(
-                            s = "${position % vm.pageCount()}",
-                            fontSize = 28,
+                            s = item,
+                            fontSize = 18,
                             color = MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
             }
         }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    private fun onSearch() {
+        trueAnalytics.clickButton("watch_list__search__click")
+        val currentPage = (pagerState?.currentPage ?: 0) % vm.pageCount()
+        StockSearchFragment.show(currentPage, parentFragmentManager)
     }
 
     private fun gotoStockDetail(stockInfo: StockInfo) {

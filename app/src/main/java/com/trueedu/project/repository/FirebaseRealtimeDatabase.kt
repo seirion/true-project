@@ -131,4 +131,12 @@ class FirebaseRealtimeDatabase @Inject constructor(
             Log.e(TAG, "Failed to update stocks", e)
         }
     }
+
+    suspend fun loadWatchList(userId: String): List<List<String>> {
+        val ref = database.getReference("users") // 종목 데이터
+        val snapshot = ref.child(userId).child("watch")
+        val list = snapshot.get().await()
+            .getValue(object : GenericTypeIndicator<List<List<String>>>() {})
+        return list ?: emptyList()
+    }
 }

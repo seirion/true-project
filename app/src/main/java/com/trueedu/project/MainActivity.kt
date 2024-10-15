@@ -182,7 +182,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onSearch() {
         trueAnalytics.clickButton("home__stock_search__click")
-        StockSearchFragment.show(supportFragmentManager)
+        StockSearchFragment.show(null, supportFragmentManager)
     }
 
     private fun onSetting() {

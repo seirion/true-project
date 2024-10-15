@@ -3,7 +3,6 @@ package com.trueedu.project.data
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.service.voice.VoiceInteractionSession.ActivityId
 import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.auth.api.Auth
@@ -11,12 +10,10 @@ import com.google.android.gms.auth.api.signin.*
 import com.trueedu.project.R
 import com.trueedu.project.analytics.TrueAnalytics
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.math.sign
 
 @Singleton
 class GoogleAccount @Inject constructor(
@@ -57,6 +54,8 @@ class GoogleAccount @Inject constructor(
     fun getToken() = googleSignInAccount?.idToken
 
     fun getEmail() = googleSignInAccount?.email
+
+    fun getId() = googleSignInAccount?.id
 
     fun getProfileImage() = googleSignInAccount?.photoUrl
 
