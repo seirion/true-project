@@ -1,5 +1,7 @@
 package com.trueedu.project.data
 
+import androidx.compose.runtime.mutableStateMapOf
+import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.model.ws.TransactionId
 import com.trueedu.project.model.ws.WsRequest
 import com.trueedu.project.model.ws.WsRequestBody
@@ -41,24 +43,35 @@ class RealPriceManager @Inject constructor(
 
     private val decodeTool = mutableMapOf<String, DecodeTool>()
 
+    // key: code
+    val dataMap = mutableStateMapOf<String, RealTimeTrade>()
+
     fun start() {
         job = MainScope().launch(Dispatchers.IO) {
-            wsMessageHandler.observeEvent()
-                .filter { it.header.transactionId == TransactionId.RealTimeTrade }
-                .collect {
-                    if (it.body?.returnCode != "0") return@collect
-                    val code = it.body.transactionKey ?: return@collect
-                    val iv = it.body.output?.iv ?: return@collect
-                    val key = it.body.output.key ?: return@collect
-                    decodeTool[code] = DecodeTool(iv, key)
-                }
+            launch {
+                wsMessageHandler.observeEvent()
+                    .filter { it.header.transactionId == TransactionId.RealTimeTrade }
+                    .collect {
+                        if (it.body?.returnCode != "0") return@collect
+                        val code = it.body.transactionKey ?: return@collect
+                        val iv = it.body.output?.iv ?: return@collect
+                        val key = it.body.output.key ?: return@collect
+                        decodeTool[code] = DecodeTool(iv, key)
+                    }
+            }
+            launch {
+                wsMessageHandler.tradeSignal
+                    .collect {
+                        dataMap[it.code] = it
+                    }
+            }
         }
 
-        request()
+        beginRequests()
     }
 
     fun stop() {
-        cancel()
+        cancelRequests()
 
         job?.cancel()
         job = null
@@ -70,7 +83,7 @@ class RealPriceManager @Inject constructor(
     fun pushRequest(name: String, codes: List<String>) {
         // 기존 처리 중단
         if (requestStack.isNotEmpty()) {
-            cancel()
+            cancelRequests()
         }
 
         // 최대 개수까지만
@@ -81,7 +94,7 @@ class RealPriceManager @Inject constructor(
         requests.addAll(codesRequested)
         requestStack.add(name to codesRequested)
 
-        request()
+        beginRequests()
     }
 
     /**
@@ -89,22 +102,22 @@ class RealPriceManager @Inject constructor(
      */
     fun popRequest() {
         // 현재 요청 취소
-        cancel()
+        cancelRequests()
 
         if (requestStack.isNotEmpty()) {
             requestStack.removeLast()
             requests.addAll(requestStack.last().second)
-            request()
+            beginRequests()
         }
     }
 
-    private fun request() {
+    private fun beginRequests() {
         requests.forEach {
             wsMessageHandler.send(makeRequest(it, true))
         }
     }
 
-    private fun cancel() {
+    private fun cancelRequests() {
         requests.forEach {
             wsMessageHandler.send(makeRequest(it, false))
         }
