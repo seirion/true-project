@@ -5,6 +5,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.WatchList
 import com.trueedu.project.model.dto.StockInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StockSearchViewModel @Inject constructor(
     private val stockPool: StockPool,
+    private val watchList: WatchList,
 ): ViewModel() {
 
     companion object {

@@ -1,6 +1,7 @@
 package com.trueedu.project.ui.views.search
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.StockInfoKospi
 import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TouchIcon32
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
@@ -84,6 +88,8 @@ fun SearchBar(
 @Composable
 fun SearchList(
     list: List<StockInfo>,
+    itemChecked: (String) -> Boolean,
+    toggleWatchList: (String) -> Unit,
     onItemClick: (StockInfo) -> Unit,
 ) {
     val state = rememberLazyListState()
@@ -92,7 +98,8 @@ fun SearchList(
         modifier = Modifier.fillMaxSize()
     ) {
         itemsIndexed(list, key = { _, item -> item.code }) { _, item ->
-            SearchStockItem(item) {
+            val checked = itemChecked(item.code)
+            SearchStockItem(item, checked, toggleWatchList) {
                 onItemClick(item)
             }
         }
@@ -103,9 +110,12 @@ fun SearchList(
 @Composable
 fun SearchStockItem(
     item: StockInfo = StockInfoKospi("003456", "삼성전자", ""),
+    checked: Boolean = true,
+    toggleWatchList: (String) -> Unit = {},
     onClick: () -> Unit = {},
 ) {
     Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -114,6 +124,20 @@ fun SearchStockItem(
             .padding(horizontal = 16.dp)
     ) {
         val s = "${item.nameKr} (${item.code})"
-        BasicText(s = s, fontSize = 16, color = MaterialTheme.colorScheme.primary)
+        BasicText(
+            s = s,
+            fontSize = 16,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.weight(1f)
+        )
+
+        val icon = if (checked) {
+            Icons.Filled.Star
+        } else {
+            Icons.Outlined.StarOutline
+        }
+        TouchIcon32(icon) {
+            toggleWatchList(item.code)
+        }
     }
 }

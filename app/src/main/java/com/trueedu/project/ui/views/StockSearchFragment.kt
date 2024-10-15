@@ -12,25 +12,34 @@ import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.trueedu.project.R
+import com.trueedu.project.data.WatchList
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.views.search.SearchBar
 import com.trueedu.project.ui.views.search.SearchList
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class StockSearchFragment: BaseFragment() {
     companion object {
         fun show(
+            targetPage: Int? = null,
             fragmentManager: FragmentManager
         ): StockSearchFragment {
             val fragment = StockSearchFragment()
+            fragment.targetPage = targetPage
             fragment.show(fragmentManager, "stock-search")
             return fragment
         }
     }
 
+    @Inject
+    lateinit var watchList: WatchList
+
+    // 관심종목 추가 시 사용되는 페이지 번호
+    var targetPage: Int? = null
     private val vm by viewModels<StockSearchViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +61,25 @@ class StockSearchFragment: BaseFragment() {
                     .padding(innerPadding)
             ) {
                 SearchBar(searchText = vm.searchInput) {}
-                SearchList(vm.searchResult.value, ::gotoStockDetail)
+                SearchList(
+                    vm.searchResult.value,
+                    ::inWatchList,
+                    ::toggleWatchList,
+                    ::gotoStockDetail
+                )
             }
+        }
+    }
+
+    fun inWatchList(code: String): Boolean {
+        return watchList.contains(targetPage!!, code)
+    }
+
+    fun toggleWatchList(code: String) {
+        if (inWatchList(code)) {
+            // TODO
+        } else {
+            watchList.add(targetPage!!, code)
         }
     }
 
