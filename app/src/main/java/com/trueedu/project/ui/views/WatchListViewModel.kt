@@ -34,7 +34,7 @@ class WatchListViewModel @Inject constructor(
     }
 
     // 일단 고정
-    fun pageCount() = 10
+    fun pageCount() = WatchList.MAX_GROUP_SIZE
 
     fun getItems(index: Int): List<String> {
         return watchList.get(index)
