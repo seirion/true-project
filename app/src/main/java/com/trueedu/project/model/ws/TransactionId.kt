@@ -4,13 +4,13 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class TransactionId {
+enum class TransactionId(val value: String) {
     @SerialName("PINGPONG")
-    PingPong,
+    PingPong("PINGPONG"),
     @SerialName("H0STASP0")
-    RealTimeQuotes, // 실시간 호가
+    RealTimeQuotes("H0STASP0"), // 실시간 호가
     @SerialName("H0STCNT0")
-    RealTimeTrade, // 실시간 체결
+    RealTimeTrade("H0STCNT0"), // 실시간 체결
     @SerialName("H0STCNI0")
-    TradeNotification, // 체결 통보
+    TradeNotification("H0STCNI0"), // 체결 통보
 }

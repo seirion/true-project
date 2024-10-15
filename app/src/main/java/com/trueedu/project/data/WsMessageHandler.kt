@@ -2,6 +2,7 @@ package com.trueedu.project.data
 
 import android.util.Log
 import com.trueedu.project.model.event.WebSocketKeyIssued
+import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.model.ws.TransactionId
 import com.trueedu.project.model.ws.WsResponse
 import com.trueedu.project.repository.local.Local
@@ -31,6 +32,8 @@ class WsMessageHandler @Inject constructor(
 
     private val event = MutableSharedFlow<WsResponse>()
     fun observeEvent() = event.asSharedFlow()
+
+    val tradeSignal = MutableSharedFlow<RealTimeTrade>()
 
     init {
         MainScope().launch {
@@ -81,7 +84,7 @@ class WsMessageHandler @Inject constructor(
                 super.onMessage(webSocket, text)
                 Log.d(TAG, "onMessage: $text")
                 if (text[0] == '0' || text[0] == '1') { // 실시간체결 or 실시간호가
-                    // TODO
+                    handleRealTimeResponse(text)
                 } else { // system message or PINGPONG
                     val res = WsResponse.from(text)
                     Log.d(TAG, "transactionId ${res.header.transactionId}")
@@ -106,5 +109,25 @@ class WsMessageHandler @Inject constructor(
                 Log.d(TAG, "onFailure: ${t.message}")
             }
         })
+    }
+
+    private fun handleRealTimeResponse(text: String) {
+        val org = text.split("^")
+        val transactionId = TransactionId.valueOf(org[1])
+        val data = org[3]
+        when (transactionId) {
+            TransactionId.RealTimeQuotes -> {
+                // TODO
+            }
+            TransactionId.RealTimeTrade -> {
+                val dto = RealTimeTrade.from(data)
+                MainScope().launch {
+                    tradeSignal.emit(dto)
+                }
+            }
+            else -> {
+                // nothing
+            }
+        }
     }
 }

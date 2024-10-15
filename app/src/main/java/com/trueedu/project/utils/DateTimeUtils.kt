@@ -13,3 +13,9 @@ fun parseDateString(dateString: String?): Date? {
         null // 파싱 오류 시 null 반환
     }
 }
+
+fun currentTimeToHHmmss(): String {
+    val now = LocalDateTime.now()
+    val formatter = DateTimeFormatter.ofPattern("HHmmss")
+    return now.format(formatter)
+}
