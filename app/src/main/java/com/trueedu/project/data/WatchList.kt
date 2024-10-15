@@ -12,10 +12,12 @@ import javax.inject.Singleton
 
 @Singleton
 class WatchList @Inject constructor(
-    googleAccount: GoogleAccount,
+    private val googleAccount: GoogleAccount,
     private val firebaseRealtimeDatabase: FirebaseRealtimeDatabase,
 ) {
     companion object {
+        // 관심 그룹 개수
+        const val MAX_GROUP_SIZE = 10
         private val TAG = WatchList::class.java.simpleName
     }
 
@@ -33,15 +35,11 @@ class WatchList @Inject constructor(
                         val temp = firebaseRealtimeDatabase.loadWatchList(id!!)
                         Log.d(TAG, "loadWatchList: ${temp.size}")
                         withContext(Dispatchers.Main) {
-                            if (temp.isEmpty()) {
-                                fillDefaultList()
-                            } else {
-                                list.value = temp
-                            }
+                            fillDefaultList(temp)
                         }
                     } else { // logout
                         withContext(Dispatchers.Main) {
-                            fillDefaultList()
+                            fillDefaultList(null)
                         }
                     }
                 }
@@ -64,6 +62,7 @@ class WatchList @Inject constructor(
                 }
             }
         list.value = temp
+        firebaseRealtimeDatabase.writeWatchList(googleAccount.getId()!!, temp)
     }
 
     fun contains(index: Int, code: String): Boolean {
@@ -75,8 +74,12 @@ class WatchList @Inject constructor(
         return list.value.any { it.isNotEmpty() }
     }
 
-    private fun fillDefaultList() {
-        val temp = MutableList(10) { listOf<String>() }
-        list.value = temp
+    /**
+     * 크기가 MAX_GROUP_SIZE 인 리스트를 만들어서 list 에 넣는다.
+     */
+    private fun fillDefaultList(loadedData: List<List<String>>?) {
+        list.value = MutableList(MAX_GROUP_SIZE) {
+            loadedData?.getOrNull(it) ?: listOf()
+        }
     }
 }

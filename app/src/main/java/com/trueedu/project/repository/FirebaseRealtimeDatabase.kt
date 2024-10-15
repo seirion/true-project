@@ -139,4 +139,10 @@ class FirebaseRealtimeDatabase @Inject constructor(
             .getValue(object : GenericTypeIndicator<List<List<String>>>() {})
         return list ?: emptyList()
     }
+
+    fun writeWatchList(userId: String, list :List<List<String>>) {
+        val ref = database.getReference("users") // 종목 데이터
+        val snapshot = ref.child(userId).child("watch")
+        snapshot.setValue(list)
+    }
 }
