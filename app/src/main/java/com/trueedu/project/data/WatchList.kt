@@ -53,10 +53,35 @@ class WatchList @Inject constructor(
     fun add(index: Int, code: String) {
         require(index in list.value.indices)
 
+        if (list.value[index].contains(code)) {
+            Log.d(TAG, "trying to insert already existing code: $code")
+            return
+        }
+
         val temp = list.value
             .mapIndexed { i, list ->
                 if (i == index) {
                     list + code
+                } else {
+                    list
+                }
+            }
+        list.value = temp
+        firebaseRealtimeDatabase.writeWatchList(googleAccount.getId()!!, temp)
+    }
+
+    fun remove(index: Int, code: String) {
+        require(index in list.value.indices)
+
+        if (!list.value[index].contains(code)) {
+            Log.d(TAG, "trying to remove not existing code: $code")
+            return
+        }
+
+        val temp = list.value
+            .mapIndexed { i, list ->
+                if (i == index) {
+                    list.filter { it != code }
                 } else {
                     list
                 }

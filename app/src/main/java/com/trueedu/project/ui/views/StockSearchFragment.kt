@@ -77,7 +77,7 @@ class StockSearchFragment: BaseFragment() {
 
     fun toggleWatchList(code: String) {
         if (inWatchList(code)) {
-            // TODO
+            watchList.remove(targetPage!!, code)
         } else {
             watchList.add(targetPage!!, code)
         }
