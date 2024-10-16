@@ -20,6 +20,8 @@ class RealTimeTrade(
     val datetime = data[1] // 'HHmmss'
     // 주식현재가
     val price = data[2].toDouble()
+    // 전일대비부호: 1 : 상한 2 : 상승 3 : 보합 4 : 하한 5 : 하락
+    // val sign = data[3]
     // 전일대비 증감
     val delta = data[4].toDouble()
     // 전일대비율(%)
