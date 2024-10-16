@@ -112,8 +112,8 @@ class WsMessageHandler @Inject constructor(
     }
 
     private fun handleRealTimeResponse(text: String) {
-        val org = text.split("^")
-        val transactionId = TransactionId.valueOf(org[1])
+        val org = text.split("|")
+        val transactionId = TransactionId.entries.firstOrNull { it.value == org[1] }
         val data = org[3]
         when (transactionId) {
             TransactionId.RealTimeQuotes -> {
