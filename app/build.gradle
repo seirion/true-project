@@ -9,6 +9,15 @@ plugins {
 
 apply from: 'versions.gradle'
 
+def getLocalProperty(String propertyName) {
+    Properties properties = new Properties()
+    File localPropertiesFile = project.rootProject.file('local.properties')
+    if (localPropertiesFile.exists()) {
+        properties.load(localPropertiesFile.newDataInputStream())
+    }
+    return properties.getProperty(propertyName)
+}
+
 android {
     namespace 'com.trueedu.project'
     compileSdk 34
@@ -19,6 +28,12 @@ android {
             storePassword "android"
             keyAlias "androiddebugkey"
             keyPassword "android"
+        }
+        upload {
+            storeFile = file(getLocalProperty("storeFile") ?: error("storeFile not found in local.properties"))
+            storePassword = getLocalProperty("storePassword") ?: error("storePassword not found in local.properties")
+            keyAlias = getLocalProperty("keyAlias") ?: error("keyAlias not found in local.properties")
+            keyPassword = getLocalProperty("keyPassword") ?: error("keyPassword not found in local.properties")
         }
     }
 
@@ -39,7 +54,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.upload
         }
         debug {
             debuggable true
