@@ -91,7 +91,7 @@ class WatchList @Inject constructor(
     }
 
     fun contains(index: Int, code: String): Boolean {
-        return list.value[index].contains(code)
+        return list.value.getOrNull(index)?.contains(code) == true
     }
 
     // 관심 종목이 하나라도 있는 지 여부
