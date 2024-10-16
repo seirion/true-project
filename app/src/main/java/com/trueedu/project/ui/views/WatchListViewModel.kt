@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WatchListViewModel @Inject constructor(
     private val watchList: WatchList,
-    private val stockPool: StockPool,
+    val stockPool: StockPool,
     val priceManager: RealPriceManager,
 ): ViewModel() {
 
@@ -37,7 +37,6 @@ class WatchListViewModel @Inject constructor(
                         Log.d(TAG, "watchList: $it")
                         loading.value = false
 
-                        Log.d("aaaa", "1")
                         requestRealtimePrice()
                     }
             }
