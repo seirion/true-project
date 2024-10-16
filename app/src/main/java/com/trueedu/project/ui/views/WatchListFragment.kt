@@ -27,9 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
-import com.trueedu.project.model.dto.account.AccountOutput1
-import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
@@ -40,7 +39,6 @@ import com.trueedu.project.utils.formatter.RateFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapNotNull
-import java.util.concurrent.ConcurrentHashMap
 
 @AndroidEntryPoint
 class WatchListFragment: BaseFragment() {
@@ -94,7 +92,11 @@ class WatchListFragment: BaseFragment() {
                 )
             }
 
-            if (vm.loading.value) {
+            // 주식 정보와 관심 종목 정보를 모두 받아야 데이터 표시 가능
+            if (
+                vm.loading.value ||
+                vm.stockPool.status.value != StockPool.Status.SUCCESS
+            ) {
                 LoadingView()
                 return@Scaffold
             }
