@@ -77,11 +77,11 @@ class FirebaseRealtimeDatabase @Inject constructor(
         return 0
     }
 
-    suspend fun loadStocks(): Pair<Int, Map<String, StockInfo>> {
+    suspend fun loadStocks(): Pair<Long, Map<String, StockInfo>> {
         Log.d(TAG, "loadStocks()")
         try {
             val snapshot = stocksRef.get().await()
-            val lastUpdatedAt = snapshot.child("lastUpdatedAt").getValue(Int::class.java)
+            val lastUpdatedAt = snapshot.child("lastUpdatedAt").getValue(Long::class.java)
             val kospi = snapshot.child("kospi").getValue(object : GenericTypeIndicator<Map<String, StockInfoKospi>>() {})
                 ?: emptyMap()
             val kosdaq = snapshot.child("kosdaq").getValue(object : GenericTypeIndicator<Map<String, StockInfoKosdaq>>() {})
@@ -89,7 +89,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
 
             if (lastUpdatedAt == null) {
                 Log.d(TAG, "cannot read values: \"lastUpdatedAt\"")
-                return 0 to emptyMap()
+                return 0L to emptyMap()
             }
             Log.d(TAG, "loading stocks completed - lastUpdatedAt: $lastUpdatedAt")
 
@@ -97,11 +97,14 @@ class FirebaseRealtimeDatabase @Inject constructor(
         } catch (e: Exception) {
             // 오류 처리
             Log.e(TAG, "Failed to get stocks", e)
-            return 0 to emptyMap()
+            return 0L to emptyMap()
         }
     }
 
-    suspend fun writeStockInfo(lastUpdatedAt: Int, stocks: Map<String, StockInfo>) {
+    /**
+     * @param lastUpdatedAt: 'yyyyMMddHHmm'
+     */
+    suspend fun writeStockInfo(lastUpdatedAt: Long, stocks: Map<String, StockInfo>) {
         val auth = FirebaseAuth.getInstance()
         var currentUser = auth.currentUser
 

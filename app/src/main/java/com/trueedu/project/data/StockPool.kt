@@ -22,9 +22,28 @@ class StockPool @Inject constructor(
 ) {
     companion object {
         private val TAG = StockPool::class.java.simpleName
+
+        /**
+         * 마스터 파일이 업로드 되는 시각 (HHmm)
+         */
+        private val uploadTime = listOf(
+            600,
+            655,
+            735,
+            755,
+            845,
+            946,
+            1055,
+            1710,
+            1730,
+            1755,
+            1810,
+            1830,
+            1855,
+        )
     }
 
-    private var lastUpdatedAt = 0
+    private var lastUpdatedAt = 0L
     private var stocks: Map<String, StockInfo> = emptyMap()
 
     enum class Status {
@@ -48,7 +67,7 @@ class StockPool @Inject constructor(
             val (lastUpdatedAt, stocks) = firebaseRealtimeDatabase.loadStocks()
 
             withContext(Dispatchers.Main) {
-                if (lastUpdatedAt == 0) {
+                if (lastUpdatedAt == 0L) {
                     status.value = Status.FAIL
                 } else {
                     status.value = Status.SUCCESS
@@ -69,11 +88,13 @@ class StockPool @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             stocks = stockInfoDownloader.getStockInfoList()
                 .associateBy(StockInfo::code)
-            firebaseRealtimeDatabase.writeStockInfo(today(), stocks)
+
+            val yyyyMMddHHmm = currentTimeToyyyyMMddHHmm()
+            firebaseRealtimeDatabase.writeStockInfo(yyyyMMddHHmm, stocks)
 
             withContext(Dispatchers.Main) {
                 if (stocks.isNotEmpty()) {
-                    lastUpdatedAt = today()
+                    lastUpdatedAt = yyyyMMddHHmm
                     status.value = Status.SUCCESS
                 } else {
                     status.value = Status.FAIL
@@ -84,7 +105,12 @@ class StockPool @Inject constructor(
 
     // 업데이트가 필요한 지 여부
     fun needUpdate(): Boolean {
-        return lastUpdatedAt < today()
+        val yyyyMMdd = currentTimeToyyyyMMdd() * 10000
+        val updateTimes = uploadTime.map {
+            yyyyMMdd + it
+        }
+        val now = currentTimeToyyyyMMddHHmm()
+        return updateTimes.any { it in (lastUpdatedAt + 1)..now }
     }
 
     fun search(keyword: String): List<StockInfo> {
@@ -95,10 +121,19 @@ class StockPool @Inject constructor(
         }
     }
 
-    private fun today(): Int {
+    private fun currentTimeToyyyyMMdd(): Long {
         val currentDate = Date()
         val formatter = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
-        return formatter.format(currentDate).toInt()
+        return formatter.format(currentDate).toLong()
+    }
+
+    /**
+     * 분 단위 resolution
+     */
+    private fun currentTimeToyyyyMMddHHmm(): Long {
+        val currentDate = Date()
+        val formatter = SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())
+        return formatter.format(currentDate).toLong()
     }
 
     fun get(code: String): StockInfo? {
