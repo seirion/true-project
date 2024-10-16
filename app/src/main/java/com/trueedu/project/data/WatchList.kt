@@ -51,6 +51,8 @@ class WatchList @Inject constructor(
     }
 
     fun add(index: Int, code: String) {
+        if (list.value.isEmpty()) return
+
         require(index in list.value.indices)
 
         if (list.value[index].contains(code)) {
