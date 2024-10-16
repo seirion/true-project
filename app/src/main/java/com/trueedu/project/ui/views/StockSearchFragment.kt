@@ -29,7 +29,7 @@ class StockSearchFragment: BaseFragment() {
             fragmentManager: FragmentManager
         ): StockSearchFragment {
             val fragment = StockSearchFragment()
-            fragment.targetPage = targetPage
+            fragment.targetPage = targetPage ?: 0
             fragment.show(fragmentManager, "stock-search")
             return fragment
         }
