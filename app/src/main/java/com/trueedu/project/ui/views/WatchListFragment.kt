@@ -66,7 +66,6 @@ class WatchListFragment: BaseFragment() {
                 .collectLatest {
                     vm.currentPage.value = it
                     // 페이지가 바뀌면 실시간 요청 다시 하기
-                    Log.d("aaaa", "2")
                     vm.requestRealtimePrice()
                 }
         }

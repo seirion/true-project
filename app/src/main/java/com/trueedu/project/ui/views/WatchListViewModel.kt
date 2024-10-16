@@ -42,11 +42,13 @@ class WatchListViewModel @Inject constructor(
             }
 
             launch {
-                snapshotFlow { priceManager.dataMap.values }
+                // 페이지가 바뀌면 종목을 변경해 주어야 함
+                snapshotFlow { currentPage.value }
                     .collect {
-                        Log.d(TAG, "price updated")
+                        requestRealtimePrice()
                     }
             }
+
         }
     }
 
