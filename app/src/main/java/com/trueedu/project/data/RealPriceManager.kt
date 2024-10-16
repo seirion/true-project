@@ -92,6 +92,12 @@ class RealPriceManager @Inject constructor(
         // 데이터 추가
         requests.clear()
         requests.addAll(codesRequested)
+
+        val topName = requestStack.lastOrNull()?.first
+        if (topName == name) {
+            // 이미 존재하는 name 이면 replace
+            requestStack.removeLast()
+        }
         requestStack.add(name to codesRequested)
 
         beginRequests()
