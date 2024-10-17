@@ -163,7 +163,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun onWatchList() {
         trueAnalytics.clickButton("home__watch_list__click")
-        WatchListFragment.show(supportFragmentManager)
+        doAfterLogin {
+            WatchListFragment.show(supportFragmentManager)
+        }
     }
 
     private fun onSearch() {
@@ -205,6 +207,14 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GoogleAccount.RC_SIGN_IN) {
             googleAccount.handleActivityResult(requestCode, resultCode, data, this)
+        }
+    }
+
+    private fun doAfterLogin(action: () -> Unit) {
+        if (googleAccount.loggedIn()) {
+            action()
+        } else {
+            googleAccount.login(this, action)
         }
     }
 }
