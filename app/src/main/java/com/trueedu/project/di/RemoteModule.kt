@@ -6,10 +6,13 @@ import com.trueedu.project.repository.remote.AccountRemote
 import com.trueedu.project.repository.remote.AccountRemoteImpl
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.repository.remote.AuthRemoteImpl
+import com.trueedu.project.repository.remote.PriceRemote
+import com.trueedu.project.repository.remote.PriceRemoteImpl
 import com.trueedu.project.repository.remote.RankingRemote
 import com.trueedu.project.repository.remote.RankingRemoteImpl
 import com.trueedu.project.repository.remote.service.AccountService
 import com.trueedu.project.repository.remote.service.AuthService
+import com.trueedu.project.repository.remote.service.PriceService
 import com.trueedu.project.repository.remote.service.RankingService
 import dagger.Module
 import dagger.Provides
@@ -38,6 +41,13 @@ object RemoteModule {
     @NormalService
     fun providesAccountService(retrofit: Retrofit): AccountService {
         return retrofit.create(AccountService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    @NormalService
+    fun providesPriceService(retrofit: Retrofit): PriceService {
+        return retrofit.create(PriceService::class.java)
     }
 
     @Provides
@@ -96,6 +106,13 @@ object RemoteModule {
         @NormalService
         accountService: AccountService
     ): AccountRemote = AccountRemoteImpl(accountService = accountService)
+
+    @Singleton
+    @Provides
+    fun providesPriceRemote(
+        @NormalService
+        priceService: PriceService
+    ): PriceRemote = PriceRemoteImpl(priceService = priceService)
 
     @Singleton
     @Provides
