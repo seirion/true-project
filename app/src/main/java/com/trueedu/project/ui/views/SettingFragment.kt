@@ -79,6 +79,8 @@ class SettingFragment: BaseFragment() {
                         ColorPaletteFragmentFragment.show(parentFragmentManager)
                     }
                 }
+
+                SettingLabel("Version", BuildConfig.VERSION_NAME)
             }
         }
     }
@@ -110,6 +112,35 @@ fun SettingItem(
             imageVector = Icons.Outlined.ChevronRight,
             tint = MaterialTheme.colorScheme.tertiary,
             contentDescription = "next"
+        )
+    }
+    DividerHorizontal()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingLabel(
+    title: String = "Version",
+    value: String = "1.0.0",
+    enabled: Boolean = true,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp)
+            .height(56.dp)
+    ) {
+        BasicText(
+            s = title,
+            fontSize = 16,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        BasicText(
+            s = value,
+            fontSize = 18,
+            color = MaterialTheme.colorScheme.secondary,
         )
     }
     DividerHorizontal()
