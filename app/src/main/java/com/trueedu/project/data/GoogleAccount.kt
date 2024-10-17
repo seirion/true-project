@@ -6,11 +6,15 @@ import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.auth.api.Auth
-import com.google.android.gms.auth.api.signin.*
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.trueedu.project.R
 import com.trueedu.project.analytics.TrueAnalytics
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,6 +30,7 @@ class GoogleAccount @Inject constructor(
 
     var googleSignInAccount: GoogleSignInAccount? = null
     var loginSignal = MutableSharedFlow<Boolean>(1) // true - login, false - logout
+    private var postLoginJob: Job? = null
 
     fun init(activity: Activity) {
         val gso = getGoogleSignInOptions(activity.applicationContext)
@@ -59,12 +64,21 @@ class GoogleAccount @Inject constructor(
 
     fun getProfileImage() = googleSignInAccount?.photoUrl
 
-    fun login(activity: Activity) {
+    fun login(activity: Activity, action: (() -> Unit)? = null) {
         Log.d(TAG, "login()")
         val gso = getGoogleSignInOptions(activity.applicationContext)
         val googleSignInClient = GoogleSignIn.getClient(activity, gso)
         val signInIntent = googleSignInClient.signInIntent
         activity.startActivityForResult(signInIntent, RC_SIGN_IN)
+
+        postLoginJob?.cancel()
+        if (action == null) return
+
+        postLoginJob = MainScope().launch {
+            loginSignal
+                .first { it }
+                .also { action() }
+        }
     }
 
     fun logout(context: Context) {
