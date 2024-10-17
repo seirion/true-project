@@ -10,6 +10,7 @@ import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.WatchList
 import com.trueedu.project.model.dto.StockInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -44,6 +45,7 @@ class WatchListViewModel @Inject constructor(
             launch {
                 // 페이지가 바뀌면 종목을 변경해 주어야 함
                 snapshotFlow { currentPage.value }
+                    .distinctUntilChanged()
                     .collect {
                         requestRealtimePrice()
                     }
@@ -64,7 +66,7 @@ class WatchListViewModel @Inject constructor(
     }
 
     // 현재 페이지의 관심 종목에 대해서 실시간 가격 요청하기
-    fun requestRealtimePrice() {
+    private fun requestRealtimePrice() {
         if (loading.value || currentPage.value == null) return
 
         val codes = watchList.get(currentPage.value!!)
