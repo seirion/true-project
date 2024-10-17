@@ -43,6 +43,8 @@ import kotlinx.coroutines.flow.mapNotNull
 @AndroidEntryPoint
 class WatchListFragment: BaseFragment() {
     companion object {
+        private val TAG = WatchListFragment::class.java.simpleName
+
         fun show(
             fragmentManager: FragmentManager
         ): WatchListFragment {
@@ -113,10 +115,11 @@ class WatchListFragment: BaseFragment() {
                     itemsIndexed(items, key = { _, item -> item }) { _, code ->
                         val stock = vm.getStock(code) ?: return@itemsIndexed
                         val tradeData = vm.priceManager.dataMap[code]
-                        val price: Double = tradeData?.price ?: 0.0
-                        val delta: Double = tradeData?.delta ?: 0.0
-                        val rate: Double = tradeData?.rate ?: 0.0
-                        val volume: Double = tradeData?.volume ?: 0.0
+                        val basePrice = vm.basePrices[code]?.output
+                        val price: Double = tradeData?.price ?: basePrice?.price?.toDouble() ?: 0.0
+                        val delta: Double = tradeData?.delta ?: basePrice?.priceChange?.toDouble() ?: 0.0
+                        val rate: Double = tradeData?.rate ?: basePrice?.priceChangeRate?.toDouble() ?: 0.0
+                        val volume: Double = tradeData?.volume ?: basePrice?.volume?.toDouble() ?: 0.0
 
                         WatchingStockItem(
                             nameKr = stock.nameKr,

@@ -21,6 +21,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -133,6 +134,7 @@ object NetworkModule {
             .build()
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     @Provides
     @Singleton
     fun providesRetrofit(
@@ -145,6 +147,7 @@ object NetworkModule {
             prettyPrint = true
             isLenient = false
             serializersModule = Json.serializersModule
+            explicitNulls = false
         }
 
         return Retrofit.Builder()

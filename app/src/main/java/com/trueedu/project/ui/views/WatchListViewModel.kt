@@ -1,6 +1,7 @@
 package com.trueedu.project.ui.views
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
@@ -9,9 +10,15 @@ import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.WatchList
 import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.price.PriceResponse
+import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,6 +27,7 @@ class WatchListViewModel @Inject constructor(
     private val watchList: WatchList,
     val stockPool: StockPool,
     val priceManager: RealPriceManager,
+    private val priceRemote: PriceRemote,
 ): ViewModel() {
 
     companion object {
@@ -28,6 +36,12 @@ class WatchListViewModel @Inject constructor(
 
     val loading = mutableStateOf(true)
     val currentPage = mutableStateOf<Int?>(null)
+
+    /**
+     * api 를 통해 받은 가격 기본값
+     * 실시간 가격은 웹소켓으로 받아서 사용하지만 그 값을 받기 전까지 사용함
+      */
+    val basePrices = mutableStateMapOf<String, PriceResponse?>()
 
     init {
         viewModelScope.launch {
@@ -39,6 +53,7 @@ class WatchListViewModel @Inject constructor(
                         loading.value = false
 
                         requestRealtimePrice()
+                        requestBasePrices()
                     }
             }
 
@@ -48,6 +63,7 @@ class WatchListViewModel @Inject constructor(
                     .distinctUntilChanged()
                     .collect {
                         requestRealtimePrice()
+                        requestBasePrices()
                     }
             }
 
@@ -71,5 +87,27 @@ class WatchListViewModel @Inject constructor(
 
         val codes = watchList.get(currentPage.value!!)
         priceManager.pushRequest(TAG, codes)
+    }
+
+    private fun requestBasePrices() {
+        if (loading.value || currentPage.value == null) return
+
+        watchList.get(currentPage.value!!)
+            .filterNot { basePrices.containsKey(it) }
+            .forEach { code ->
+                priceRemote.currentPrice(code)
+                    .onStart {
+                        basePrices[code] = null
+                    }
+                    .catch {
+                        Log.d(TAG, "failed to get currentPrice: $code $it")
+                        basePrices.remove(code)
+                    }
+                    .onEach {
+                        //Log.d(TAG, "currentPrice: ${it.output.nameKr} ${it.output}")
+                        basePrices[code] = it
+                    }
+                    .launchIn(viewModelScope)
+            }
     }
 }
