@@ -110,9 +110,29 @@ class StockInfoDownloader @Inject constructor(
                 ZipInputStream(inputStream).use { zis ->
                     var entry: ZipEntry? = zis.nextEntry
                     while (entry != null) {
+                        val fileName = entry.name
+                        // 파일 이름 검증
+                        if (fileName.contains("../")) {
+                            Log.w(TAG, "Skipping unsafe file: $fileName")
+                            zis.closeEntry()
+                            entry = zis.nextEntry
+                            continue
+                        }
+                        // 경로 정규화
                         val path = uri.path?.let { File(it).parent }
                         //val currentFile = File(Environment.DIRECTORY_DOWNLOADS, entry.name)
                         val currentFile = File(path, entry.name)
+
+                        // 겟 경로가 대상 디렉터리의 하위 요소인지 확인
+                        val destDir = File(path!!)
+                        val canonicalPath = currentFile.canonicalPath
+                        if (!canonicalPath.startsWith(destDir.canonicalPath + File.separator)) {
+                            Log.w(TAG, "Skipping file outside destination directory: $fileName")
+                            zis.closeEntry()
+                            entry = zis.nextEntry
+                            continue
+                        }
+
                         Log.d(TAG, "currentFile: $currentFile")
                         if (entry.isDirectory) {
                             currentFile.mkdirs()
