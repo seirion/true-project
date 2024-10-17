@@ -13,20 +13,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.analytics.TrueAnalytics
@@ -35,7 +29,6 @@ import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
-import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
@@ -148,13 +141,6 @@ class MainActivity : AppCompatActivity() {
                                 StockItem(item, vm.marketPriceMode.value)
                             }
                         }
-
-                        /*
-                        HomeItem(
-                            name = "거래량 순위",
-                            ::gotoVolumeRanking
-                        )
-                         */
                     }
                 }
             }
@@ -221,22 +207,4 @@ class MainActivity : AppCompatActivity() {
             googleAccount.handleActivityResult(requestCode, resultCode, data, this)
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun HomeItem(
-    name: String = "종목 보기",
-    onClick: () -> Unit = {}
-) {
-    BasicText(
-        s = name,
-        fontSize = 18,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 16.dp)
-    )
-    HorizontalDivider()
 }
