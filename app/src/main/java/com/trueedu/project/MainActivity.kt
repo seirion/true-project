@@ -137,7 +137,8 @@ class MainActivity : AppCompatActivity() {
                         } ?: item { EmptyHome() }
 
                         vm.account.value?.output1?.let {
-                            itemsIndexed(it, { _, item -> item.code} ) { index, item ->
+                            val items = it.filter { it.holdingQuantity.toDouble() > 0 }
+                            itemsIndexed(items, { _, item -> item.code} ) { index, item ->
                                 StockItem(item, vm.marketPriceMode.value)
                             }
                         }
