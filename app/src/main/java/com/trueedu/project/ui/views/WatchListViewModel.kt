@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.WatchList
@@ -28,6 +29,7 @@ class WatchListViewModel @Inject constructor(
     val stockPool: StockPool,
     val priceManager: RealPriceManager,
     private val priceRemote: PriceRemote,
+    private val trueAnalytics: TrueAnalytics,
 ): ViewModel() {
 
     companion object {
@@ -79,6 +81,13 @@ class WatchListViewModel @Inject constructor(
 
     fun getStock(code: String): StockInfo? {
         return stockPool.get(code)
+    }
+
+    fun removeStock(code: String) {
+        trueAnalytics.clickButton("watch_list__remove__click", mapOf("code" to code))
+        if (currentPage.value != null) {
+            watchList.remove(currentPage.value!!, code)
+        }
     }
 
     // 현재 페이지의 관심 종목에 대해서 실시간 가격 요청하기
