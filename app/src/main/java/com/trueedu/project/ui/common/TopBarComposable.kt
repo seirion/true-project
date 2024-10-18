@@ -32,7 +32,7 @@ fun BackTitleTopBar(
 ) {
     val actions: @Composable (RowScope.() -> Unit) =
         if (actionIcon != null && onAction != null) {
-            { TouchIcon32(actionIcon, onAction) }
+            { TouchIcon24(actionIcon, onAction) }
         } else {
             {}
         }
