@@ -11,6 +11,7 @@ import com.trueedu.project.data.UserInfo
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.repository.FirebaseRealtimeDatabase
 import com.trueedu.project.repository.local.Local
+import com.trueedu.project.utils.toAccountNumFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -45,7 +46,7 @@ class MainViewModel @Inject constructor(
             }
             launch {
                 userInfo.account.collectLatest {
-                    accountNum.value = accountNumFormat(local.currentAccountNumber)
+                    accountNum.value = local.currentAccountNumber.toAccountNumFormat()
                     account.value = it
                 }
             }
@@ -55,14 +56,6 @@ class MainViewModel @Inject constructor(
                         googleSignInAccount.value = googleAccount.googleSignInAccount
                     }
             }
-        }
-    }
-
-    private fun accountNumFormat(str: String): String {
-        return if (str.length == 10) {
-            str.take(8) + "-" + str.drop(8)
-        } else {
-            str
         }
     }
 
