@@ -34,6 +34,7 @@ import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
 import com.trueedu.project.ui.views.SettingFragment
 import com.trueedu.project.ui.views.StockSearchFragment
+import com.trueedu.project.ui.views.UserInfoFragment
 import com.trueedu.project.ui.views.WatchListFragment
 import com.trueedu.project.ui.views.home.AccountInfo
 import com.trueedu.project.ui.views.home.EmptyHome
@@ -116,6 +117,7 @@ class MainActivity : AppCompatActivity() {
                             vm.googleSignInAccount.value,
                             vm.accountNum.value,
                             ::onUserInfo,
+                            ::onAccountInfo,
                             ::onWatchList,
                             ::onSearch,
                             ::onSetting
@@ -158,8 +160,13 @@ class MainActivity : AppCompatActivity() {
         if (vm.googleSignInAccount.value == null) {
             googleAccount.login(this)
         } else {
-            AppKeyInputFragment.show(supportFragmentManager)
+            UserInfoFragment.show(supportFragmentManager)
         }
+    }
+
+    private fun onAccountInfo() {
+        trueAnalytics.clickButton("home__account_info__click")
+        AppKeyInputFragment.show(supportFragmentManager)
     }
 
     private fun onWatchList() {
