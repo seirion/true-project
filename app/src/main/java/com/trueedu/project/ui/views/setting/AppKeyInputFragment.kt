@@ -29,6 +29,7 @@ import com.trueedu.project.R
 import com.trueedu.project.data.TokenControl
 import com.trueedu.project.data.UserInfo
 import com.trueedu.project.extensions.getClipboardText
+import com.trueedu.project.model.local.UserKey
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.BaseFragment
@@ -76,11 +77,12 @@ class AppKeyInputFragment: BaseFragment() {
     lateinit var userInfo: UserInfo
 
     override fun init() {
-        appKeyOrg = local.appKey
-        appSecretOrg = local.appSecret
+        val useKey = local.getUserKeys().lastOrNull()
+        appKeyOrg = useKey?.appKey ?: ""
+        appSecretOrg = useKey?.appSecret ?: ""
         accountNumberOrg = local.currentAccountNumber
-        appKey.value = local.appKey
-        appSecret.value = local.appSecret
+        appKey.value = useKey?.appKey ?: ""
+        appSecret.value = useKey?.appSecret ?: ""
         accountNumber.value = local.currentAccountNumber
     }
 
@@ -176,7 +178,7 @@ class AppKeyInputFragment: BaseFragment() {
             accountNum = accountNumber.value,
             onSuccess = {
                 Log.d(TAG, "account check ok")
-                local.currentAccountNumber = accountNumber.value
+                saveUserKey()
                 Toast.makeText(requireContext(), "계좌 번호 확인 완료", Toast.LENGTH_SHORT).show()
                 dismissAllowingStateLoss()
             },
@@ -185,6 +187,22 @@ class AppKeyInputFragment: BaseFragment() {
                 Toast.makeText(requireContext(), "계좌 번호 오류", Toast.LENGTH_SHORT).show()
             }
         )
+    }
+
+    private fun saveUserKey() {
+        val userKey = UserKey(
+            appKey = appKey.value,
+            appSecret = appSecret.value,
+            accountNum = accountNumber.value,
+            htsId = null, // TODO
+        )
+
+        local.addUserKey(userKey)
+
+        // 처음으로 계좌를 등록하는 경우 주 사용 계좌로 등록
+        if (local.currentAccountNumber.isEmpty()) {
+            local.currentAccountNumber = accountNumber.value
+        }
     }
 
     @Composable

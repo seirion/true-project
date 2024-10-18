@@ -28,10 +28,11 @@ class TokenAuthenticator @Inject constructor(
     @Synchronized
     override fun authenticate(route: Route?, response: Response): Request? {
         return runBlocking {
+            val userKey = local.getUserKeys().lastOrNull()
             val request = TokenRequest(
                 grantType = "client_credentials",
-                appKey = local.appKey,
-                appSecret = local.appSecret,
+                appKey = userKey?.appKey,
+                appSecret = userKey?.appSecret,
             )
             val tokenResponse = authService.refreshToken(request)
             val responseCode = tokenResponse.errorBody()?.string()?.let {
@@ -59,11 +60,10 @@ class TokenAuthenticator @Inject constructor(
     }
 
     private fun clearUser() {
-        local.accessToken = ""
-        local.refreshToken = ""
+        local.setAccessToken(null)
     }
 
     private fun saveNewToken(tokenResponse: TokenResponse) {
-        local.accessToken = tokenResponse.accessToken
+        local.setAccessToken(tokenResponse)
     }
 }

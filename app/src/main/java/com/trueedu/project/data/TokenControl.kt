@@ -9,9 +9,9 @@ import com.trueedu.project.model.event.AuthEvent
 import com.trueedu.project.model.event.TokenIssued
 import com.trueedu.project.model.event.TokenRevoked
 import com.trueedu.project.model.event.WebSocketKeyIssued
+import com.trueedu.project.model.local.UserKey
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
-import com.trueedu.project.utils.parseDateString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
@@ -35,11 +35,18 @@ class TokenControl @Inject constructor(
         private val TAG = TokenControl::class.java.simpleName
     }
 
+    var userKey: UserKey? = null
+        private set
+
     // auth 관련 이벤트 구독을 위함
     private val event = MutableSharedFlow<AuthEvent>(1)
 
     fun observeAuthEvent(): Flow<AuthEvent> {
         return event
+    }
+
+    init {
+        userKey = local.getUserKeys().lastOrNull()
     }
 
     private fun hasValidToken(): Boolean {
@@ -57,19 +64,21 @@ class TokenControl @Inject constructor(
     }
 
     fun issueAccessToken(onSuccess: () -> Unit) {
-        Log.d(TAG, "appKey: ${local.appKey}")
-        Log.d(TAG, "appSecret: ${local.appSecret}")
+        Log.d(TAG, "appKey: ${userKey?.appKey}")
+        Log.d(TAG, "appSecret: ${userKey?.appSecret}")
         issueAccessToken(
-            appKey = local.appKey,
-            appSecret = local.appSecret,
+            appKey = userKey?.appKey,
+            appSecret = userKey?.appSecret,
             onSuccess = onSuccess
         )
     }
 
     fun issueWebSocketKey(onSuccess: () -> Unit) {
+        if (userKey?.appKey == null || userKey?.appSecret == null) return
+
         issueWebSocketKey(
-            appKey = local.appKey,
-            appSecret = local.appSecret,
+            appKey = userKey!!.appKey!!,
+            appSecret = userKey!!.appSecret!!,
             onSuccess = onSuccess
         )
     }
@@ -110,12 +119,12 @@ class TokenControl @Inject constructor(
     }
 
     fun issueAccessToken(
-        appKey: String,
-        appSecret: String,
+        appKey: String?,
+        appSecret: String?,
         onSuccess: () -> Unit = {},
         onFailed: (Throwable) -> Unit = {},
     ) {
-        if (appKey.isEmpty() || appSecret.isEmpty()) {
+        if (appKey.isNullOrEmpty() || appSecret.isNullOrEmpty()) {
             Log.d(TAG, "appKey appSecret is empty")
             return
         }
@@ -153,13 +162,15 @@ class TokenControl @Inject constructor(
     }
 
     private fun revokeToken() {
+        if (userKey?.appKey == null || userKey?.appSecret == null) return
+
         if (local.accessToken.isEmpty()) {
             return
         }
 
         val request = RevokeTokenRequest(
-            appKey = local.appKey,
-            appSecret = local.appSecret,
+            appKey = userKey!!.appKey!!,
+            appSecret = userKey!!.appSecret!!,
             token = local.accessToken,
         )
         authRemote.revokeToken(request)
@@ -174,8 +185,11 @@ class TokenControl @Inject constructor(
             .launchIn(MainScope())
     }
 
+    fun clearToken() {
+        local.setAccessToken(null)
+    }
+
     fun setAccessToken(tokenResponse: TokenResponse) {
-        local.accessToken = tokenResponse.accessToken
-        local.accessTokenExpiredAt = parseDateString(tokenResponse.accessTokenTokenExpired)?.time ?: 0L
+        local.setAccessToken(tokenResponse)
     }
 }

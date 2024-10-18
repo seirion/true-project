@@ -39,6 +39,9 @@ class App : Application(), LifecycleEventObserver {
     override fun onCreate() {
         super.onCreate()
         // init here
+        val local = entryPointInjector(InjectModule::class.java).getLocal()
+        local.migrate()
+
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 
