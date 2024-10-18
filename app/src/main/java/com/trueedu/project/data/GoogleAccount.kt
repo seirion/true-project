@@ -50,7 +50,7 @@ class GoogleAccount @Inject constructor(
     private fun setLoggedIn(account: GoogleSignInAccount?) {
         googleSignInAccount = account
         MainScope().launch {
-            loginSignal.emit(true)
+            loginSignal.emit(account != null)
         }
     }
 
@@ -81,7 +81,7 @@ class GoogleAccount @Inject constructor(
         }
     }
 
-    fun logout(context: Context) {
+    fun logout(context: Context, onSuccess: (() -> Unit)) {
         Log.d(TAG, "logout()")
         trueAnalytics.log("google_logout")
         val gso = getGoogleSignInOptions(context)
@@ -90,6 +90,9 @@ class GoogleAccount @Inject constructor(
             .addOnCompleteListener {
                 setLoggedIn(null)
                 Log.d(TAG, "logout completed: ${loggedIn()}")
+                MainScope().launch {
+                    onSuccess()
+                }
             }
     }
 

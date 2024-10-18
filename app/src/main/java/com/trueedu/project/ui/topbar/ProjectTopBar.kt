@@ -33,6 +33,7 @@ fun MainTopBar(
     googleAccount: GoogleSignInAccount? = null,
     accountNum: String = "74341523-01",
     onUserInfoClick: () -> Unit = {},
+    onAccountInfoClick: () -> Unit = {},
     onWatchListClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onSettingClick: () -> Unit = {}
@@ -61,7 +62,7 @@ fun MainTopBar(
             TouchIcon32(Icons.Outlined.Search, onSearchClick)
             TouchIcon32(Icons.Outlined.Settings, onSettingClick)
         },
-        title = { TopBarTitle(title, onUserInfoClick) },
+        title = { TopBarTitle(title, onAccountInfoClick) },
         colors = TopAppBarDefaults.smallTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             titleContentColor = MaterialTheme.colorScheme.primary,
