@@ -12,13 +12,11 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
 import com.trueedu.project.data.GoogleAccount
-import com.trueedu.project.model.local.UserKey
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -45,19 +43,12 @@ class UserInfoFragment: BaseFragment() {
         }
     }
 
+    private val vm by viewModels<UserInfoViewModel>()
+
     @Inject
     lateinit var local: Local
     @Inject
     lateinit var googleAccount: GoogleAccount
-
-    private val userKeys = mutableStateOf<List<UserKey>>(emptyList())
-
-    private val selected = mutableIntStateOf(0)
-
-    override fun init() {
-        // 마지막 item 이 현재 선택된 item 이므로 역순으로 보여줌
-        userKeys.value = local.getUserKeys().reversed()
-    }
 
     @Composable
     override fun BodyScreen() {
@@ -99,10 +90,10 @@ class UserInfoFragment: BaseFragment() {
                     )
                 }
 
-                itemsIndexed(userKeys.value, key = { _, item -> item.accountNum!! }) { index, item ->
+                itemsIndexed(vm.userKeys.value, key = { _, item -> item.accountNum!! }) { index, item ->
                     AccountNumView(
                         item.accountNum.toAccountNumFormat(),
-                        selected = selected.intValue == index,
+                        selected = vm.selected.intValue == index,
                     ) {
                     }
                 }
