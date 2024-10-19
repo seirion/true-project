@@ -30,7 +30,7 @@ class SettingViewModel @Inject constructor(
 
                         }
                         StockPool.Status.SUCCESS -> {
-                            updateAvailable.value = stockPool.needUpdate()
+                            updateAvailable.value = stockPool.needToDownloadMasterFiles()
                             stockUpdateLabel.value = if (updateAvailable.value) {
                                 ""
                             } else {
@@ -51,6 +51,6 @@ class SettingViewModel @Inject constructor(
     }
 
     fun updateStocks() {
-        stockPool.updateStocks()
+        stockPool.downloadMasterFiles()
     }
 }
