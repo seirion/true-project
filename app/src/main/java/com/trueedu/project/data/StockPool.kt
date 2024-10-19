@@ -76,13 +76,16 @@ class StockPool @Inject constructor(
 
                     Log.d(TAG, "stocks(${stocks.size}) loaded")
                 }
+
+                // 마스터 파일 다운로드가 필요한 지 확인 후 추가 작업
+                downloadMasterFiles()
             }
         }
     }
 
     // 종목 파일을 다운로드/파싱하여 firebase 에 저장하기
-    fun updateStocks() {
-        if (!needUpdate()) return
+    fun downloadMasterFiles() {
+        if (!needToDownloadMasterFiles()) return
 
         status.value = Status.UPDATING
         CoroutineScope(Dispatchers.IO).launch {
@@ -103,8 +106,8 @@ class StockPool @Inject constructor(
         }
     }
 
-    // 업데이트가 필요한 지 여부
-    fun needUpdate(): Boolean {
+    // 마스터 파일 갱신이 필요한 지 여부
+    fun needToDownloadMasterFiles(): Boolean {
         val yyyyMMdd = currentTimeToyyyyMMdd() * 10000
         val updateTimes = uploadTime.map {
             yyyyMMdd + it

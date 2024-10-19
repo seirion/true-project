@@ -68,6 +68,6 @@ class StockSearchViewModel @Inject constructor(
     }
 
     fun updateStocks() {
-        stockPool.updateStocks()
+        stockPool.downloadMasterFiles()
     }
 }
