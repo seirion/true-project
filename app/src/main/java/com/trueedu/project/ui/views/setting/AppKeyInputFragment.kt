@@ -31,7 +31,6 @@ import com.trueedu.project.data.UserInfo
 import com.trueedu.project.extensions.getClipboardText
 import com.trueedu.project.model.local.UserKey
 import com.trueedu.project.repository.local.Local
-import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
@@ -71,13 +70,10 @@ class AppKeyInputFragment: BaseFragment() {
     lateinit var local: Local
 
     @Inject
-    lateinit var authRemote: AuthRemote
-
-    @Inject
     lateinit var userInfo: UserInfo
 
     override fun init() {
-        val userKey = local.getUserKeys().lastOrNull()
+        val userKey = tokenKeyManager.userKey
         appKeyOrg = userKey?.appKey ?: ""
         appSecretOrg = userKey?.appSecret ?: ""
         accountNumberOrg = userKey?.accountNum ?: ""
@@ -197,7 +193,7 @@ class AppKeyInputFragment: BaseFragment() {
             htsId = null, // TODO
         )
 
-        local.addUserKey(userKey)
+        tokenKeyManager.addUserKey(userKey)
     }
 
     @Composable

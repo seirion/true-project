@@ -34,23 +34,13 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
 
     // appKey, appSecret, accountNumber, htsId
     // 마지막 element 가 최근에 사용한 값임
-    private var userKeys by preferences.string("[]")
+    var userKeys by preferences.string("[]")
     fun getUserKeys(): List<UserKey> {
         return try {
             json.decodeFromString<List<UserKey>>(userKeys)
         } catch (e: SerializationException) {
             emptyList()
         }
-    }
-
-    // 마지막에 추가
-    fun addUserKey(userKey: UserKey) {
-        val list = getUserKeys().filter {
-            it.accountNum != userKey.accountNum
-        }
-
-        val jsonString = json.encodeToString(list + userKey)
-        userKeys = jsonString
     }
 
     var accessToken by preferences.string("")
