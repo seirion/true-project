@@ -8,7 +8,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.TokenKeyManager
-import com.trueedu.project.data.UserInfo
+import com.trueedu.project.data.UserAssets
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.repository.FirebaseRealtimeDatabase
 import com.trueedu.project.repository.local.Local
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val local: Local,
-    private val userInfo: UserInfo,
+    private val userAssets: UserAssets,
     private val googleAccount: GoogleAccount,
     private val tokenKeyManager: TokenKeyManager,
     private val trueAnalytics: TrueAnalytics,
@@ -34,7 +34,7 @@ class MainViewModel @Inject constructor(
 
     val googleSignInAccount = mutableStateOf<GoogleSignInAccount?>(null)
     val accountNum = mutableStateOf("")
-    val account = mutableStateOf<AccountResponse?>(null)
+    val userStocks = mutableStateOf<AccountResponse?>(null)
     val marketPriceMode = mutableStateOf(local.marketPriceMode)
     val forceUpdateVisible = mutableStateOf(false)
 
@@ -47,11 +47,11 @@ class MainViewModel @Inject constructor(
                 }
             }
             launch {
-                userInfo.userStocks.collectLatest {
+                userAssets.userStocks.collectLatest {
                     accountNum.value = tokenKeyManager.userKey
                         ?.accountNum
                         .toAccountNumFormat()
-                    account.value = it
+                    userStocks.value = it
                 }
             }
             launch {

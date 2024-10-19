@@ -15,13 +15,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserInfo @Inject constructor(
+class UserAssets @Inject constructor(
     private val local: Local,
     private val tokenKeyManager: TokenKeyManager,
     private val accountRemote: AccountRemote,
 ) {
     companion object {
-        private val TAG = UserInfo::class.java.simpleName
+        private val TAG = UserAssets::class.java.simpleName
     }
 
     val userStocks = MutableSharedFlow<AccountResponse>(1)

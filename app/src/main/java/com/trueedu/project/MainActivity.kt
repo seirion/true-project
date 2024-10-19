@@ -134,11 +134,11 @@ class MainActivity : AppCompatActivity() {
                             .padding(innerPadding)
                             .padding(16.dp)
                     ) {
-                        vm.account.value?.output2?.firstOrNull()?.let {
+                        vm.userStocks.value?.output2?.firstOrNull()?.let {
                             item { AccountInfo(it, vm.marketPriceMode.value, vm::onChangeMarketPriceMode) }
                         } ?: item { EmptyHome() }
 
-                        vm.account.value?.output1?.let {
+                        vm.userStocks.value?.output1?.let {
                             val items = it.filter { it.holdingQuantity.toDouble() > 0 }
                             itemsIndexed(items, { _, item -> item.code} ) { index, item ->
                                 StockItem(item, vm.marketPriceMode.value)

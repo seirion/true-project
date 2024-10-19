@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.R
 import com.trueedu.project.data.TokenKeyManager
-import com.trueedu.project.data.UserInfo
+import com.trueedu.project.data.UserAssets
 import com.trueedu.project.extensions.getClipboardText
 import com.trueedu.project.model.local.UserKey
 import com.trueedu.project.repository.local.Local
@@ -70,7 +70,7 @@ class AppKeyInputFragment: BaseFragment() {
     lateinit var local: Local
 
     @Inject
-    lateinit var userInfo: UserInfo
+    lateinit var userAssets: UserAssets
 
     override fun init() {
         val userKey = tokenKeyManager.userKey
@@ -170,7 +170,7 @@ class AppKeyInputFragment: BaseFragment() {
     }
 
     private fun checkAccount() {
-        userInfo.loadUserStocks(
+        userAssets.loadUserStocks(
             accountNum = accountNumber.value,
             onSuccess = {
                 Log.d(TAG, "account check ok")

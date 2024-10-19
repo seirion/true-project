@@ -219,5 +219,6 @@ class TokenKeyManager @Inject constructor(
 
         val jsonString = json.encodeToString(list + userKey)
         local.userKeys = jsonString
+        this.userKey = userKey
     }
 }

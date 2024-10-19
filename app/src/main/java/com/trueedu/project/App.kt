@@ -9,7 +9,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
-import com.trueedu.project.data.UserInfo
+import com.trueedu.project.data.UserAssets
 import com.trueedu.project.data.WsMessageHandler
 import com.trueedu.project.repository.local.Local
 import dagger.hilt.EntryPoint
@@ -29,7 +29,7 @@ class App : Application(), LifecycleEventObserver {
     @InstallIn(SingletonComponent::class)
     interface InjectModule {
         fun getLocal(): Local
-        fun getUserInfo(): UserInfo
+        fun getUserAssets(): UserAssets
         fun getWsMessage(): WsMessageHandler
         fun getRealPriceManager(): RealPriceManager
         fun getStockPool(): StockPool
@@ -46,7 +46,7 @@ class App : Application(), LifecycleEventObserver {
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        val userInfo = entryPointInjector(InjectModule::class.java).getUserInfo()
+        val userInfo = entryPointInjector(InjectModule::class.java).getUserAssets()
         val wsMessage = entryPointInjector(InjectModule::class.java).getWsMessage()
         val realPriceManager = entryPointInjector(InjectModule::class.java).getRealPriceManager()
         val stockPool = entryPointInjector(InjectModule::class.java).getStockPool()
