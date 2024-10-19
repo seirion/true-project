@@ -46,9 +46,11 @@ class AppKeyInputFragment: BaseFragment() {
         private val TAG = AppKeyInputFragment::class.java.simpleName
 
         fun show(
+            isNewKey: Boolean,
             fragmentManager: FragmentManager
         ): AppKeyInputFragment {
             val fragment = AppKeyInputFragment()
+            fragment.isNewKey = isNewKey
             fragment.show(fragmentManager, "appkey")
             return fragment
         }
@@ -56,6 +58,8 @@ class AppKeyInputFragment: BaseFragment() {
 
     @Inject
     lateinit var tokenKeyManager: TokenKeyManager
+
+    var isNewKey = false
 
     private val appKey = mutableStateOf("")
     private val appSecret = mutableStateOf("")
@@ -73,7 +77,7 @@ class AppKeyInputFragment: BaseFragment() {
     lateinit var userAssets: UserAssets
 
     override fun init() {
-        val userKey = tokenKeyManager.userKey
+        val userKey = if (isNewKey) null else tokenKeyManager.userKey.value
         appKeyOrg = userKey?.appKey ?: ""
         appSecretOrg = userKey?.appSecret ?: ""
         accountNumberOrg = userKey?.accountNum ?: ""
@@ -154,12 +158,17 @@ class AppKeyInputFragment: BaseFragment() {
     }
 
     private fun checkToken() {
+        // 토큰을 새로 받기 위해 기존 토큰은 삭제
+        tokenKeyManager.clearToken()
+
+        // 토큰 다시 받기
         tokenKeyManager.issueAccessToken(
             appKey = appKey.value,
             appSecret = appSecret.value,
             onSuccess = {
                 Log.d(TAG, "new token issued")
                 Toast.makeText(requireContext(), "토큰 정상 발급 완료", Toast.LENGTH_SHORT).show()
+                saveUserKey()
                 checkAccount()
             },
             onFailed = {
@@ -174,7 +183,6 @@ class AppKeyInputFragment: BaseFragment() {
             accountNum = accountNumber.value,
             onSuccess = {
                 Log.d(TAG, "account check ok")
-                saveUserKey()
                 Toast.makeText(requireContext(), "계좌 번호 확인 완료", Toast.LENGTH_SHORT).show()
                 dismissAllowingStateLoss()
             },

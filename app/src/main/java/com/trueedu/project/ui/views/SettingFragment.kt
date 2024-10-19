@@ -61,7 +61,7 @@ class SettingFragment: BaseFragment() {
             ) {
                 SettingItem("appkey 설정", true) {
                     trueAnalytics.enterView("setting__appkey_setting__click")
-                    AppKeyInputFragment.show(parentFragmentManager)
+                    AppKeyInputFragment.show(false, parentFragmentManager)
                 }
                 SettingItem("Screen 설정", true) {
                     trueAnalytics.enterView("setting__screen_setting__click")

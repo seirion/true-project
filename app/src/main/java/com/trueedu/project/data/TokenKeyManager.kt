@@ -1,6 +1,7 @@
 package com.trueedu.project.data
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.model.dto.auth.RevokeTokenRequest
 import com.trueedu.project.model.dto.auth.TokenRequest
 import com.trueedu.project.model.dto.auth.TokenResponse
@@ -45,8 +46,7 @@ class TokenKeyManager @Inject constructor(
         }
     }
 
-    var userKey: UserKey? = null
-        private set
+    val userKey = mutableStateOf<UserKey?>(null)
 
     // auth 관련 이벤트 구독을 위함
     private val event = MutableSharedFlow<AuthEvent>(1)
@@ -56,7 +56,7 @@ class TokenKeyManager @Inject constructor(
     }
 
     init {
-        userKey = getUserKeys().lastOrNull()
+        userKey.value = getUserKeys().lastOrNull()
     }
 
     private fun hasValidToken(): Boolean {
@@ -74,21 +74,21 @@ class TokenKeyManager @Inject constructor(
     }
 
     fun issueAccessToken(onSuccess: () -> Unit) {
-        Log.d(TAG, "appKey: ${userKey?.appKey}")
-        Log.d(TAG, "appSecret: ${userKey?.appSecret}")
+        Log.d(TAG, "appKey: ${userKey.value?.appKey}")
+        Log.d(TAG, "appSecret: ${userKey.value?.appSecret}")
         issueAccessToken(
-            appKey = userKey?.appKey,
-            appSecret = userKey?.appSecret,
+            appKey = userKey.value?.appKey,
+            appSecret = userKey.value?.appSecret,
             onSuccess = onSuccess
         )
     }
 
     fun issueWebSocketKey(onSuccess: () -> Unit) {
-        if (userKey?.appKey == null || userKey?.appSecret == null) return
+        if (userKey.value?.appKey == null || userKey.value?.appSecret == null) return
 
         issueWebSocketKey(
-            appKey = userKey!!.appKey!!,
-            appSecret = userKey!!.appSecret!!,
+            appKey = userKey.value!!.appKey!!,
+            appSecret = userKey.value!!.appSecret!!,
             onSuccess = onSuccess
         )
     }
@@ -172,15 +172,15 @@ class TokenKeyManager @Inject constructor(
     }
 
     private fun revokeToken() {
-        if (userKey?.appKey == null || userKey?.appSecret == null) return
+        if (userKey.value?.appKey == null || userKey.value?.appSecret == null) return
 
         if (local.accessToken.isEmpty()) {
             return
         }
 
         val request = RevokeTokenRequest(
-            appKey = userKey!!.appKey!!,
-            appSecret = userKey!!.appSecret!!,
+            appKey = userKey.value!!.appKey!!,
+            appSecret = userKey.value!!.appSecret!!,
             token = local.accessToken,
         )
         authRemote.revokeToken(request)
@@ -219,6 +219,6 @@ class TokenKeyManager @Inject constructor(
 
         val jsonString = json.encodeToString(list + userKey)
         local.userKeys = jsonString
-        this.userKey = userKey
+        this.userKey.value = userKey
     }
 }
