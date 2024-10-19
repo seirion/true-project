@@ -24,7 +24,7 @@ class UserInfo @Inject constructor(
         private val TAG = UserInfo::class.java.simpleName
     }
 
-    val account = MutableSharedFlow<AccountResponse>(1)
+    val userStocks = MutableSharedFlow<AccountResponse>(1)
 
     // 앱이 foreground 상태가 될 때
     fun start() {
@@ -41,7 +41,8 @@ class UserInfo @Inject constructor(
         val accessToken = local.accessToken
         Log.d(TAG,"accessToken: $accessToken")
         tokenControl.issueAccessToken {
-            loadUserStocks(local.currentAccountNumber)
+            val currentAccountNumber = local.getUserKeys().lastOrNull()?.accountNum
+            loadUserStocks(currentAccountNumber)
         }
 
         tokenControl.issueWebSocketKey {
@@ -62,7 +63,7 @@ class UserInfo @Inject constructor(
                 }
             }
             .onEach {
-                account.emit(it)
+                userStocks.emit(it)
                 withContext(Dispatchers.Main) {
                     onSuccess()
                 }

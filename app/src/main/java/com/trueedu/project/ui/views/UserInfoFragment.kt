@@ -120,8 +120,6 @@ class UserInfoFragment: BaseFragment() {
     }
 
     private fun onAddUserKey() {
-        AppKeyInputFragment.show(parentFragmentManager) {
-
-        }
+        AppKeyInputFragment.show(parentFragmentManager)
     }
 }
