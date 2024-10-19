@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.GoogleAccount
+import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.UserInfo
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.repository.FirebaseRealtimeDatabase
@@ -22,6 +23,7 @@ class MainViewModel @Inject constructor(
     private val local: Local,
     private val userInfo: UserInfo,
     private val googleAccount: GoogleAccount,
+    private val tokenKeyManager: TokenKeyManager,
     private val trueAnalytics: TrueAnalytics,
     private val firebaseDatabase: FirebaseRealtimeDatabase,
 ): ViewModel() {
@@ -46,8 +48,7 @@ class MainViewModel @Inject constructor(
             }
             launch {
                 userInfo.userStocks.collectLatest {
-                    accountNum.value = local.getUserKeys()
-                        .lastOrNull()
+                    accountNum.value = tokenKeyManager.userKey
                         ?.accountNum
                         .toAccountNumFormat()
                     account.value = it

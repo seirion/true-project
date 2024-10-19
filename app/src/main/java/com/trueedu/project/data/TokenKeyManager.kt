@@ -21,6 +21,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
@@ -33,6 +37,12 @@ class TokenKeyManager @Inject constructor(
 ) {
     companion object {
         private val TAG = TokenKeyManager::class.java.simpleName
+
+        @OptIn(ExperimentalSerializationApi::class)
+        private val json = Json {
+            ignoreUnknownKeys = true
+            explicitNulls = false
+        }
     }
 
     var userKey: UserKey? = null
@@ -46,7 +56,7 @@ class TokenKeyManager @Inject constructor(
     }
 
     init {
-        userKey = local.getUserKeys().lastOrNull()
+        userKey = getUserKeys().lastOrNull()
     }
 
     private fun hasValidToken(): Boolean {
@@ -191,5 +201,23 @@ class TokenKeyManager @Inject constructor(
 
     fun setAccessToken(tokenResponse: TokenResponse) {
         local.setAccessToken(tokenResponse)
+    }
+
+    fun getUserKeys(): List<UserKey> {
+        return try {
+            json.decodeFromString<List<UserKey>>(local.userKeys)
+        } catch (e: SerializationException) {
+            emptyList()
+        }
+    }
+
+    // 마지막에 추가
+    fun addUserKey(userKey: UserKey) {
+        val list = getUserKeys().filter {
+            it.accountNum != userKey.accountNum
+        }
+
+        val jsonString = json.encodeToString(list + userKey)
+        local.userKeys = jsonString
     }
 }

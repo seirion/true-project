@@ -41,7 +41,7 @@ class UserInfo @Inject constructor(
         val accessToken = local.accessToken
         Log.d(TAG,"accessToken: $accessToken")
         tokenKeyManager.issueAccessToken {
-            val currentAccountNumber = local.getUserKeys().lastOrNull()?.accountNum
+            val currentAccountNumber = tokenKeyManager.userKey?.accountNum
             loadUserStocks(currentAccountNumber)
         }
 
