@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.R
-import com.trueedu.project.data.TokenControl
+import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.UserInfo
 import com.trueedu.project.extensions.getClipboardText
 import com.trueedu.project.model.local.UserKey
@@ -56,7 +56,7 @@ class AppKeyInputFragment: BaseFragment() {
     }
 
     @Inject
-    lateinit var tokenControl: TokenControl
+    lateinit var tokenKeyManager: TokenKeyManager
 
     private val appKey = mutableStateOf("")
     private val appSecret = mutableStateOf("")
@@ -158,7 +158,7 @@ class AppKeyInputFragment: BaseFragment() {
     }
 
     private fun checkToken() {
-        tokenControl.issueAccessToken(
+        tokenKeyManager.issueAccessToken(
             appKey = appKey.value,
             appSecret = appSecret.value,
             onSuccess = {

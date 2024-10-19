@@ -23,7 +23,7 @@ import javax.inject.Singleton
 @Singleton
 class WsMessageHandler @Inject constructor(
     private val local: Local,
-    private val tokenControl: TokenControl,
+    private val tokenKeyManager: TokenKeyManager,
     private val webSocketService: WebSocketService,
 ) {
     companion object {
@@ -37,7 +37,7 @@ class WsMessageHandler @Inject constructor(
 
     init {
         MainScope().launch {
-            tokenControl.observeAuthEvent()
+            tokenKeyManager.observeAuthEvent()
                 .collectLatest {
                     when (it) {
                         is WebSocketKeyIssued -> {

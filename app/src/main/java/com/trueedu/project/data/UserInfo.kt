@@ -17,7 +17,7 @@ import javax.inject.Singleton
 @Singleton
 class UserInfo @Inject constructor(
     private val local: Local,
-    private val tokenControl: TokenControl,
+    private val tokenKeyManager: TokenKeyManager,
     private val accountRemote: AccountRemote,
 ) {
     companion object {
@@ -40,12 +40,12 @@ class UserInfo @Inject constructor(
     fun init() {
         val accessToken = local.accessToken
         Log.d(TAG,"accessToken: $accessToken")
-        tokenControl.issueAccessToken {
+        tokenKeyManager.issueAccessToken {
             val currentAccountNumber = local.getUserKeys().lastOrNull()?.accountNum
             loadUserStocks(currentAccountNumber)
         }
 
-        tokenControl.issueWebSocketKey {
+        tokenKeyManager.issueWebSocketKey {
             Log.d(TAG,"webSocketKey: ${local.webSocketKey}")
         }
     }

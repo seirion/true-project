@@ -27,12 +27,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TokenControl @Inject constructor(
+class TokenKeyManager @Inject constructor(
     private val local: Local,
     private val authRemote: AuthRemote,
 ) {
     companion object {
-        private val TAG = TokenControl::class.java.simpleName
+        private val TAG = TokenKeyManager::class.java.simpleName
     }
 
     var userKey: UserKey? = null
