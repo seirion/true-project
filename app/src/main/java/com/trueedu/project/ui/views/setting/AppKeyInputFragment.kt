@@ -77,13 +77,13 @@ class AppKeyInputFragment: BaseFragment() {
     lateinit var userInfo: UserInfo
 
     override fun init() {
-        val useKey = local.getUserKeys().lastOrNull()
-        appKeyOrg = useKey?.appKey ?: ""
-        appSecretOrg = useKey?.appSecret ?: ""
-        accountNumberOrg = local.currentAccountNumber
-        appKey.value = useKey?.appKey ?: ""
-        appSecret.value = useKey?.appSecret ?: ""
-        accountNumber.value = local.currentAccountNumber
+        val userKey = local.getUserKeys().lastOrNull()
+        appKeyOrg = userKey?.appKey ?: ""
+        appSecretOrg = userKey?.appSecret ?: ""
+        accountNumberOrg = userKey?.accountNum ?: ""
+        appKey.value = userKey?.appKey ?: ""
+        appSecret.value = userKey?.appSecret ?: ""
+        accountNumber.value = userKey?.accountNum ?: ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -198,11 +198,6 @@ class AppKeyInputFragment: BaseFragment() {
         )
 
         local.addUserKey(userKey)
-
-        // 처음으로 계좌를 등록하는 경우 주 사용 계좌로 등록
-        if (local.currentAccountNumber.isEmpty()) {
-            local.currentAccountNumber = accountNumber.value
-        }
     }
 
     @Composable

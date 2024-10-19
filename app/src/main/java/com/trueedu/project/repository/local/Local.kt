@@ -32,11 +32,8 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
         explicitNulls = false
     }
 
-    // not used
-    //private var appKey by preferences.string("")
-    //private var appSecret by preferences.string("")
-
     // appKey, appSecret, accountNumber, htsId
+    // 마지막 element 가 최근에 사용한 값임
     private var userKeys by preferences.string("[]")
     fun getUserKeys(): List<UserKey> {
         return try {
@@ -74,17 +71,6 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
     var webSocketKey by preferences.string("")
 
     // 사용자 계정 정보
-
-    // 사용자 전체 계좌 목록 - comma separated list
-    private var accountNumbers by preferences.string("")
-    val accountNumberList: List<String>
-        get() = accountNumbers.split(",")
-    fun setAccountNumberList(list: List<String>) {
-        accountNumbers = list.joinToString(",")
-    }
-
-    // 사용자가 가장 최근 선택한 계좌 번호
-    var currentAccountNumber by preferences.string("")
 
     // UI
     var forceDark by preferences.boolean(false)

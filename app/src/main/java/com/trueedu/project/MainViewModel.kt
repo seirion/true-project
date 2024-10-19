@@ -45,8 +45,11 @@ class MainViewModel @Inject constructor(
                 }
             }
             launch {
-                userInfo.account.collectLatest {
-                    accountNum.value = local.currentAccountNumber.toAccountNumFormat()
+                userInfo.userStocks.collectLatest {
+                    accountNum.value = local.getUserKeys()
+                        .lastOrNull()
+                        ?.accountNum
+                        .toAccountNumFormat()
                     account.value = it
                 }
             }
