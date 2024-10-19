@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onAccountInfo() {
         trueAnalytics.clickButton("home__account_info__click")
-        AppKeyInputFragment.show(supportFragmentManager)
+        AppKeyInputFragment.show(false, supportFragmentManager)
     }
 
     private fun onWatchList() {

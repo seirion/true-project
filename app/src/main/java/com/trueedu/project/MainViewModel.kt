@@ -2,6 +2,7 @@ package com.trueedu.project
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -15,6 +16,7 @@ import com.trueedu.project.repository.local.Local
 import com.trueedu.project.utils.toAccountNumFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,9 +50,6 @@ class MainViewModel @Inject constructor(
             }
             launch {
                 userAssets.userStocks.collectLatest {
-                    accountNum.value = tokenKeyManager.userKey
-                        ?.accountNum
-                        .toAccountNumFormat()
                     userStocks.value = it
                 }
             }
@@ -58,6 +57,15 @@ class MainViewModel @Inject constructor(
                 googleAccount.loginSignal
                     .collect {
                         googleSignInAccount.value = googleAccount.googleSignInAccount
+                    }
+            }
+            launch {
+                snapshotFlow { tokenKeyManager.userKey.value }
+                    .filterNotNull()
+                    .collect {
+                        accountNum.value = tokenKeyManager.userKey.value
+                            ?.accountNum
+                            .toAccountNumFormat()
                     }
             }
         }
