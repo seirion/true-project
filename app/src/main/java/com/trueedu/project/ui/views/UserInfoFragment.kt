@@ -98,6 +98,8 @@ class UserInfoFragment: BaseFragment() {
                         item.accountNum.toAccountNumFormat(),
                         selected = vm.selected.intValue == index,
                     ) {
+                        vm.selected.intValue = index
+                        tokenKeyManager.addUserKey(item)
                     }
                 }
 

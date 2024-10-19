@@ -25,10 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.R
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.UserAssets
 import com.trueedu.project.extensions.getClipboardText
+import com.trueedu.project.model.event.TokenIssueFail
+import com.trueedu.project.model.event.TokenIssued
 import com.trueedu.project.model.local.UserKey
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
@@ -38,6 +41,9 @@ import com.trueedu.project.ui.common.BottomBar
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -154,43 +160,26 @@ class AppKeyInputFragment: BaseFragment() {
 
     private fun onSave() {
         trueAnalytics.clickButton("${screenName()}__bottom_btn__click")
-        checkToken()
-    }
+        saveUserKey()
 
-    private fun checkToken() {
-        // 토큰을 새로 받기 위해 기존 토큰은 삭제
-        tokenKeyManager.clearToken()
-
-        // 토큰 다시 받기
-        tokenKeyManager.issueAccessToken(
-            appKey = appKey.value,
-            appSecret = appSecret.value,
-            onSuccess = {
-                Log.d(TAG, "new token issued")
-                Toast.makeText(requireContext(), "토큰 정상 발급 완료", Toast.LENGTH_SHORT).show()
-                saveUserKey()
-                checkAccount()
-            },
-            onFailed = {
-                Log.d(TAG, "failed: $it")
-                Toast.makeText(requireContext(), "토큰 발급 실패", Toast.LENGTH_SHORT).show()
-            }
-        )
-    }
-
-    private fun checkAccount() {
-        userAssets.loadUserStocks(
-            accountNum = accountNumber.value,
-            onSuccess = {
-                Log.d(TAG, "account check ok")
-                Toast.makeText(requireContext(), "계좌 번호 확인 완료", Toast.LENGTH_SHORT).show()
-                dismissAllowingStateLoss()
-            },
-            onFail = {
-                Log.d(TAG, "failed to get account: $it")
-                Toast.makeText(requireContext(), "계좌 번호 오류", Toast.LENGTH_SHORT).show()
-            }
-        )
+        // 토큰이 정상적으로 발급되면 창을 닫는다
+        lifecycleScope.launch {
+            tokenKeyManager.observeTokenKeyEvent()
+                .onEach {
+                    if (it is TokenIssued) {
+                        Log.d(TAG, "new token issued")
+                        Toast.makeText(requireContext(), "토큰 정상 발급 완료", Toast.LENGTH_SHORT)
+                            .show()
+                        dismissAllowingStateLoss()
+                    } else if (it is TokenIssueFail) {
+                        Log.d(TAG, "failed: $it")
+                        Toast.makeText(requireContext(), "토큰 발급 실패", Toast.LENGTH_SHORT).show()
+                        this.cancel()
+                    }
+                }
+                .collect {
+                }
+        }
     }
 
     private fun saveUserKey() {

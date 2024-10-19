@@ -6,22 +6,20 @@ import com.trueedu.project.model.dto.auth.RevokeTokenRequest
 import com.trueedu.project.model.dto.auth.TokenRequest
 import com.trueedu.project.model.dto.auth.TokenResponse
 import com.trueedu.project.model.dto.auth.WebSocketKeyRequest
-import com.trueedu.project.model.event.AuthEvent
+import com.trueedu.project.model.event.TokenIssueFail
 import com.trueedu.project.model.event.TokenIssued
+import com.trueedu.project.model.event.TokenKeyEvent
 import com.trueedu.project.model.event.TokenRevoked
 import com.trueedu.project.model.event.WebSocketKeyIssued
 import com.trueedu.project.model.local.UserKey
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
@@ -49,14 +47,16 @@ class TokenKeyManager @Inject constructor(
     val userKey = mutableStateOf<UserKey?>(null)
 
     // auth 관련 이벤트 구독을 위함
-    private val event = MutableSharedFlow<AuthEvent>(1)
+    private val event = MutableSharedFlow<TokenKeyEvent>(1)
 
-    fun observeAuthEvent(): Flow<AuthEvent> {
+    fun observeTokenKeyEvent(): Flow<TokenKeyEvent> {
         return event
     }
 
     init {
         userKey.value = getUserKeys().lastOrNull()
+        issueAccessToken()
+        issueWebSocketKey()
     }
 
     private fun hasValidToken(): Boolean {
@@ -73,34 +73,11 @@ class TokenKeyManager @Inject constructor(
         return bufferedExpirationTime.after(currentTime)
     }
 
-    fun issueAccessToken(onSuccess: () -> Unit) {
-        Log.d(TAG, "appKey: ${userKey.value?.appKey}")
-        Log.d(TAG, "appSecret: ${userKey.value?.appSecret}")
-        issueAccessToken(
-            appKey = userKey.value?.appKey,
-            appSecret = userKey.value?.appSecret,
-            onSuccess = onSuccess
-        )
-    }
-
-    fun issueWebSocketKey(onSuccess: () -> Unit) {
-        if (userKey.value?.appKey == null || userKey.value?.appSecret == null) return
-
-        issueWebSocketKey(
-            appKey = userKey.value!!.appKey!!,
-            appSecret = userKey.value!!.appSecret!!,
-            onSuccess = onSuccess
-        )
-    }
-
-    private fun issueWebSocketKey(
-        appKey: String,
-        appSecret: String,
-        onSuccess: () -> Unit,
-    ) {
+    private fun issueWebSocketKey() {
+        val appKey = userKey.value!!.appKey!!
+        val appSecret = userKey.value!!.appSecret!!
         if (local.webSocketKey.isNotEmpty()) {
             Log.d(TAG, "websocket key exists: ${local.webSocketKey}")
-            onSuccess()
             return
         }
         if (appKey.isEmpty() || appSecret.isEmpty()) {
@@ -120,29 +97,21 @@ class TokenKeyManager @Inject constructor(
             .onEach {
                 local.webSocketKey = it.approvalKey
                 event.emit(WebSocketKeyIssued())
-                withContext(Dispatchers.Main) {
-                    onSuccess()
-                }
                 Log.d(TAG, "new web socket key: $it")
             }
             .launchIn(MainScope())
     }
 
-    fun issueAccessToken(
-        appKey: String?,
-        appSecret: String?,
-        onSuccess: () -> Unit = {},
-        onFailed: (Throwable) -> Unit = {},
-    ) {
+    private fun issueAccessToken() {
+        Log.d(TAG, "issueAccessToken()")
+        val appKey = userKey.value?.appKey
+        val appSecret = userKey.value?.appSecret
         if (appKey.isNullOrEmpty() || appSecret.isNullOrEmpty()) {
             Log.d(TAG, "appKey appSecret is empty")
             return
         }
         if (hasValidToken()) {
             Log.d(TAG, "token is valid")
-            MainScope().launch {
-                onSuccess()
-            }
             return
         }
 
@@ -156,16 +125,11 @@ class TokenKeyManager @Inject constructor(
             .catch {
                 // service not available
                 Log.e(TAG, "failed to get AccessToken: $it")
-                withContext(Dispatchers.Main) {
-                    onFailed(it)
-                }
+                event.emit(TokenIssueFail())
             }
             .onEach {
                 setAccessToken(it)
                 event.emit(TokenIssued())
-                withContext(Dispatchers.Main) {
-                    onSuccess()
-                }
                 Log.d(TAG, "new token: $it")
             }
             .launchIn(MainScope())
@@ -220,5 +184,11 @@ class TokenKeyManager @Inject constructor(
         val jsonString = json.encodeToString(list + userKey)
         local.userKeys = jsonString
         this.userKey.value = userKey
+
+        // 키 정보가 갱신되면 토큰을 재발급 받아야 함
+        clearToken()
+        local.webSocketKey = ""
+        issueAccessToken()
+        issueWebSocketKey()
     }
 }

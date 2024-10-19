@@ -2,21 +2,22 @@ package com.trueedu.project.data
 
 import android.util.Log
 import com.trueedu.project.model.dto.account.AccountResponse
-import com.trueedu.project.repository.local.Local
+import com.trueedu.project.model.event.TokenIssued
 import com.trueedu.project.repository.remote.AccountRemote
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UserAssets @Inject constructor(
-    private val local: Local,
     private val tokenKeyManager: TokenKeyManager,
     private val accountRemote: AccountRemote,
 ) {
@@ -24,37 +25,36 @@ class UserAssets @Inject constructor(
         private val TAG = UserAssets::class.java.simpleName
     }
 
+    var job: Job? = null
     val userStocks = MutableSharedFlow<AccountResponse>(1)
 
     // 앱이 foreground 상태가 될 때
     fun start() {
         Log.d(TAG, "start")
-        init()
+        loadUserStocks()
+
+        job = MainScope().launch {
+            tokenKeyManager.observeTokenKeyEvent()
+                .collect {
+                    if (it is TokenIssued) {
+                        loadUserStocks()
+                    }
+                }
+        }
     }
 
     // 앱이 background 상태가 될 때
     fun stop() {
         Log.d(TAG, "stop")
+        job?.cancel()
+        job = null
     }
 
-    fun init() {
-        val accessToken = local.accessToken
-        Log.d(TAG,"accessToken: $accessToken")
-        tokenKeyManager.issueAccessToken {
-            val currentAccountNumber = tokenKeyManager.userKey.value?.accountNum
-            loadUserStocks(currentAccountNumber)
-        }
-
-        tokenKeyManager.issueWebSocketKey {
-            Log.d(TAG,"webSocketKey: ${local.webSocketKey}")
-        }
-    }
-
-    fun loadUserStocks(
-        accountNum: String? = null,
+    private fun loadUserStocks(
         onSuccess: () -> Unit = {},
         onFail: (Throwable) -> Unit = {},
     ) {
+        val accountNum = tokenKeyManager.userKey.value?.accountNum
         if (accountNum.isNullOrEmpty()) return
         accountRemote.getUserStocks(accountNum)
             .catch {
