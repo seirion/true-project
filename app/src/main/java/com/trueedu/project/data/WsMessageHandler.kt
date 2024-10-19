@@ -37,7 +37,7 @@ class WsMessageHandler @Inject constructor(
 
     init {
         MainScope().launch {
-            tokenKeyManager.observeAuthEvent()
+            tokenKeyManager.observeTokenKeyEvent()
                 .collectLatest {
                     when (it) {
                         is WebSocketKeyIssued -> {
@@ -75,6 +75,7 @@ class WsMessageHandler @Inject constructor(
             return
         }
 
+        webSocketService.disconnect()
         webSocketService.connect(object: WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 Log.d(TAG, "onOpen()")
