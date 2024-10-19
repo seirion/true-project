@@ -4,7 +4,7 @@ import com.trueedu.project.model.dto.account.AccountResponse
 import kotlinx.coroutines.flow.Flow
 
 interface AccountRemote {
-    fun getAccount(
+    fun getUserStocks(
         accountNum: String,
     ): Flow<AccountResponse>
 }

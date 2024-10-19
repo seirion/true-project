@@ -9,7 +9,7 @@ class AccountRemoteImpl(
     private val accountService: AccountService
 ): AccountRemote {
 
-    override fun getAccount(
+    override fun getUserStocks(
         accountNum: String,
     ) = apiCallFlow {
         val headers = mapOf(

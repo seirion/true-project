@@ -41,7 +41,7 @@ class UserInfo @Inject constructor(
         val accessToken = local.accessToken
         Log.d(TAG,"accessToken: $accessToken")
         tokenControl.issueAccessToken {
-            loadAccount(local.currentAccountNumber)
+            loadUserStocks(local.currentAccountNumber)
         }
 
         tokenControl.issueWebSocketKey {
@@ -49,13 +49,13 @@ class UserInfo @Inject constructor(
         }
     }
 
-    fun loadAccount(
+    fun loadUserStocks(
         accountNum: String? = null,
         onSuccess: () -> Unit = {},
         onFail: (Throwable) -> Unit = {},
     ) {
         if (accountNum.isNullOrEmpty()) return
-        accountRemote.getAccount(accountNum)
+        accountRemote.getUserStocks(accountNum)
             .catch {
                 withContext(Dispatchers.Main) {
                     onFail(it)

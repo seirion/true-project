@@ -174,7 +174,7 @@ class AppKeyInputFragment: BaseFragment() {
     }
 
     private fun checkAccount() {
-        userInfo.loadAccount(
+        userInfo.loadUserStocks(
             accountNum = accountNumber.value,
             onSuccess = {
                 Log.d(TAG, "account check ok")
