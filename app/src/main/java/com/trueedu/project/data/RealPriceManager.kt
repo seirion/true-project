@@ -106,12 +106,16 @@ class RealPriceManager @Inject constructor(
     /**
      * 현재 요청을 취소하고 예전 요청을 복구
      */
-    fun popRequest() {
+    fun popRequest(name: String) {
+        if (requestStack.isEmpty()) return
+        if (requestStack.last().first != name) return
+
         // 현재 요청 취소
         cancelRequests()
 
+        requestStack.removeLast()
+
         if (requestStack.isNotEmpty()) {
-            requestStack.removeLast()
             requests.addAll(requestStack.last().second)
             beginRequests()
         }

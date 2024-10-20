@@ -142,6 +142,7 @@ class WatchListFragment: BaseFragment() {
                             delta = delta,
                             rate = rate,
                             volume = volume,
+                            onClick = { gotoStockDetail(stock) },
                         ) {
                             Log.d(TAG, "long click: ${stock.nameKr}")
                             selectedStock = stock
@@ -163,6 +164,11 @@ class WatchListFragment: BaseFragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        vm.cancelRealtimePrice()
     }
 
     private fun onSearch() {
@@ -221,6 +227,7 @@ private fun WatchingStockItem(
     delta: Double,
     rate: Double,
     volume: Double,
+    onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
     val formatter = CashFormatter()
@@ -231,7 +238,7 @@ private fun WatchingStockItem(
         modifier = Modifier
             .fillMaxWidth()
             .combinedClickable(
-                onClick = {},
+                onClick = onClick,
                 onLongClick = onLongClick
             )
             .padding(horizontal = 16.dp, vertical = 8.dp)

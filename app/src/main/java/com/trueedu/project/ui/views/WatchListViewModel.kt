@@ -98,6 +98,10 @@ class WatchListViewModel @Inject constructor(
         priceManager.pushRequest(TAG, codes)
     }
 
+    fun cancelRealtimePrice() {
+        priceManager.popRequest(TAG)
+    }
+
     private fun requestBasePrices() {
         if (loading.value || currentPage.value == null) return
 
