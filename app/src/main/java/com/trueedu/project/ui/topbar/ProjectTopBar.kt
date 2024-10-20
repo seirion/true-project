@@ -44,7 +44,7 @@ fun MainTopBar(
     TopAppBar(
         navigationIcon = {
             if (googleAccount == null) {
-                TouchIcon32(Icons.Outlined.AccountCircle, onUserInfoClick)
+                TouchIcon32(icon = Icons.Outlined.AccountCircle, onClick = onUserInfoClick)
             } else {
                 val imageUrl = googleAccount.photoUrl
                 NetworkImage(
@@ -58,9 +58,9 @@ fun MainTopBar(
             }
         },
         actions = {
-            TouchIcon32(Icons.Outlined.StarOutline, onWatchListClick)
-            TouchIcon32(Icons.Outlined.Search, onSearchClick)
-            TouchIcon32(Icons.Outlined.Settings, onSettingClick)
+            TouchIcon32(icon = Icons.Outlined.StarOutline, onClick = onWatchListClick)
+            TouchIcon32(icon = Icons.Outlined.Search, onClick = onSearchClick)
+            TouchIcon32(icon = Icons.Outlined.Settings, onClick = onSettingClick)
         },
         title = { TopBarTitle(title, onAccountInfoClick) },
         colors = TopAppBarDefaults.smallTopAppBarColors(

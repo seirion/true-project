@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.trueedu.project.data.GoogleAccount
-import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -50,8 +49,6 @@ class UserInfoFragment: BaseFragment() {
     lateinit var local: Local
     @Inject
     lateinit var googleAccount: GoogleAccount
-    @Inject
-    lateinit var tokenKeyManager: TokenKeyManager
 
     @Composable
     override fun BodyScreen() {
@@ -97,10 +94,13 @@ class UserInfoFragment: BaseFragment() {
                     AccountNumView(
                         item.accountNum.toAccountNumFormat(),
                         selected = vm.selected.intValue == index,
-                    ) {
-                        vm.selected.intValue = index
-                        tokenKeyManager.addUserKey(item)
-                    }
+                        onDelete = {
+                            trueAnalytics.clickButton("${screenName()}_delete__click")
+                            vm.delete(item.accountNum!!)
+                            Toast.makeText(requireContext(), "삭제했습니다", Toast.LENGTH_SHORT).show()
+                        },
+                        onClick = { vm.onSelected(index) }
+                    )
                 }
 
                 item { AddIcon(::onAddUserKey) }

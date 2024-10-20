@@ -191,4 +191,31 @@ class TokenKeyManager @Inject constructor(
         issueAccessToken()
         issueWebSocketKey()
     }
+
+    fun deleteUserKey(accountNum: String) {
+        val userKeys = getUserKeys()
+        val newUserKeys = userKeys.filter { it.accountNum != accountNum }
+
+        if (userKeys.size == newUserKeys.size) {
+            Log.d(TAG, "not exists userKey: $accountNum")
+            return
+        }
+
+        val jsonString = json.encodeToString(newUserKeys)
+        local.userKeys = jsonString
+
+        // userKey 가 갱신되는 경우
+        val newKey = newUserKeys.lastOrNull()
+        if (newKey != userKey.value) {
+            this.userKey.value = newKey
+
+            // 키 정보가 갱신되면 토큰을 재발급 받아야 함
+            clearToken()
+            local.webSocketKey = ""
+            if (newKey != null) {
+                issueAccessToken()
+                issueWebSocketKey()
+            }
+        }
+    }
 }
