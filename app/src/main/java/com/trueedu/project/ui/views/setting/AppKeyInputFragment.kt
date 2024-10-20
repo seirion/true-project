@@ -245,6 +245,6 @@ private fun TextInputItem(
             maxLines = 2,
         )
         Margin(8)
-        TouchIcon24(Icons.Filled.ContentPaste, onPaste)
+        TouchIcon24(icon = Icons.Filled.ContentPaste, onClick = onPaste)
     }
 }
