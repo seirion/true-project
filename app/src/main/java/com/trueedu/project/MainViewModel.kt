@@ -49,7 +49,7 @@ class MainViewModel @Inject constructor(
                 }
             }
             launch {
-                userAssets.userStocks.collectLatest {
+                userAssets.assets.collectLatest {
                     userStocks.value = it
                 }
             }

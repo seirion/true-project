@@ -26,7 +26,7 @@ class UserAssets @Inject constructor(
     }
 
     var job: Job? = null
-    val userStocks = MutableSharedFlow<AccountResponse>(1)
+    val assets = MutableSharedFlow<AccountResponse>(1)
 
     // 앱이 foreground 상태가 될 때
     fun start() {
@@ -63,7 +63,7 @@ class UserAssets @Inject constructor(
                 }
             }
             .onEach {
-                userStocks.emit(it)
+                assets.emit(it)
                 withContext(Dispatchers.Main) {
                     onSuccess()
                 }
