@@ -53,7 +53,8 @@ fun AccountInfo(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 8.dp)
     ) {
         val profit = accountInfo.profitLossSumTotalAmount.toDouble()
         val profitString = formatter.format(profit, true)
@@ -82,12 +83,12 @@ fun AccountInfo(
         }
     }
 
-    Row {
+    Row(modifier = Modifier.padding(horizontal = 16.dp)) {
         HeaderTitle("예수금")
         HeaderTitle("D+1 예수금")
         HeaderTitle("D+2 예수금")
     }
-    Row {
+    Row(modifier = Modifier.padding(horizontal = 16.dp)) {
         BodyTitle(
             formatter.format(accountInfo.depositAccountTotalAmount.toDouble())
         )
@@ -139,7 +140,7 @@ fun StockItem(item: AccountOutput1, marketPriceMode: Boolean) {
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Column {
             BasicText(

@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -129,10 +130,10 @@ class MainActivity : AppCompatActivity() {
                     val state = rememberLazyListState()
                     LazyColumn(
                         state = state,
+                        contentPadding = PaddingValues(vertical = 16.dp),
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
-                            .padding(16.dp)
                     ) {
                         vm.userStocks.value?.output2?.firstOrNull()?.let {
                             item { AccountInfo(it, vm.marketPriceMode.value, vm::onChangeMarketPriceMode) }
