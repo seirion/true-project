@@ -3,24 +3,21 @@ package com.trueedu.project.ui.common
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import com.trueedu.project.ui.theme.ChartColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
@@ -47,21 +44,10 @@ fun BackTitleTopBar(
         }
     TopAppBar(
         navigationIcon = {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .clickable { onBack() },
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp),
-                    imageVector = Icons.Filled.ChevronLeft,
-                    tint = MaterialTheme.colorScheme.tertiary,
-                    contentDescription = "icon"
-                )
-            }
+            TouchIcon32(
+                icon = Icons.Filled.ChevronLeft,
+                onClick = onBack,
+            )
         },
         title = {
             BasicText(
@@ -78,3 +64,35 @@ fun BackTitleTopBar(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun BackStockTopBar(
+    nameKr: String = "삼성전자",
+    priceChange: String = "+1,150(+1.15%)",
+    textColor: Color = ChartColor.up,
+    onBack: () -> Unit = {},
+) {
+    TopAppBar(
+        navigationIcon = {
+            TouchIcon32(
+                icon = Icons.Filled.ChevronLeft,
+                onClick = onBack,
+            )
+        },
+        title = {
+            Column {
+                BasicText(
+                    s = nameKr,
+                    fontSize = 16,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                BasicText(s = priceChange, fontSize = 14, color = textColor)
+            }
+        },
+        colors = TopAppBarDefaults.smallTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
+    )
+}
