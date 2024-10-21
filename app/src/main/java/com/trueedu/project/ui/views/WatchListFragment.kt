@@ -99,9 +99,9 @@ class WatchListFragment: BaseFragment() {
 
             if (pagerState == null) {
                 pagerState = rememberPagerState(
-                    initialPage = 10000 * vm.pageCount(),
+                    initialPage = 100 * vm.pageCount(),
                     initialPageOffsetFraction = 0f,
-                    pageCount = { 20000 * vm.pageCount() }, // infinite loop
+                    pageCount = { 200 * vm.pageCount() }, // infinite loop
                 )
             }
 
