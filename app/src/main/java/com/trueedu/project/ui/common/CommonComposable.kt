@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.em
 
 @Composable
 fun DividerHorizontal() {
@@ -50,6 +51,7 @@ fun BasicText(
         overflow = TextOverflow.Ellipsis,
         maxLines = maxLines,
         textAlign = textAlign,
+        lineHeight = 1.5.em,
         style = style,
     )
 }
