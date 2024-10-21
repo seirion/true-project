@@ -59,6 +59,11 @@ class StockDetailFragment: BaseFragment() {
         vm.init(stockInfo)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        vm.destroy()
+    }
+
     @Composable
     override fun BodyScreen() {
         if (!::stockInfo.isInitialized) dismissAllowingStateLoss()
