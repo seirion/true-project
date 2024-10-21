@@ -55,8 +55,11 @@ class TokenKeyManager @Inject constructor(
 
     init {
         userKey.value = getUserKeys().lastOrNull()
-        issueAccessToken()
-        issueWebSocketKey()
+
+        if (userKey.value != null) {
+            issueAccessToken()
+            issueWebSocketKey()
+        }
     }
 
     private fun hasValidToken(): Boolean {
