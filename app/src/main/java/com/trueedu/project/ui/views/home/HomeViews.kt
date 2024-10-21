@@ -55,10 +55,22 @@ fun AccountInfo(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-        // 총자산
+        val profit = accountInfo.profitLossSumTotalAmount.toDouble()
+        val profitString = formatter.format(profit, true)
+
+        val rate = accountInfo.totalProfitRate()
+        val profitRateString = rateFormatter.format(rate, true)
+
         Column {
             BasicText(s = "Total", fontSize = 12, color = MaterialTheme.colorScheme.outline)
+            // 총자산
             BasicText(s = totalString, fontSize = 24, color = MaterialTheme.colorScheme.primary)
+            // 수익/수익률
+            BasicText(
+                s = "$profitString ($profitRateString)",
+                fontSize = 14,
+                color = ChartColor.color(profit)
+            )
         }
 
         Column(horizontalAlignment = Alignment.End) {
@@ -69,17 +81,6 @@ fun AccountInfo(
             )
         }
     }
-
-    val profit = accountInfo.profitLossSumTotalAmount.toDouble()
-    val profitString = formatter.format(profit, true)
-
-    val rate = accountInfo.totalProfitRate()
-    val profitRateString = rateFormatter.format(rate, true)
-    BasicText(
-        s = "$profitString ($profitRateString)",
-        fontSize = 14,
-        color = ChartColor.color(profit)
-    )
 
     Row {
         HeaderTitle("예수금")
