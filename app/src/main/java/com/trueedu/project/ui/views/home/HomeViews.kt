@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.model.dto.account.AccountOutput1
 import com.trueedu.project.model.dto.account.AccountOutput2
@@ -165,12 +166,6 @@ fun StockItem(item: AccountOutput1, marketPriceMode: Boolean) {
                 item.evaluationAmount.toDouble()
             }
             val totalValueString = formatter.format(totalValue)
-            BasicText(
-                s = totalValueString,
-                fontSize = 13,
-                color = MaterialTheme.colorScheme.primary,
-            )
-
             val profit = if (marketPriceMode) {
                 // 시세 변동
                 item.priceChange.toDouble()
@@ -185,6 +180,12 @@ fun StockItem(item: AccountOutput1, marketPriceMode: Boolean) {
                 item.profitLossRate.toDouble()
             }
             val profitRateString = rateFormatter.format(profitRate, true)
+            BasicText(
+                s = totalValueString,
+                fontSize = 14,
+                fontWeight = FontWeight.W600,
+                color = ChartColor.color(profit),
+            )
             BasicText(
                 s = "$profitString ($profitRateString)",
                 fontSize = 12,

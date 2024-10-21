@@ -263,8 +263,9 @@ private fun WatchingStockItem(
             val totalValueString = formatter.format(price)
             BasicText(
                 s = totalValueString,
-                fontSize = 13,
-                color = MaterialTheme.colorScheme.primary,
+                fontSize = 14,
+                fontWeight = FontWeight.W600,
+                color = ChartColor.color(delta),
             )
 
             val profitString = formatter.format(delta, true)
