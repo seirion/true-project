@@ -1,17 +1,13 @@
 package com.trueedu.project.ui.views
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.StockInfoKosdaq
 import com.trueedu.project.model.dto.StockInfoKospi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,11 +26,15 @@ class StockDetailViewModel @Inject constructor(
 
     fun init(stockInfo: StockInfo) {
         this.stockInfo = stockInfo
-
-        viewModelScope.launch {
-        }
-
         initInfoList()
+        priceManager.pushRequest(
+            stockInfo.code,
+            listOf(stockInfo.code)
+        )
+    }
+
+    fun destroy() {
+        priceManager.popRequest(stockInfo.code)
     }
 
     private fun initInfoList() {
