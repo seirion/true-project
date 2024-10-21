@@ -2,6 +2,7 @@ package com.trueedu.project.ui.common
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -29,12 +30,20 @@ fun BackTitleTopBar(
     onBack: () -> Unit = {},
     actionIcon: ImageVector? = null,
     onAction: (() -> Unit)? = null,
+    actionIcon2: ImageVector? = null,
+    onAction2: (() -> Unit)? = null,
 ) {
+    val iconList = listOfNotNull(
+        actionIcon2, actionIcon
+    )
+    val actionList = listOf(onAction2, onAction)
     val actions: @Composable (RowScope.() -> Unit) =
-        if (actionIcon != null && onAction != null) {
-            { TouchIcon24(icon = actionIcon, onClick = onAction) }
-        } else {
-            {}
+        {
+            Row {
+                iconList.zip(actionList).forEach { (icon, action) ->
+                    TouchIcon24(icon = icon) { action?.invoke() }
+                }
+            }
         }
     TopAppBar(
         navigationIcon = {

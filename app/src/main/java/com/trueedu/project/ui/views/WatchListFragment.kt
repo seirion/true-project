@@ -19,7 +19,9 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -89,7 +91,9 @@ class WatchListFragment: BaseFragment() {
                     title = "관심 종목 ${vm.currentPage.value ?: ""}",
                     onBack = ::dismissAllowingStateLoss,
                     actionIcon = Icons.Filled.Search,
-                    onAction = ::onSearch
+                    onAction = ::onSearch,
+                    actionIcon2 = Icons.Filled.Edit,
+                    onAction2 = ::onEdit,
                 )
             },
             modifier = Modifier
@@ -175,6 +179,13 @@ class WatchListFragment: BaseFragment() {
     private fun onSearch() {
         trueAnalytics.clickButton("watch_list__search__click")
         StockSearchFragment.show(vm.currentPage.value, parentFragmentManager)
+    }
+
+    private fun onEdit() {
+        trueAnalytics.clickButton("watch_list__edit__click")
+        if (vm.currentPage.value != null) {
+            WatchEditFragment.show(vm.currentPage.value!!, parentFragmentManager)
+        }
     }
 
     private fun gotoStockDetail(stockInfo: StockInfo) {
