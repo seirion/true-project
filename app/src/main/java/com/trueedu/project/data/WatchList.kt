@@ -92,6 +92,20 @@ class WatchList @Inject constructor(
         firebaseRealtimeDatabase.writeWatchList(googleAccount.getId()!!, temp)
     }
 
+    // 편집한 관심종목 목록을 갱신
+    fun replace(index: Int, codes: List<String>) {
+        val temp = list.value
+            .mapIndexed { i, list ->
+                if (i == index) {
+                    codes
+                } else {
+                    list
+                }
+            }
+        list.value = temp
+        firebaseRealtimeDatabase.writeWatchList(googleAccount.getId()!!, temp)
+    }
+
     fun contains(index: Int, code: String): Boolean {
         return list.value.getOrNull(index)?.contains(code) == true
     }
