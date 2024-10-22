@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TouchIcon32
 import com.trueedu.project.utils.NetworkImage
 
@@ -58,9 +59,9 @@ fun MainTopBar(
             }
         },
         actions = {
-            TouchIcon32(icon = Icons.Outlined.StarOutline, onClick = onWatchListClick)
-            TouchIcon32(icon = Icons.Outlined.Search, onClick = onSearchClick)
-            TouchIcon32(icon = Icons.Outlined.Settings, onClick = onSettingClick)
+            TouchIcon24(icon = Icons.Outlined.StarOutline, onClick = onWatchListClick)
+            TouchIcon24(icon = Icons.Outlined.Search, onClick = onSearchClick)
+            TouchIcon24(icon = Icons.Outlined.Settings, onClick = onSettingClick)
         },
         title = { TopBarTitle(title, onAccountInfoClick) },
         colors = TopAppBarDefaults.smallTopAppBarColors(
