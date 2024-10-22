@@ -2,6 +2,7 @@ package com.trueedu.project.repository
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -14,6 +15,9 @@ import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.StockInfoKosdaq
 import com.trueedu.project.model.dto.StockInfoKospi
 import com.trueedu.project.repository.local.Local
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -101,27 +105,31 @@ class FirebaseRealtimeDatabase @Inject constructor(
         }
     }
 
+    private suspend fun firebaseCurrentUser(): FirebaseUser? {
+        val auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            return currentUser
+        }
+
+        if (!googleAccount.loggedIn()) {
+            Log.d(TAG, "cannot write values: currentUser == null")
+            return null
+        }
+        val idToken = googleAccount.getToken()
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential).await()
+        return auth.currentUser
+    }
+
     /**
      * @param lastUpdatedAt: 'yyyyMMddHHmm'
      */
     suspend fun writeStockInfo(lastUpdatedAt: Long, stocks: Map<String, StockInfo>) {
-        val auth = FirebaseAuth.getInstance()
-        var currentUser = auth.currentUser
-
+        val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            if (!googleAccount.loggedIn()) {
-                Log.d(TAG, "cannot write values: currentUser == null")
-                return
-            }
-            val idToken = googleAccount.getToken()
-            val credential = GoogleAuthProvider.getCredential(idToken, null)
-            auth.signInWithCredential(credential).await()
-            currentUser = auth.currentUser
-            
-            if (currentUser == null) {
-                Log.d(TAG, """"cannot write values: "currentUser"""")
-                return
-            }
+            Log.d(TAG, "cannot write values: \"currentUser\"")
+            return
         }
 
         val kospi = stocks.filter { it.value.isKospi() }
@@ -135,7 +143,13 @@ class FirebaseRealtimeDatabase @Inject constructor(
         }
     }
 
-    suspend fun loadWatchList(userId: String): List<List<String>> {
+    suspend fun loadWatchList(): List<List<String>> {
+        val currentUser = firebaseCurrentUser()
+        if (currentUser == null) {
+            Log.d(TAG, "loadWatchList() failed: currentUser null")
+        }
+        val userId = currentUser?.uid ?: return emptyList()
+
         val ref = database.getReference("users") // 종목 데이터
         val snapshot = ref.child(userId).child("watch")
         val list = snapshot.get().await()
@@ -143,9 +157,17 @@ class FirebaseRealtimeDatabase @Inject constructor(
         return list ?: emptyList()
     }
 
-    fun writeWatchList(userId: String, list :List<List<String>>) {
-        val ref = database.getReference("users") // 종목 데이터
-        val snapshot = ref.child(userId).child("watch")
-        snapshot.setValue(list)
+    fun writeWatchList(list :List<List<String>>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val currentUser = firebaseCurrentUser()
+            if (currentUser == null) {
+                Log.d(TAG, "loadWatchList() failed: currentUser null")
+            }
+            val userId = currentUser?.uid ?: return@launch
+
+            val ref = database.getReference("users") // 종목 데이터
+            val snapshot = ref.child(userId).child("watch")
+            snapshot.setValue(list)
+        }
     }
 }
