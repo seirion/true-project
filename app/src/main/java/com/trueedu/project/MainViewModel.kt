@@ -34,6 +34,7 @@ class MainViewModel @Inject constructor(
         private val TAG = MainViewModel::class.java.simpleName
     }
 
+    val loading = mutableStateOf(true)
     val googleSignInAccount = mutableStateOf<GoogleSignInAccount?>(null)
     val accountNum = mutableStateOf("")
     val userStocks = mutableStateOf<AccountResponse?>(null)
@@ -41,6 +42,10 @@ class MainViewModel @Inject constructor(
     val forceUpdateVisible = mutableStateOf(false)
 
     fun init() {
+        if (local.getUserKeys().isEmpty()) {
+            // 키가 없어서 자산을 못 불러오면 로딩 상태가 불필요함
+            loading.value = false
+        }
         viewModelScope.launch {
             launch {
                 if (firebaseDatabase.needForceUpdate()) {
@@ -51,6 +56,7 @@ class MainViewModel @Inject constructor(
             launch {
                 userAssets.assets.collectLatest {
                     userStocks.value = it
+                    loading.value = false
                 }
             }
             launch {

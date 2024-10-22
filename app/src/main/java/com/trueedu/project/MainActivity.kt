@@ -30,6 +30,7 @@ import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
+import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
@@ -126,6 +127,11 @@ class MainActivity : AppCompatActivity() {
                     },
                     modifier = Modifier.fillMaxSize(),
                 ) { innerPadding ->
+
+                    if (vm.loading.value) {
+                        LoadingView()
+                        return@Scaffold
+                    }
 
                     val state = rememberLazyListState()
                     LazyColumn(
