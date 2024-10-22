@@ -60,8 +60,6 @@ class GoogleAccount @Inject constructor(
 
     fun getEmail() = googleSignInAccount?.email
 
-    fun getId() = googleSignInAccount?.id
-
     fun getProfileImage() = googleSignInAccount?.photoUrl
 
     fun login(activity: Activity, action: (() -> Unit)? = null) {
