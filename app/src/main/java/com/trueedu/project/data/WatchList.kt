@@ -28,11 +28,7 @@ class WatchList @Inject constructor(
             googleAccount.loginSignal
                 .collect { login ->
                     if (login) {
-                        val id = googleAccount.getId()
-                        if (id.isNullOrBlank()) {
-                            Log.d(TAG, "id is not available: ($id)")
-                        }
-                        val temp = firebaseRealtimeDatabase.loadWatchList(id!!)
+                        val temp = firebaseRealtimeDatabase.loadWatchList()
                         Log.d(TAG, "loadWatchList: ${temp.size}")
                         withContext(Dispatchers.Main) {
                             fillDefaultList(temp)
@@ -69,7 +65,7 @@ class WatchList @Inject constructor(
                 }
             }
         list.value = temp
-        firebaseRealtimeDatabase.writeWatchList(googleAccount.getId()!!, temp)
+        firebaseRealtimeDatabase.writeWatchList(temp)
     }
 
     fun remove(index: Int, code: String) {
@@ -89,7 +85,7 @@ class WatchList @Inject constructor(
                 }
             }
         list.value = temp
-        firebaseRealtimeDatabase.writeWatchList(googleAccount.getId()!!, temp)
+        firebaseRealtimeDatabase.writeWatchList(temp)
     }
 
     // 편집한 관심종목 목록을 갱신
@@ -103,7 +99,7 @@ class WatchList @Inject constructor(
                 }
             }
         list.value = temp
-        firebaseRealtimeDatabase.writeWatchList(googleAccount.getId()!!, temp)
+        firebaseRealtimeDatabase.writeWatchList(temp)
     }
 
     fun contains(index: Int, code: String): Boolean {
