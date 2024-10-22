@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -193,6 +194,7 @@ class AppKeyInputFragment: BaseFragment() {
         tokenKeyManager.addUserKey(userKey)
     }
 
+    @Preview(showBackground = true)
     @Composable
     private fun AppKeySecretInput() {
         Column(
@@ -205,9 +207,23 @@ class AppKeyInputFragment: BaseFragment() {
             TextInputItem("appkey", appKey.value, ::pasteAppKey, ::onAppKeyChanged)
             TextInputItem("appsecret", appSecret.value, ::pasteAppSecret, ::onAppSecretChanged)
             TextInputItem("계좌번호(숫자)", accountNumber.value, ::pasteAccountNumber, ::onAccountNumberChanged, true)
+
+            BasicText(
+                s = notice,
+                fontSize = 10,
+                color = MaterialTheme.colorScheme.tertiary,
+                maxLines = Int.MAX_VALUE,
+                modifier = Modifier.fillMaxWidth()
+                    .padding(top = 56.dp)
+            )
         }
     }
 }
+
+private val notice = """
+    앱 키와 시크릿은 서버에 저장되지 않습니다.
+    타인에게 노출 되지 않도록 주의해 주세요.
+""".trimIndent()
 
 
 @Composable
