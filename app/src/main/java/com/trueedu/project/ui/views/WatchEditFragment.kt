@@ -43,6 +43,7 @@ class WatchEditFragment: BaseFragment() {
 
     private var page: Int = -1
     private val items = mutableStateOf<List<StockInfo>>(emptyList())
+    private var dirty = false
 
     @Inject
     lateinit var stockPool: StockPool
@@ -75,11 +76,14 @@ class WatchEditFragment: BaseFragment() {
                     val list = items.value.toMutableList()
                     swap(list, from, to)
                     items.value = list
-                    save()
+                    dirty = true
                     true
                 },
+                onEditMoveCallback = { drop ->
+                    if (drop && dirty) save()
+                },
                 modifier = Modifier.padding(innerPadding),
-                keyValue = { item, position -> item.code },
+                keyValue = { item, _ -> item.code },
             ) { stock, _ ->
                 Column(
                     verticalArrangement = Arrangement.Center,
@@ -106,5 +110,6 @@ class WatchEditFragment: BaseFragment() {
     private fun save() {
         val list = items.value.map { it.code }
         watchList.replace(page, list)
+        dirty = false
     }
 }
