@@ -12,17 +12,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import com.trueedu.project.extensions.priceChangeStr
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackStockTopBar
 import com.trueedu.project.ui.common.BasicText
-import com.trueedu.project.ui.theme.ChartColor
-import com.trueedu.project.utils.formatter.CashFormatter
-import com.trueedu.project.utils.formatter.RateFormatter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -65,31 +62,13 @@ class StockDetailFragment: BaseFragment() {
         vm.destroy()
     }
 
-    /**
-     * return [priceString, textColor]
-     */
-    private fun priceChangeStr(): Pair<String, Color> {
-        val code = stockInfo.code
-        val priceInfo = vm.priceManager.dataMap[code]
-        val priceChange = priceInfo?.delta
-        val rate = priceInfo?.rate
-        if (priceChange != null && rate != null) {
-            val formatter = CashFormatter()
-            val rateFormatter = RateFormatter()
-            return "${formatter.format(priceChange, true)} (" +
-                    rateFormatter.format(rate, true) +
-                    ")" to ChartColor.color(priceChange)
-        } else {
-            return "" to ChartColor.up
-        }
-    }
-
     @Composable
     override fun BodyScreen() {
         if (!::stockInfo.isInitialized) dismissAllowingStateLoss()
         Scaffold(
             topBar = {
-                val (priceChangeStr, textColor) = priceChangeStr()
+                val realTimeTrade = vm.priceManager.dataMap[stockInfo.code]
+                val (priceChangeStr, textColor) = priceChangeStr(realTimeTrade)
                 BackStockTopBar(
                     stockInfo.nameKr,
                     priceChangeStr,

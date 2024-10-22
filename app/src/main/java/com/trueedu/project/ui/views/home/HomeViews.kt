@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.views.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -133,7 +134,11 @@ private fun RowScope.BodyTitle(s: String) {
 }
 
 @Composable
-fun StockItem(item: AccountOutput1, marketPriceMode: Boolean) {
+fun StockItem(
+    item: AccountOutput1,
+    marketPriceMode: Boolean,
+    onClick: (String) -> Unit,
+) {
     val formatter = CashFormatter()
     val rateFormatter = RateFormatter()
     Row(
@@ -141,6 +146,7 @@ fun StockItem(item: AccountOutput1, marketPriceMode: Boolean) {
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick(item.code) }
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Column {
