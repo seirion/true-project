@@ -43,6 +43,7 @@ import com.trueedu.project.ui.views.home.EmptyHome
 import com.trueedu.project.ui.views.home.ForceUpdateView
 import com.trueedu.project.ui.views.home.StockItem
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
+import com.trueedu.project.ui.views.trading.TradingFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -147,8 +148,8 @@ class MainActivity : AppCompatActivity() {
 
                         vm.userStocks.value?.output1?.let {
                             val items = it.filter { it.holdingQuantity.toDouble() > 0 }
-                            itemsIndexed(items, { _, item -> item.code} ) { index, item ->
-                                StockItem(item, vm.marketPriceMode.value)
+                            itemsIndexed(items, { _, item -> item.code} ) { _, item ->
+                                StockItem(item, vm.marketPriceMode.value, ::onItemClick)
                             }
                         }
                     }
@@ -160,6 +161,11 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(downloadCompleteReceiver)
+    }
+
+    private fun onItemClick(code: String) {
+        trueAnalytics.clickButton("home__item__click")
+        TradingFragment.show(code, supportFragmentManager)
     }
 
     private fun onUserInfo() {
