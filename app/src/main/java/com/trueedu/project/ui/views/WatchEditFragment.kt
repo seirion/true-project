@@ -100,6 +100,7 @@ class WatchEditFragment: BaseFragment() {
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.weight(1f),
                     ) {
                         BasicText(
                             s = stock.nameKr,
