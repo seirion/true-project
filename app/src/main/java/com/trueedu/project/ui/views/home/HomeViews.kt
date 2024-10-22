@@ -150,8 +150,14 @@ fun StockItem(item: AccountOutput1, marketPriceMode: Boolean) {
                 color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
             )
+
+            val subText = if (marketPriceMode) {
+                "(${item.code})" // 종목 코드
+            } else {
+                "${item.holdingQuantity}주" // 수량
+            }
             BasicText(
-                s = "(${item.code})",
+                s = subText,
                 fontSize = 13,
                 color = MaterialTheme.colorScheme.secondary,
             )
