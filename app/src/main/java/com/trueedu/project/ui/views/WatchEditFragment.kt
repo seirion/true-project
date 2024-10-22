@@ -4,13 +4,19 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Reorder
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
@@ -85,23 +91,29 @@ class WatchEditFragment: BaseFragment() {
                 modifier = Modifier.padding(innerPadding),
                 keyValue = { item, _ -> item.code },
             ) { stock, _ ->
-                Column(
-                    verticalArrangement = Arrangement.Center,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    BasicText(
-                        s = stock.nameKr,
-                        fontSize = 14,
-                        color = MaterialTheme.colorScheme.primary,
-                        maxLines = 1,
-                    )
-                    BasicText(
-                        s = "(${stock.code})",
-                        fontSize = 13,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        BasicText(
+                            s = stock.nameKr,
+                            fontSize = 14,
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                        )
+                        BasicText(
+                            s = "(${stock.code})",
+                            fontSize = 13,
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+                    }
+                    HandleIcon()
                 }
             }
         }
@@ -112,4 +124,14 @@ class WatchEditFragment: BaseFragment() {
         watchList.replace(page, list)
         dirty = false
     }
+}
+
+@Composable
+private fun HandleIcon() {
+    Icon(
+        imageVector = Icons.Filled.Reorder,
+        contentDescription = "reorder",
+        modifier = Modifier.size(24.dp),
+        tint = MaterialTheme.colorScheme.secondary,
+    )
 }
