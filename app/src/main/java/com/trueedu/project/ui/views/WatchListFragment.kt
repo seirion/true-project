@@ -183,7 +183,7 @@ class WatchListFragment: BaseFragment() {
 
     private fun onEdit() {
         trueAnalytics.clickButton("watch_list__edit__click")
-        if (vm.currentPage.value != null) {
+        if (vm.loading.value || vm.currentPage.value != null) {
             WatchEditFragment.show(vm.currentPage.value!!, parentFragmentManager)
         }
     }
