@@ -80,7 +80,7 @@ class SettingFragment: BaseFragment() {
                     }
                 }
 
-                SettingLabel("Version", BuildConfig.VERSION_NAME)
+                SettingLabel("버전", BuildConfig.VERSION_NAME)
             }
         }
     }
