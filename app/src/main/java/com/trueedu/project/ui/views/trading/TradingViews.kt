@@ -19,16 +19,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.utils.formatter.CashFormatter
+
+private val formatter = CashFormatter(0)
 
 @Preview(showBackground = true)
 @Composable
-fun OrderBook() {
+fun OrderBook(data: RealTimeOrder? = null) {
     val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
         val scrollRange = scrollState.maxValue
@@ -40,11 +43,11 @@ fun OrderBook() {
             .fillMaxHeight()
             .verticalScroll(scrollState),
     ) {
-        repeat(10) {
-            SellItems()
+        data?.sells()?.forEach { (p, c) ->
+            SellItems(formatter.format(p), formatter.format(c))
         }
-        repeat(10) {
-            BuyItems()
+        data?.buys()?.forEach { (p, c) ->
+            BuyItems(formatter.format(p), formatter.format(c))
         }
     }
 }
@@ -70,16 +73,20 @@ fun Section() {
 }
 
 @Composable
-private fun SellItems() {
+private fun SellItems(price: String, count: String) {
     SellBuyItems(
+        price,
+        count,
         ChartColor.up,
         ChartColor.up.copy(alpha = 0.1f)
     )
 }
 
 @Composable
-private fun BuyItems() {
+private fun BuyItems(price: String, count: String) {
     SellBuyItems(
+        price,
+        count,
         ChartColor.down,
         ChartColor.down.copy(alpha = 0.1f)
     )
@@ -87,6 +94,8 @@ private fun BuyItems() {
 
 @Composable
 private fun SellBuyItems(
+    price: String,
+    count: String,
     textColor: Color,
     bgColor: Color,
 ) {
@@ -96,9 +105,9 @@ private fun SellBuyItems(
             .height(48.dp)
             .padding(1.dp),
     ) {
-        NumberText("124,000", textColor, bgColor)
+        NumberText(price, textColor, bgColor)
         Margin(1)
-        NumberText("457", textColor, bgColor)
+        NumberText(count, textColor, bgColor)
     }
 }
 
