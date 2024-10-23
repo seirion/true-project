@@ -20,6 +20,7 @@ import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackStockTopBar
 import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.theme.ChartColor
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -68,7 +69,12 @@ class StockDetailFragment: BaseFragment() {
         Scaffold(
             topBar = {
                 val realTimeTrade = vm.priceManager.dataMap[stockInfo.code]
-                val (priceChangeStr, textColor) = priceChangeStr(realTimeTrade)
+
+                val (priceChangeStr, textColor) = when {
+                    realTimeTrade != null -> priceChangeStr(realTimeTrade)
+                    vm.basePrice.value != null -> priceChangeStr(vm.basePrice.value!!)
+                    else -> "" to ChartColor.up
+                }
                 BackStockTopBar(
                     stockInfo.nameKr,
                     priceChangeStr,

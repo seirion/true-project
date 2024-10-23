@@ -1,6 +1,7 @@
 package com.trueedu.project.extensions
 
 import androidx.compose.ui.graphics.Color
+import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.CashFormatter
@@ -15,6 +16,16 @@ private val rateFormatter = RateFormatter()
 fun priceChangeStr(priceInfo: RealTimeTrade?): Pair<String, Color> {
     val priceChange = priceInfo?.delta
     val rate = priceInfo?.rate
+    return priceChangeStr(priceChange, rate)
+}
+
+fun priceChangeStr(priceResponse: PriceResponse): Pair<String, Color> {
+    val priceChange = priceResponse.output.priceChange.toDouble()
+    val rate = priceResponse.output.priceChangeRate.toDouble()
+    return priceChangeStr(priceChange, rate)
+}
+
+private fun priceChangeStr(priceChange: Double?, rate: Double?): Pair<String, Color> {
     if (priceChange != null && rate != null) {
         return "${cashFormatter.format(priceChange, true)} (" +
                 rateFormatter.format(rate, true) +
@@ -23,4 +34,3 @@ fun priceChangeStr(priceInfo: RealTimeTrade?): Pair<String, Color> {
         return "" to ChartColor.up
     }
 }
-
