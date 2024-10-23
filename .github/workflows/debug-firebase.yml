@@ -28,6 +28,12 @@ jobs:
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
+    # 필요하지 않지만 github actions 수행 중 실패해서 넣어 줌
+    - name: Create local.properties
+      id: createLocalProperties
+      run: echo '${{ secrets.LOCAL_PROPERTIES }}' > ./local.properties
+
     - name: Build with Gradle
       run: ./gradlew assembleDebug
     - name: Upload artifact to Firebase App Distribution
