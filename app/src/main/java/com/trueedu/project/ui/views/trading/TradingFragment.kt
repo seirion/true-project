@@ -81,16 +81,18 @@ class TradingFragment: BaseFragment() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                Box(
+                BasicText(
+                    s = "준비중",
+                    fontSize = 20,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(24.dp)
+                )
+                Column(
                     modifier = Modifier.weight(1f)
                         .fillMaxWidth()
                 ) {
-                    BasicText(
-                        s = "준비중",
-                        fontSize = 20,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(24.dp)
-                    )
+                    Section()
+                    OrderBook()
                 }
                 SellBuyButtons()
             }
