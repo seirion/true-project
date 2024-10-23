@@ -2,17 +2,23 @@ package com.trueedu.project.ui.views
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.StockInfoKosdaq
 import com.trueedu.project.model.dto.StockInfoKospi
+import com.trueedu.project.model.dto.price.PriceResponse
+import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
 class StockDetailViewModel @Inject constructor(
     private val stockPool: StockPool,
+    val priceRemote: PriceRemote,
     val priceManager: RealPriceManager,
 ): ViewModel() {
 
@@ -23,6 +29,8 @@ class StockDetailViewModel @Inject constructor(
     private lateinit var stockInfo: StockInfo
     val infoList = mutableStateOf<List<Pair<String, String?>>>(emptyList())
 
+    // 가격 정보 (api)
+    val basePrice = mutableStateOf<PriceResponse?>(null)
 
     fun init(stockInfo: StockInfo) {
         this.stockInfo = stockInfo
@@ -31,6 +39,12 @@ class StockDetailViewModel @Inject constructor(
             stockInfo.code,
             listOf(stockInfo.code)
         )
+
+        priceRemote.currentPrice(stockInfo.code)
+            .onEach {
+                basePrice.value = it
+            }
+            .launchIn(viewModelScope)
     }
 
     fun destroy() {
