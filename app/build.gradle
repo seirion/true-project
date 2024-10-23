@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.firebase.performance)
 }
 
 apply from: 'versions.gradle'
@@ -55,9 +57,15 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.upload
+            firebaseCrashlytics {
+                mappingFileUploadEnabled true
+            }
         }
         debug {
             debuggable true
+            firebaseCrashlytics {
+                mappingFileUploadEnabled false
+            }
         }
     }
     compileOptions {

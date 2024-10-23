@@ -6,6 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RealOrderManager
 import com.trueedu.project.data.RealPriceManager
@@ -45,6 +46,10 @@ class App : Application(), LifecycleEventObserver {
         local.migrate()
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+
+        if (!BuildConfig.DEBUG) {
+            FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
+        }
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

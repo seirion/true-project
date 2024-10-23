@@ -61,9 +61,12 @@ material-extended = { group = "androidx.compose.material", name ="material-icons
 amplitude = { module = "com.amplitude:android-sdk", version = "2.23.2" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
 
-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version = "33.4.0" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version = "33.5.0" }
 firebase-database = { module = "com.google.firebase:firebase-database-ktx" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+firebase-performance = { module = "com.google.firebase:firebase-perf-ktx" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 google-play-services = { group = "com.google.android.gms", name = "play-services-auth", version = "21.2.0" }
 coil-compose = { module = "io.coil-kt:coil-compose", version = "2.3.0" }
 
@@ -76,6 +79,8 @@ hilt = {id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 googleServices = { id = "com.google.gms.google-services", version = "4.4.2" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.2" }
+firebase-performance = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
 
 [bundles]
 ksps = [
@@ -90,5 +95,8 @@ hilt = [
 ]
 
 firebase = [
-    "firebase-database"
+    "firebase-database",
+    "firebase-performance",
+    "firebase-analytics",
+    "firebase-crashlytics"
 ]
