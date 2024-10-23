@@ -2,6 +2,7 @@ package com.trueedu.project.data
 
 import android.util.Log
 import com.trueedu.project.model.event.WebSocketKeyIssued
+import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.model.ws.TransactionId
 import com.trueedu.project.model.ws.WsResponse
@@ -33,7 +34,10 @@ class WsMessageHandler @Inject constructor(
     private val event = MutableSharedFlow<WsResponse>()
     fun observeEvent() = event.asSharedFlow()
 
+    // 거래 데이터
     val tradeSignal = MutableSharedFlow<RealTimeTrade>()
+    // 호가 데이터
+    val quotesSignal = MutableSharedFlow<RealTimeOrder>()
 
     init {
         MainScope().launch {
@@ -118,7 +122,10 @@ class WsMessageHandler @Inject constructor(
         val data = org[3]
         when (transactionId) {
             TransactionId.RealTimeQuotes -> {
-                // TODO
+                val dto = RealTimeOrder.from(data)
+                MainScope().launch {
+                    quotesSignal.emit(dto)
+                }
             }
             TransactionId.RealTimeTrade -> {
                 val dto = RealTimeTrade.from(data)

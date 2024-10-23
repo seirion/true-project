@@ -2,6 +2,7 @@ package com.trueedu.project.ui.views.trading
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.trueedu.project.data.RealOrderManager
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class TradingViewModel @Inject constructor(
     val stockPool: StockPool,
     val priceManager: RealPriceManager,
+    val orderManager: RealOrderManager,
 ): ViewModel() {
 
     companion object {
@@ -33,10 +35,12 @@ class TradingViewModel @Inject constructor(
             code,
             listOf(code)
         )
+        orderManager.beginRequests(code)
     }
 
     fun destroy() {
         priceManager.popRequest(code)
+        orderManager.stop()
     }
 
     fun stockInfo(): StockInfo? {

@@ -81,18 +81,13 @@ class TradingFragment: BaseFragment() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                BasicText(
-                    s = "준비중",
-                    fontSize = 20,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(24.dp)
-                )
+                val quotes = vm.orderManager.data.value
                 Column(
                     modifier = Modifier.weight(1f)
                         .fillMaxWidth()
                 ) {
                     Section()
-                    OrderBook()
+                    OrderBook(quotes)
                 }
                 SellBuyButtons()
             }

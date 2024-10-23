@@ -7,6 +7,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.data.RealOrderManager
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.UserAssets
@@ -32,6 +33,7 @@ class App : Application(), LifecycleEventObserver {
         fun getUserAssets(): UserAssets
         fun getWsMessage(): WsMessageHandler
         fun getRealPriceManager(): RealPriceManager
+        fun getRealOrderManager(): RealOrderManager
         fun getStockPool(): StockPool
         fun getTrueAnalytics(): TrueAnalytics
     }
@@ -49,6 +51,7 @@ class App : Application(), LifecycleEventObserver {
         val userInfo = entryPointInjector(InjectModule::class.java).getUserAssets()
         val wsMessage = entryPointInjector(InjectModule::class.java).getWsMessage()
         val realPriceManager = entryPointInjector(InjectModule::class.java).getRealPriceManager()
+        val realOrderManager = entryPointInjector(InjectModule::class.java).getRealOrderManager()
         val stockPool = entryPointInjector(InjectModule::class.java).getStockPool()
         val trueAnalytics = entryPointInjector(InjectModule::class.java).getTrueAnalytics()
 
@@ -61,6 +64,7 @@ class App : Application(), LifecycleEventObserver {
                 userInfo.start()
                 wsMessage.start()
                 realPriceManager.start()
+                realOrderManager.start()
                 stockPool.loadStockInfo()
             }
 
@@ -69,6 +73,7 @@ class App : Application(), LifecycleEventObserver {
                 userInfo.stop()
                 wsMessage.stop()
                 realPriceManager.stop()
+                realOrderManager.stop()
             }
 
             Lifecycle.Event.ON_DESTROY -> {
