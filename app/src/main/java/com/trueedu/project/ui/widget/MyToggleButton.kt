@@ -30,8 +30,8 @@ fun MyToggleButton(
     textKeys: List<String> = listOf("On", "Off"),
     toggleClick: (Int) -> Unit = {},
 ) {
-    val width = 88.dp
-    val height = 34.dp
+    val width = 74.dp
+    val height = 30.dp
     val gap = 3.dp
 
     var state by remember { mutableIntStateOf(defaultValue) }
