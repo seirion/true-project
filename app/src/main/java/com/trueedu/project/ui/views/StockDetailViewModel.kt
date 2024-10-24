@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StockDetailViewModel @Inject constructor(
     private val stockPool: StockPool,
-    val priceRemote: PriceRemote,
+    private val priceRemote: PriceRemote,
     val priceManager: RealPriceManager,
 ): ViewModel() {
 

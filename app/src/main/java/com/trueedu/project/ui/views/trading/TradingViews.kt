@@ -19,17 +19,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.cashFormatter
 
-@Preview(showBackground = true)
 @Composable
-fun OrderBook(data: RealTimeOrder? = null) {
+fun OrderBook(
+    sells: List<Pair<Double, Double>>,
+    buys: List<Pair<Double, Double>>,
+    previousClose: Double,
+) {
     val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
         val scrollRange = scrollState.maxValue
@@ -41,11 +42,11 @@ fun OrderBook(data: RealTimeOrder? = null) {
             .fillMaxHeight()
             .verticalScroll(scrollState),
     ) {
-        data?.sells()?.forEach { (p, c) ->
-            SellItems(cashFormatter.format(p), cashFormatter.format(c))
+        sells.forEach { (p, q) ->
+            SellItems(p, q, previousClose)
         }
-        data?.buys()?.forEach { (p, c) ->
-            BuyItems(cashFormatter.format(p), cashFormatter.format(c))
+        buys.forEach { (p, q) ->
+            BuyItems(p, q, previousClose)
         }
     }
 }
@@ -71,21 +72,25 @@ fun Section() {
 }
 
 @Composable
-private fun SellItems(price: String, count: String) {
+private fun SellItems(price: Double, quantity: Double, previousClose: Double) {
+    val priceString = if (price > 0.0) cashFormatter.format(price) else ""
+    val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
     SellBuyItems(
-        price,
-        count,
-        ChartColor.up,
+        priceString,
+        quantityString,
+        ChartColor.color(price - previousClose),
         ChartColor.up.copy(alpha = 0.1f)
     )
 }
 
 @Composable
-private fun BuyItems(price: String, count: String) {
+private fun BuyItems(price: Double, quantity: Double, previousClose: Double) {
+    val priceString = if (price > 0.0) cashFormatter.format(price) else ""
+    val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
     SellBuyItems(
-        price,
-        count,
-        ChartColor.down,
+        priceString,
+        quantityString,
+        ChartColor.color(price - previousClose),
         ChartColor.down.copy(alpha = 0.1f)
     )
 }

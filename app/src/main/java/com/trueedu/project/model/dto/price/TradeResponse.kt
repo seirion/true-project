@@ -112,7 +112,20 @@ data class TradeDetail(
     val totalSellQuantity: String, // 총 매도호가 잔량
     @SerialName("total_bidp_rsqn")
     val totalBuyQuantity: String, // 총 매수호가 잔량
-)
+) {
+    fun sells(): List<Pair<Double, Double>> {
+        val p = listOf(sell1, sell2, sell3, sell4, sell5, sell6, sell7, sell8, sell9, sell10)
+        val q = listOf(sellQuantity1, sellQuantity2, sellQuantity3, sellQuantity4, sellQuantity5, sellQuantity6, sellQuantity7, sellQuantity8, sellQuantity9, sellQuantity10)
+        return p.zip(q).map { it.first.toDouble() to it.second.toDouble() }
+            .reversed() // 매도호가는 역순으로
+    }
+
+    fun buys(): List<Pair<Double, Double>> {
+        val p = listOf(buy1, buy2, buy3, buy4, buy5, buy6, buy7, buy8, buy9, buy10)
+        val q = listOf(buyQuantity1, buyQuantity2, buyQuantity3, buyQuantity4, buyQuantity5, buyQuantity6, buyQuantity7, buyQuantity8, buyQuantity9, buyQuantity10)
+        return p.zip(q).map { it.first.toDouble() to it.second.toDouble() }
+    }
+}
 
 @Serializable
 data class TradePriceDetail(

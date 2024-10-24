@@ -70,7 +70,6 @@ class TradingFragment: BaseFragment() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                val quotes = vm.orderManager.data.value
                 Column(
                     modifier = Modifier.weight(1f)
                         .fillMaxWidth()
@@ -81,7 +80,7 @@ class TradingFragment: BaseFragment() {
                         rate = vm.priceChangeRate(),
                     )
                     Section()
-                    OrderBook(quotes)
+                    OrderBook(vm.sells(), vm.buys(), vm.previousClose())
                 }
                 SellBuyButtons()
             }
