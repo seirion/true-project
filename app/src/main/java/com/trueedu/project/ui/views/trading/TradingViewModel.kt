@@ -8,10 +8,13 @@ import com.trueedu.project.data.RealOrderManager
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
 import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,7 +33,8 @@ class TradingViewModel @Inject constructor(
     private var code: String = ""
 
     // api 응답
-    val trade = mutableStateOf<TradeResponse?>(null)
+    private val trade = mutableStateOf<TradeResponse?>(null)
+    private val basePrice = mutableStateOf<PriceResponse?>(null)
 
     fun init(code: String) {
         this.code = code
@@ -40,13 +44,20 @@ class TradingViewModel @Inject constructor(
         )
         orderManager.beginRequests(code)
 
-        viewModelScope.launch {
-            priceRemote.currentTrade(code)
-                .collect {
-                    Log.d(TAG, "호가 api: $it")
-                    trade.value = it
-                }
-        }
+        // 호가 기본값
+        priceRemote.currentTrade(code)
+            .onEach {
+                Log.d(TAG, "호가 api: $it")
+                trade.value = it
+            }
+            .launchIn(viewModelScope)
+
+        // 가격 기본값
+        priceRemote.currentPrice(code)
+            .onEach {
+                basePrice.value = it
+            }
+            .launchIn(viewModelScope)
     }
 
     fun destroy() {
@@ -61,5 +72,26 @@ class TradingViewModel @Inject constructor(
     fun realTimeTrade(): RealTimeTrade? {
         val stockInfo = stockInfo() ?: return null
         return priceManager.dataMap[stockInfo.code]
+    }
+
+    fun price(): Double {
+        return realTimeTrade()?.price
+            ?: trade.value?.output2?.price?.toDouble()
+            ?: basePrice.value?.output?.price?.toDouble()
+            ?: 0.0
+    }
+
+    fun priceChange(): Double {
+        return realTimeTrade()?.delta
+            ?: basePrice.value?.output?.priceChange?.toDouble()
+            ?: trade.value?.output2?.anticipatedPriceChange?.toDouble()
+            ?: 0.0
+    }
+
+    fun priceChangeRate(): Double {
+        return realTimeTrade()?.rate
+            ?: basePrice.value?.output?.priceChangeRate?.toDouble()
+            ?: trade.value?.output2?.anticipatedPriceChangeRate?.toDouble()
+            ?: 0.0
     }
 }

@@ -25,9 +25,7 @@ import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
-import com.trueedu.project.utils.formatter.CashFormatter
-
-private val formatter = CashFormatter(0)
+import com.trueedu.project.utils.formatter.cashFormatter
 
 @Preview(showBackground = true)
 @Composable
@@ -44,10 +42,10 @@ fun OrderBook(data: RealTimeOrder? = null) {
             .verticalScroll(scrollState),
     ) {
         data?.sells()?.forEach { (p, c) ->
-            SellItems(formatter.format(p), formatter.format(c))
+            SellItems(cashFormatter.format(p), cashFormatter.format(c))
         }
         data?.buys()?.forEach { (p, c) ->
-            BuyItems(formatter.format(p), formatter.format(c))
+            BuyItems(cashFormatter.format(p), cashFormatter.format(c))
         }
     }
 }
