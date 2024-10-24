@@ -12,3 +12,7 @@ interface MyFormatter {
     }
     fun sign(value: Int) = sign(value.toDouble())
 }
+
+// 자주 사용하는 formatter
+val cashFormatter = CashFormatter(0)
+val rateFormatter = RateFormatter(2)

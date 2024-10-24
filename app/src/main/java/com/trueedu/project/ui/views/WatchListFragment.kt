@@ -50,6 +50,7 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.ui.views.trading.TradingFragment
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -147,6 +148,7 @@ class WatchListFragment: BaseFragment() {
                             delta = delta,
                             rate = rate,
                             volume = volume,
+                            onTradingClick = { gotoTrading(stock) },
                             onClick = { gotoStockDetail(stock) },
                         ) {
                             Log.d(TAG, "long click: ${stock.nameKr}")
@@ -186,6 +188,10 @@ class WatchListFragment: BaseFragment() {
         if (vm.loading.value || vm.currentPage.value != null) {
             WatchEditFragment.show(vm.currentPage.value!!, parentFragmentManager)
         }
+    }
+
+    private fun gotoTrading(stockInfo: StockInfo) {
+        TradingFragment.show(stockInfo.code, parentFragmentManager)
     }
 
     private fun gotoStockDetail(stockInfo: StockInfo) {
@@ -240,6 +246,7 @@ private fun WatchingStockItem(
     delta: Double,
     rate: Double,
     volume: Double,
+    onTradingClick: () -> Unit,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
@@ -270,7 +277,11 @@ private fun WatchingStockItem(
             )
         }
 
-        Column(horizontalAlignment = Alignment.End) {
+        Column(
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier
+                .clickable { onTradingClick() }
+        ) {
             val totalValueString = formatter.format(price)
             BasicText(
                 s = totalValueString,
