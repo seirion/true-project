@@ -28,4 +28,7 @@ class RealTimeTrade(
     val rate = data[5].toDouble()
     // 누적거래량
     val volume = data[14].toDouble()
+
+    // 전일 종가
+    val previousClose = price - delta
 }

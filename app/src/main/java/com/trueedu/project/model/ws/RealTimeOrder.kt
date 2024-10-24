@@ -1,6 +1,7 @@
 package com.trueedu.project.model.ws
 
 /**
+ * 실시간 호가
  * fields:
  */
 class RealTimeOrder(
@@ -13,6 +14,19 @@ class RealTimeOrder(
             )
         }
     }
+
+    val code = data[0]
+
+    // TODO: 테스트 필요함
+    // print("영업시간 [" + recvvalue[1] + "]" + "시간구분코드 [" + recvvalue[2] + "]")
+
+    // 총 매도호가 잔량
+    val totalSellQuantity = data[43]
+    // 총 매수호가 잔량
+    val totalBuyQuantity = data[44]
+
+    // 누적거래량
+    val volume = data[53]
 
     /**
      * 매도 10 호가: <가격, 잔량>

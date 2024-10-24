@@ -1,7 +1,9 @@
 package com.trueedu.project.ui.views.trading
 
 import android.util.Log
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.RealOrderManager
@@ -10,9 +12,12 @@ import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
+import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -21,20 +26,24 @@ import javax.inject.Inject
 @HiltViewModel
 class TradingViewModel @Inject constructor(
     val stockPool: StockPool,
-    val priceRemote: PriceRemote,
-    val priceManager: RealPriceManager,
-    val orderManager: RealOrderManager,
+    private val priceRemote: PriceRemote,
+    private val priceManager: RealPriceManager,
+    private val orderManager: RealOrderManager,
 ): ViewModel() {
 
     companion object {
         private val TAG = TradingViewModel::class.java.simpleName
+
+        private val empty = List(10) { 0.0 to 0.0 }
     }
 
     private var code: String = ""
 
     // api 응답
-    private val trade = mutableStateOf<TradeResponse?>(null)
+    private val tradeBase = mutableStateOf<TradeResponse?>(null)
     private val basePrice = mutableStateOf<PriceResponse?>(null)
+
+    val realTimeQuotes = mutableStateOf<RealTimeOrder?>(null)
 
     fun init(code: String) {
         this.code = code
@@ -48,7 +57,7 @@ class TradingViewModel @Inject constructor(
         priceRemote.currentTrade(code)
             .onEach {
                 Log.d(TAG, "호가 api: $it")
-                trade.value = it
+                tradeBase.value = it
             }
             .launchIn(viewModelScope)
 
@@ -58,6 +67,16 @@ class TradingViewModel @Inject constructor(
                 basePrice.value = it
             }
             .launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            snapshotFlow { orderManager.data.value }
+                .filterNotNull()
+                .filter { it.code == this@TradingViewModel.code }
+                .collect {
+                    val stock = stockPool.get(it.code)
+                    Log.d(TAG, "실시간 호가: ${it.code} ${stock?.nameKr}")
+                }
+        }
     }
 
     fun destroy() {
@@ -69,29 +88,54 @@ class TradingViewModel @Inject constructor(
         return stockPool.get(code)
     }
 
-    fun realTimeTrade(): RealTimeTrade? {
+    private fun realTimeTrade(): RealTimeTrade? {
         val stockInfo = stockInfo() ?: return null
         return priceManager.dataMap[stockInfo.code]
     }
 
     fun price(): Double {
         return realTimeTrade()?.price
-            ?: trade.value?.output2?.price?.toDouble()
             ?: basePrice.value?.output?.price?.toDouble()
+            ?: tradeBase.value?.output2?.price?.toDouble()
+            ?: 0.0
+    }
+
+    // 기준가 (전일 종가)
+    fun previousClose(): Double {
+        return realTimeTrade()?.previousClose
+            ?: basePrice.value?.output?.previousClosePrice?.toDouble()
             ?: 0.0
     }
 
     fun priceChange(): Double {
         return realTimeTrade()?.delta
             ?: basePrice.value?.output?.priceChange?.toDouble()
-            ?: trade.value?.output2?.anticipatedPriceChange?.toDouble()
+            ?: tradeBase.value?.output2?.anticipatedPriceChange?.toDouble()
             ?: 0.0
     }
 
     fun priceChangeRate(): Double {
         return realTimeTrade()?.rate
             ?: basePrice.value?.output?.priceChangeRate?.toDouble()
-            ?: trade.value?.output2?.anticipatedPriceChangeRate?.toDouble()
+            ?: tradeBase.value?.output2?.anticipatedPriceChangeRate?.toDouble()
             ?: 0.0
+    }
+
+    /**
+     * 매도 호가와 잔량 10 개
+     */
+    fun sells(): List<Pair<Double, Double>> {
+        return realTimeQuotes.value?.sells()
+            ?: tradeBase.value?.output1?.sells()
+            ?: empty
+    }
+
+    /**
+     * 매수 호가와 잔량 10 개
+     */
+    fun buys(): List<Pair<Double, Double>> {
+        return realTimeQuotes.value?.buys()
+            ?: tradeBase.value?.output1?.buys()
+            ?: empty
     }
 }
