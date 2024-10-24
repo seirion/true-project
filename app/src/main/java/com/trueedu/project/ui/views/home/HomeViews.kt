@@ -137,7 +137,8 @@ private fun RowScope.BodyTitle(s: String) {
 fun StockItem(
     item: AccountOutput1,
     marketPriceMode: Boolean,
-    onClick: (String) -> Unit,
+    onPriceClick: (String) -> Unit,
+    onItemClick: (String) -> Unit,
 ) {
     val formatter = CashFormatter()
     val rateFormatter = RateFormatter()
@@ -146,7 +147,7 @@ fun StockItem(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(item.code) }
+            .clickable { onItemClick(item.code) }
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Column {
@@ -169,7 +170,10 @@ fun StockItem(
             )
         }
 
-        Column(horizontalAlignment = Alignment.End) {
+        Column(
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier.clickable { onPriceClick(item.code) }
+        ) {
             val totalValue = if (marketPriceMode) {
                 // 시세 (현재 가격)
                 item.currentPrice.toDouble()

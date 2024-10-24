@@ -28,6 +28,8 @@ import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.broadcast.DownloadCompleteReceiver
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.ScreenControl
+import com.trueedu.project.data.StockPool
+import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.common.LoadingView
@@ -35,6 +37,7 @@ import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
 import com.trueedu.project.ui.views.SettingFragment
+import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.StockSearchFragment
 import com.trueedu.project.ui.views.UserInfoFragment
 import com.trueedu.project.ui.views.WatchListFragment
@@ -59,6 +62,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var local: Local
     @Inject
     lateinit var screen: ScreenControl
+    @Inject
+    lateinit var stockPool: StockPool
     @Inject
     lateinit var authRemote: AuthRemote
     @Inject
@@ -149,7 +154,11 @@ class MainActivity : AppCompatActivity() {
                         vm.userStocks.value?.output1?.let {
                             val items = it.filter { it.holdingQuantity.toDouble() > 0 }
                             itemsIndexed(items, { _, item -> item.code} ) { _, item ->
-                                StockItem(item, vm.marketPriceMode.value, ::onItemClick)
+                                StockItem(item, vm.marketPriceMode.value, ::onPriceClick) {
+                                    stockPool.get(item.code)?.let {
+                                        onItemClick(it)
+                                    }
+                                }
                             }
                         }
                     }
@@ -163,8 +172,13 @@ class MainActivity : AppCompatActivity() {
         unregisterReceiver(downloadCompleteReceiver)
     }
 
-    private fun onItemClick(code: String) {
+    private fun onItemClick(stockInfo: StockInfo) {
         trueAnalytics.clickButton("home__item__click")
+        StockDetailFragment.show(stockInfo, supportFragmentManager)
+    }
+
+    private fun onPriceClick(code: String) {
+        trueAnalytics.clickButton("home__price__click")
         TradingFragment.show(code, supportFragmentManager)
     }
 
