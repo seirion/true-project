@@ -75,6 +75,7 @@ class TradingViewModel @Inject constructor(
                 .collect {
                     val stock = stockPool.get(it.code)
                     Log.d(TAG, "실시간 호가: ${it.code} ${stock?.nameKr}")
+                    realTimeQuotes.value = it
                 }
         }
     }
