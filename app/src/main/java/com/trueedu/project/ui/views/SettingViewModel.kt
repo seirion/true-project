@@ -5,6 +5,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.repository.FirebaseRealtimeDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -12,6 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val stockPool: StockPool,
+    private val firebaseRealtimeDatabase: FirebaseRealtimeDatabase,
 ): ViewModel() {
 
     companion object {
@@ -52,5 +54,12 @@ class SettingViewModel @Inject constructor(
 
     fun updateStocks() {
         stockPool.downloadMasterFiles()
+    }
+
+    fun withdraw(
+        onSuccess: () -> Unit,
+        onFail: () -> Unit,
+    ) {
+        firebaseRealtimeDatabase.deleteUser(onSuccess, onFail)
     }
 }

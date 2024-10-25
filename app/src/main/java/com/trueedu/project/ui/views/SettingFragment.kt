@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.views
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.trueedu.project.BuildConfig
+import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
@@ -31,6 +33,7 @@ import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.ui.views.setting.ColorPaletteFragmentFragment
 import com.trueedu.project.ui.views.setting.ScreenSettingFragment
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingFragment: BaseFragment() {
@@ -45,6 +48,9 @@ class SettingFragment: BaseFragment() {
     }
 
     private val vm by viewModels<SettingViewModel>()
+
+    @Inject
+    lateinit var googleAccount: GoogleAccount
 
     @Composable
     override fun BodyScreen() {
@@ -81,6 +87,19 @@ class SettingFragment: BaseFragment() {
                 }
 
                 SettingLabel("버전", BuildConfig.VERSION_NAME)
+
+                SettingItem("탈퇴 및 데이터 삭제", vm.updateAvailable.value) {
+                    trueAnalytics.enterView("setting__withdraw__click")
+                    vm.withdraw(
+                        onSuccess = {
+                            Toast.makeText(requireContext(), "계정 삭제 완료되었습니다", Toast.LENGTH_SHORT).show()
+                        },
+                        onFail = {
+                            Toast.makeText(requireContext(), "오류가 발생하였습니다", Toast.LENGTH_SHORT).show()
+                        },
+                    )
+                    googleAccount.revokeAccess(requireContext())
+                }
             }
         }
     }
