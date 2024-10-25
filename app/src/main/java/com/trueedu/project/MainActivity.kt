@@ -34,9 +34,11 @@ import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.WsMessageHandler
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.ads.AdmobManager
+import com.trueedu.project.ui.dev.OnOffState
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.UserInfoFragment
 import com.trueedu.project.ui.views.home.BottomNavItem
@@ -75,6 +77,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var remoteConfig: RemoteConfig
     @Inject
     lateinit var admobManager: AdmobManager
+
+    @Inject
+    lateinit var wsMessageHandler: WsMessageHandler
 
     private val vm by viewModels<MainViewModel>()
     private val watchVm by viewModels<WatchListViewModel>()
@@ -207,6 +212,10 @@ class MainActivity : AppCompatActivity() {
             bottomBar = { HomeBottomNavigation(navController = navController) }
         ) { _ ->
             NavigationGraph(navController = navController)
+        }
+
+        if (BuildConfig.DEBUG) {
+            OnOffState(wsMessageHandler.on.value)
         }
     }
 
