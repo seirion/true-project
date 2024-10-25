@@ -1,7 +1,6 @@
 package com.trueedu.project.ui.views.trading
 
 import android.util.Log
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
@@ -82,7 +81,7 @@ class TradingViewModel @Inject constructor(
 
     fun destroy() {
         priceManager.popRequest(code)
-        orderManager.stop()
+        orderManager.cancelRequests()
     }
 
     fun stockInfo(): StockInfo? {

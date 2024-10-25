@@ -69,7 +69,7 @@ class RealOrderManager @Inject constructor(
         wsMessageHandler.send(makeRequest(code, true))
     }
 
-    private fun cancelRequests() {
+    fun cancelRequests() {
         if (code != null) {
             wsMessageHandler.send(makeRequest(code!!, false))
             code = null
