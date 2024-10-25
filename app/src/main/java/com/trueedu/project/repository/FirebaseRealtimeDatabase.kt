@@ -1,6 +1,7 @@
 package com.trueedu.project.repository
 
 import android.util.Log
+import coil.compose.AsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -17,6 +18,7 @@ import com.trueedu.project.model.dto.StockInfoKospi
 import com.trueedu.project.repository.local.Local
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -168,6 +170,32 @@ class FirebaseRealtimeDatabase @Inject constructor(
             val ref = database.getReference("users") // 종목 데이터
             val snapshot = ref.child(userId).child("watch")
             snapshot.setValue(list)
+        }
+    }
+
+    fun deleteUser(
+        onSuccess: () -> Unit,
+        onFail: () -> Unit,
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val currentUser = firebaseCurrentUser()
+            if (currentUser == null) {
+                Log.d(TAG, "loadWatchList() failed: currentUser null")
+            }
+            val userId = currentUser?.uid ?: return@launch
+
+            val ref = database.getReference("users")
+            ref.child(userId).removeValue()
+                .addOnSuccessListener {
+                    MainScope().launch {
+                        onSuccess()
+                    }
+                }
+                .addOnFailureListener {
+                    MainScope().launch {
+                        onFail()
+                    }
+                }
         }
     }
 }

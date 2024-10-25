@@ -94,6 +94,34 @@ class GoogleAccount @Inject constructor(
             }
     }
 
+    fun signOut(context: Context) {
+        val gso = getGoogleSignInOptions(context.applicationContext)
+        GoogleSignIn.getClient(context, gso).signOut()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    googleSignInAccount = null
+                    MainScope().launch {
+                        loginSignal.emit(false)
+                    }
+                } else {
+                }
+            }
+    }
+
+    fun revokeAccess(context: Context) {
+        val gso = getGoogleSignInOptions(context.applicationContext)
+        GoogleSignIn.getClient(context, gso).revokeAccess()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    googleSignInAccount = null
+                    MainScope().launch {
+                        loginSignal.emit(false)
+                    }
+                } else {
+                }
+            }
+    }
+
     private fun getGoogleSignInOptions(context: Context) =
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(context.getString(R.string.default_web_client_id))
