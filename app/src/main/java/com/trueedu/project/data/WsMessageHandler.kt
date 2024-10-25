@@ -1,6 +1,7 @@
 package com.trueedu.project.data
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.model.event.WebSocketKeyIssued
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
@@ -33,6 +34,9 @@ class WsMessageHandler @Inject constructor(
 
     private val event = MutableSharedFlow<WsResponse>()
     fun observeEvent() = event.asSharedFlow()
+
+    // 디버깅 용
+    val on = mutableStateOf(false)
 
     // 거래 데이터
     val tradeSignal = MutableSharedFlow<RealTimeTrade>()
@@ -83,6 +87,7 @@ class WsMessageHandler @Inject constructor(
         webSocketService.connect(object: WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 Log.d(TAG, "onOpen()")
+                on.value = true
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
@@ -112,6 +117,7 @@ class WsMessageHandler @Inject constructor(
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 super.onFailure(webSocket, t, response)
                 Log.d(TAG, "onFailure: ${t.message}")
+                on.value = false
             }
         })
     }
