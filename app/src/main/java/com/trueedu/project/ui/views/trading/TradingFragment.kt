@@ -75,13 +75,14 @@ class TradingFragment: BaseFragment() {
                     modifier = Modifier.weight(1f)
                         .fillMaxWidth()
                 ) {
+                    val price = vm.price()
                     PriceViews(
-                        price = vm.price(),
+                        price = price,
                         priceChange = vm.priceChange(),
                         rate = vm.priceChangeRate(),
                     )
                     Section()
-                    OrderBook(vm.sells(), vm.buys(), vm.previousClose())
+                    OrderBook(vm.sells(), vm.buys(), price, vm.previousClose())
                 }
                 SellBuyButtons()
             }

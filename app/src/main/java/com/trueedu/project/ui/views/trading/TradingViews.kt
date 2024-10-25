@@ -29,6 +29,7 @@ import com.trueedu.project.utils.formatter.cashFormatter
 fun OrderBook(
     sells: List<Pair<Double, Double>>,
     buys: List<Pair<Double, Double>>,
+    price: Double, // 현재가
     previousClose: Double,
 ) {
     val scrollState = rememberScrollState()
@@ -43,10 +44,10 @@ fun OrderBook(
             .verticalScroll(scrollState),
     ) {
         sells.forEach { (p, q) ->
-            SellItems(p, q, previousClose)
+            SellItems(p, q, price, previousClose)
         }
         buys.forEach { (p, q) ->
-            BuyItems(p, q, previousClose)
+            BuyItems(p, q, price, previousClose)
         }
     }
 }
@@ -72,24 +73,38 @@ fun Section() {
 }
 
 @Composable
-private fun SellItems(price: Double, quantity: Double, previousClose: Double) {
+private fun SellItems(
+    price: Double,
+    quantity: Double,
+    currentPrice: Double,
+    previousClose: Double
+) {
     val priceString = if (price > 0.0) cashFormatter.format(price) else ""
     val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
+    val selected = price != 0.0 && price == currentPrice
     SellBuyItems(
         priceString,
         quantityString,
+        selected,
         ChartColor.color(price - previousClose),
         ChartColor.up.copy(alpha = 0.1f)
     )
 }
 
 @Composable
-private fun BuyItems(price: Double, quantity: Double, previousClose: Double) {
+private fun BuyItems(
+    price: Double,
+    quantity: Double,
+    currentPrice: Double,
+    previousClose: Double,
+) {
     val priceString = if (price > 0.0) cashFormatter.format(price) else ""
     val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
+    val selected = price != 0.0 && price == currentPrice
     SellBuyItems(
         priceString,
         quantityString,
+        selected,
         ChartColor.color(price - previousClose),
         ChartColor.down.copy(alpha = 0.1f)
     )
@@ -99,13 +114,16 @@ private fun BuyItems(price: Double, quantity: Double, previousClose: Double) {
 private fun SellBuyItems(
     price: String,
     count: String,
+    selected: Boolean,
     textColor: Color,
     bgColor: Color,
 ) {
+    val border = if (selected) 1.dp else 0.dp
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .height(48.dp)
+            .border(border, textColor)
             .padding(1.dp),
     ) {
         NumberText(price, textColor, bgColor)
