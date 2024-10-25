@@ -69,6 +69,7 @@ class TradingFragment: BaseFragment() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    .padding(horizontal = 2.dp)
             ) {
                 Column(
                     modifier = Modifier.weight(1f)
