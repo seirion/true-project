@@ -36,9 +36,9 @@ import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
-import com.trueedu.project.ui.views.SettingFragment
+import com.trueedu.project.ui.views.setting.SettingFragment
 import com.trueedu.project.ui.views.StockDetailFragment
-import com.trueedu.project.ui.views.StockSearchFragment
+import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.UserInfoFragment
 import com.trueedu.project.ui.views.WatchListFragment
 import com.trueedu.project.ui.views.home.AccountInfo

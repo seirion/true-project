@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.views
+package com.trueedu.project.ui.views.search
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow

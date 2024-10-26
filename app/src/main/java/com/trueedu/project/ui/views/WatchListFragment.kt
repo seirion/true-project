@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -50,6 +49,7 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.trading.TradingFragment
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
