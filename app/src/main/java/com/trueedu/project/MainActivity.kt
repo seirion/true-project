@@ -36,15 +36,15 @@ import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
-import com.trueedu.project.ui.views.setting.SettingFragment
+import com.trueedu.project.ui.views.MenuFragment
 import com.trueedu.project.ui.views.StockDetailFragment
-import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.UserInfoFragment
 import com.trueedu.project.ui.views.WatchListFragment
 import com.trueedu.project.ui.views.home.AccountInfo
 import com.trueedu.project.ui.views.home.EmptyHome
 import com.trueedu.project.ui.views.home.ForceUpdateView
 import com.trueedu.project.ui.views.home.StockItem
+import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.ui.views.trading.TradingFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity() {
                             ::onAccountInfo,
                             ::onWatchList,
                             ::onSearch,
-                            ::onSetting
+                            ::onMenu,
                         )
                     },
                     modifier = Modifier.fillMaxSize(),
@@ -208,9 +208,9 @@ class MainActivity : AppCompatActivity() {
         StockSearchFragment.show(null, supportFragmentManager)
     }
 
-    private fun onSetting() {
-        trueAnalytics.clickButton("home__setting__click")
-        SettingFragment.show(supportFragmentManager)
+    private fun onMenu() {
+        trueAnalytics.clickButton("home__menu__click")
+        MenuFragment.show(supportFragmentManager)
     }
 
     private fun gotoPlayStore() {
