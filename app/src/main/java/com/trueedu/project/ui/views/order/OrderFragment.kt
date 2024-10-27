@@ -12,6 +12,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -103,7 +107,39 @@ class OrderFragment: BaseFragment() {
 
     @Composable
     private fun TabViews() {
+        val currentTabIndex = vm.currentTab.value.ordinal
 
+        TabRow(
+            selectedTabIndex = 0,
+            modifier = Modifier
+                .padding(horizontal = 2.dp, vertical = 4.dp),
+            containerColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.background,
+            indicator = { tabPositions ->
+                val currentTabItem = tabPositions[currentTabIndex]
+                TabRowDefaults.Indicator(
+                    Modifier.tabIndicatorOffset(currentTabItem)
+                )
+            },
+            divider = {},
+        ) {
+
+            OrderTab.entries.forEachIndexed { index, tab ->
+                Tab(
+                    selected = currentTabIndex == index,
+                    onClick = { vm.setOrderTab(tab) },
+                    modifier = Modifier.height(32.dp),
+                    enabled = index <= 1,
+                    icon = {
+                        BasicText(
+                            s = tab.label,
+                            fontSize = 14,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    },
+                )
+            }
+        }
     }
 }
 

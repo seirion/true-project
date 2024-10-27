@@ -13,6 +13,7 @@ import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
+import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.OrderRemote
 import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrderViewModel @Inject constructor(
+    private val local: Local,
     val stockPool: StockPool,
     private val priceRemote: PriceRemote,
     private val orderRemote: OrderRemote,
@@ -46,7 +48,15 @@ class OrderViewModel @Inject constructor(
 
     val realTimeQuotes = mutableStateOf<RealTimeOrder?>(null)
 
+    val currentTab = mutableStateOf(OrderTab.Order)
+
+    fun setOrderTab(tab: OrderTab) {
+        currentTab.value = tab
+        local.setOrderTab(tab)
+    }
+
     fun init(code: String) {
+        currentTab.value = local.getOrderTab()
         this.code = code
         priceManager.pushRequest(
             code,
