@@ -1,6 +1,7 @@
 package com.trueedu.project.ui.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,10 +18,12 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.trueedu.project.extensions.priceChangeStr
 import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.price.DailyPrice
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackStockTopBar
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.ui.views.stock.DailyPriceFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -91,13 +94,14 @@ class StockDetailFragment: BaseFragment() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
+                LinkBox(::gotoDailyPrice)
                 vm.infoList.value.forEach {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(8.dp)
                     ) {
                         BasicText(s = it.first, fontSize = 16, color = MaterialTheme.colorScheme.primary)
                         BasicText(s = it.second ?: "", fontSize = 16, color = MaterialTheme.colorScheme.primary)
@@ -105,5 +109,29 @@ class StockDetailFragment: BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun gotoDailyPrice() {
+        trueAnalytics.clickButton("stock_detail__daily_price__click")
+        DailyPriceFragment.show(stockInfo.code, childFragmentManager)
+    }
+}
+
+@Composable
+private fun LinkBox(
+   onDailyPrice: () -> Unit,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        BasicText(
+            s = "일별 가격",
+            fontSize = 14,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.clickable { onDailyPrice() }
+        )
     }
 }
