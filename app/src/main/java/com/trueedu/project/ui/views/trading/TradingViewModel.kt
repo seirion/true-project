@@ -13,6 +13,7 @@ import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
+import com.trueedu.project.repository.remote.OrderRemote
 import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filter
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class TradingViewModel @Inject constructor(
     val stockPool: StockPool,
     private val priceRemote: PriceRemote,
+    private val orderRemote: OrderRemote,
     private val priceManager: RealPriceManager,
     private val orderManager: RealOrderManager,
 ): ViewModel() {

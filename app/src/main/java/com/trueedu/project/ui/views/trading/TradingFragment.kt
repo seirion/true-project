@@ -78,6 +78,7 @@ class TradingFragment: BaseFragment() {
                 ) {
                     val price = vm.price()
                     TopStockInfoViewInternal()
+                    TabViews()
                     Section()
                     OrderBook(vm.sells(), vm.buys(), price, vm.previousClose())
                 }
@@ -98,6 +99,11 @@ class TradingFragment: BaseFragment() {
             high = vm.highPrice(),
             low = vm.lowPrice(),
         )
+    }
+
+    @Composable
+    private fun TabViews() {
+
     }
 }
 
