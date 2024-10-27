@@ -25,6 +25,7 @@ import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.ui.views.common.TopStockInfoView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -76,17 +77,27 @@ class TradingFragment: BaseFragment() {
                         .fillMaxWidth()
                 ) {
                     val price = vm.price()
-                    PriceViews(
-                        price = price,
-                        priceChange = vm.priceChange(),
-                        rate = vm.priceChangeRate(),
-                    )
+                    TopStockInfoViewInternal()
                     Section()
                     OrderBook(vm.sells(), vm.buys(), price, vm.previousClose())
                 }
                 SellBuyButtons()
             }
         }
+    }
+
+    @Composable
+    private fun TopStockInfoViewInternal() {
+        TopStockInfoView(
+            price = vm.price(),
+            previousPrice = vm.previousClose(),
+            priceChange = vm.priceChange(),
+            priceChangeRate = vm.priceChangeRate(),
+            volume = vm.volume(),
+            open = vm.openPrice(),
+            high = vm.highPrice(),
+            low = vm.lowPrice(),
+        )
     }
 }
 

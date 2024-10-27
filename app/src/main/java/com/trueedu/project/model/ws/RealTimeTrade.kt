@@ -31,4 +31,10 @@ class RealTimeTrade(
 
     // 전일 종가
     val previousClose = price - delta
+    // 시가
+    val `open` = data[7].toDouble()
+    // 고가
+    val high = data[8].toDouble()
+    // 저가
+    val low = data[9].toDouble()
 }

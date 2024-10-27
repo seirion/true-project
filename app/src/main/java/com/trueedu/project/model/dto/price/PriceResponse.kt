@@ -45,11 +45,11 @@ data class PriceDetail(
     @SerialName("acml_vol")
     val volume: String, // 누적 거래량
     @SerialName("stck_oprc")
-    val openPrice: String, // 시가
+    val open: String, // 시가
     @SerialName("stck_hgpr")
-    val highPrice: String, // 고가
+    val high: String, // 고가
     @SerialName("stck_lwpr")
-    val lowPrice: String, // 저가
+    val low: String, // 저가
     @SerialName("stck_sdpr")
     val previousClosePrice: String, // 기준가(전일종가 or 시가)
 )
