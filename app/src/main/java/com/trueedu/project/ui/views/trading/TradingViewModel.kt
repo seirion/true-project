@@ -121,6 +121,34 @@ class TradingViewModel @Inject constructor(
             ?: 0.0
     }
 
+    fun volume(): Double {
+        return realTimeTrade()?.volume
+            ?: basePrice.value?.output?.volume?.toDouble()
+            ?: tradeBase.value?.output2?.anticipatedVolume?.toDouble()
+            ?: 0.0
+    }
+
+    fun openPrice(): Double {
+        return realTimeTrade()?.open
+            ?: basePrice.value?.output?.open?.toDouble()
+            ?: tradeBase.value?.output2?.open?.toDouble()
+            ?: 0.0
+    }
+
+    fun highPrice(): Double {
+        return realTimeTrade()?.high
+            ?: basePrice.value?.output?.high?.toDouble()
+            ?: tradeBase.value?.output2?.high?.toDouble()
+            ?: 0.0
+    }
+
+    fun lowPrice(): Double {
+        return realTimeTrade()?.low
+            ?: basePrice.value?.output?.low?.toDouble()
+            ?: tradeBase.value?.output2?.low?.toDouble()
+            ?: 0.0
+    }
+
     /**
      * 매도 호가와 잔량 10 개
      */
