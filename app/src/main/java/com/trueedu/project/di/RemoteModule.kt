@@ -6,12 +6,15 @@ import com.trueedu.project.repository.remote.AccountRemote
 import com.trueedu.project.repository.remote.AccountRemoteImpl
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.repository.remote.AuthRemoteImpl
+import com.trueedu.project.repository.remote.OrderRemote
+import com.trueedu.project.repository.remote.OrderRemoteImpl
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.repository.remote.PriceRemoteImpl
 import com.trueedu.project.repository.remote.RankingRemote
 import com.trueedu.project.repository.remote.RankingRemoteImpl
 import com.trueedu.project.repository.remote.service.AccountService
 import com.trueedu.project.repository.remote.service.AuthService
+import com.trueedu.project.repository.remote.service.OrderService
 import com.trueedu.project.repository.remote.service.PriceService
 import com.trueedu.project.repository.remote.service.RankingService
 import dagger.Module
@@ -48,6 +51,13 @@ object RemoteModule {
     @NormalService
     fun providesPriceService(retrofit: Retrofit): PriceService {
         return retrofit.create(PriceService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    @NormalService
+    fun providesOrderService(retrofit: Retrofit): OrderService {
+        return retrofit.create(OrderService::class.java)
     }
 
     @Provides
@@ -113,6 +123,13 @@ object RemoteModule {
         @NormalService
         priceService: PriceService
     ): PriceRemote = PriceRemoteImpl(priceService = priceService)
+
+    @Singleton
+    @Provides
+    fun providesOrderRemote(
+        @NormalService
+        orderService: OrderService
+    ): OrderRemote = OrderRemoteImpl(orderService = orderService)
 
     @Singleton
     @Provides
