@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.views.trading
+package com.trueedu.project.ui.views.order
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -29,13 +29,13 @@ import com.trueedu.project.ui.views.common.TopStockInfoView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TradingFragment: BaseFragment() {
+class OrderFragment: BaseFragment() {
     companion object {
         fun show(
             code: String,
             fragmentManager: FragmentManager
-        ): TradingFragment {
-            val fragment = TradingFragment()
+        ): OrderFragment {
+            val fragment = OrderFragment()
             fragment.code = code
             fragment.show(fragmentManager, "trading")
             return fragment
@@ -43,7 +43,7 @@ class TradingFragment: BaseFragment() {
     }
 
     lateinit var code: String
-    private val vm by viewModels<TradingViewModel>()
+    private val vm by viewModels<OrderViewModel>()
 
     override fun init() {
         super.init()

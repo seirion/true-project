@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.views.trading
+package com.trueedu.project.ui.views.order
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

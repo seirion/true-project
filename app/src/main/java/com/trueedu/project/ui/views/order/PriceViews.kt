@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.views.trading
+package com.trueedu.project.ui.views.order
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

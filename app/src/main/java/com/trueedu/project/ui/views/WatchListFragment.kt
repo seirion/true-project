@@ -50,7 +50,7 @@ import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.search.StockSearchFragment
-import com.trueedu.project.ui.views.trading.TradingFragment
+import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -191,7 +191,7 @@ class WatchListFragment: BaseFragment() {
     }
 
     private fun gotoTrading(stockInfo: StockInfo) {
-        TradingFragment.show(stockInfo.code, parentFragmentManager)
+        OrderFragment.show(stockInfo.code, parentFragmentManager)
     }
 
     private fun gotoStockDetail(stockInfo: StockInfo) {

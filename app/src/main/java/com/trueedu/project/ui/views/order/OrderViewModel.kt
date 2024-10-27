@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.views.trading
+package com.trueedu.project.ui.views.order
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TradingViewModel @Inject constructor(
+class OrderViewModel @Inject constructor(
     val stockPool: StockPool,
     private val priceRemote: PriceRemote,
     private val orderRemote: OrderRemote,
@@ -33,7 +33,7 @@ class TradingViewModel @Inject constructor(
 ): ViewModel() {
 
     companion object {
-        private val TAG = TradingViewModel::class.java.simpleName
+        private val TAG = OrderViewModel::class.java.simpleName
 
         private val empty = List(10) { 0.0 to 0.0 }
     }
@@ -72,7 +72,7 @@ class TradingViewModel @Inject constructor(
         viewModelScope.launch {
             snapshotFlow { orderManager.data.value }
                 .filterNotNull()
-                .filter { it.code == this@TradingViewModel.code }
+                .filter { it.code == this@OrderViewModel.code }
                 .collect {
                     val stock = stockPool.get(it.code)
                     Log.d(TAG, "실시간 호가: ${it.code} ${stock?.nameKr}")

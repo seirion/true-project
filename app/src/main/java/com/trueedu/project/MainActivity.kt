@@ -46,7 +46,7 @@ import com.trueedu.project.ui.views.home.ForceUpdateView
 import com.trueedu.project.ui.views.home.StockItem
 import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
-import com.trueedu.project.ui.views.trading.TradingFragment
+import com.trueedu.project.ui.views.order.OrderFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -179,7 +179,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onPriceClick(code: String) {
         trueAnalytics.clickButton("home__price__click")
-        TradingFragment.show(code, supportFragmentManager)
+        OrderFragment.show(code, supportFragmentManager)
     }
 
     private fun onUserInfo() {
