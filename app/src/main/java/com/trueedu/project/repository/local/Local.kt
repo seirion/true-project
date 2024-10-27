@@ -7,6 +7,7 @@ import com.trueedu.project.extensions.long
 import com.trueedu.project.extensions.string
 import com.trueedu.project.model.dto.auth.TokenResponse
 import com.trueedu.project.model.local.UserKey
+import com.trueedu.project.ui.views.order.OrderTab
 import com.trueedu.project.utils.parseDateString
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
@@ -71,4 +72,12 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
     var dailyProfitMode by preferences.boolean(false) // 사용 안 함
     var marketPriceMode by preferences.boolean(false) // 시세 | 수익
 
+    // 거래
+    private var orderTab by preferences.string("Order")
+    fun getOrderTab(): OrderTab {
+        return OrderTab.valueOf(orderTab)
+    }
+    fun setOrderTab(tab: OrderTab) {
+        orderTab = tab.name
+    }
 }
