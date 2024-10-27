@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import com.trueedu.project.model.dto.price.StockDetail
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.LoadingView
@@ -66,7 +67,7 @@ class DailyPriceFragment: BaseFragment() {
                     return@LazyColumn
                 }
 
-                item { TopStockInfoView(vm.dailyPrices.value!!.stockDetail) }
+                item { TopStockInfoViewInternal(vm.dailyPrices.value!!.stockDetail) }
                 stickyHeader { DailyPriceSection() }
 
                 val items = vm.dailyPrices.value!!.dailyPrices
@@ -85,4 +86,20 @@ class DailyPriceFragment: BaseFragment() {
             }
         }
     }
+}
+
+@Composable
+private fun TopStockInfoViewInternal(
+    stockDetail: StockDetail
+) {
+    TopStockInfoView(
+        price = stockDetail.price.toDouble(),
+        previousPrice = stockDetail.previousPrice.toDouble(),
+        priceChange = stockDetail.priceChange.toDouble(),
+        priceChangeRate = stockDetail.priceChangeRate.toDouble(),
+        volume = stockDetail.volume.toDouble(),
+        `open` = stockDetail.open.toDouble(),
+        high = stockDetail.high.toDouble(),
+        low = stockDetail.low.toDouble(),
+    )
 }

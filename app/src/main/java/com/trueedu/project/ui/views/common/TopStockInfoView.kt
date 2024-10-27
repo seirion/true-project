@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.trueedu.project.model.dto.price.StockDetail
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
@@ -23,13 +22,17 @@ import com.trueedu.project.utils.formatter.rateFormatter
  * 거래량  | 저가
  */
 @Composable
-fun TopStockInfoView(stockDetail: StockDetail) {
-    val priceString = cashFormatter.format(
-        stockDetail.price.toDouble()
-    )
-    val priceChange = stockDetail.priceChange.toDouble()
-    val priceChangeRate = stockDetail.priceChangeRate.toDouble()
-    val volume = stockDetail.volume.toDouble()
+fun TopStockInfoView(
+    price: Double,
+    previousPrice: Double,
+    priceChange: Double,
+    priceChangeRate: Double,
+    volume: Double,
+    `open`: Double,
+    high: Double,
+    low: Double,
+) {
+    val priceString = cashFormatter.format(price)
     val textColor = ChartColor.color(priceChange)
 
     Row(
@@ -56,7 +59,7 @@ fun TopStockInfoView(stockDetail: StockDetail) {
             )
             // 거래량
             BasicText(
-                s = "${cashFormatter.format(volume, false)}",
+                s = cashFormatter.format(volume, false),
                 fontSize = 12,
                 color = MaterialTheme.colorScheme.secondary,
             )
@@ -65,13 +68,12 @@ fun TopStockInfoView(stockDetail: StockDetail) {
         Column(
             modifier = Modifier.weight(0.8f),
         ) {
-            val basePrice = stockDetail.previousPrice.toDouble()
             listOf(
-                "시가" to stockDetail.`open`.toDouble(),
-                "고가" to stockDetail.high.toDouble(),
-                "저가" to stockDetail.low.toDouble(),
+                "시가" to `open`,
+                "고가" to high,
+                "저가" to low,
             ).forEach { (title, value) ->
-                val color = ChartColor.color(value - basePrice)
+                val color = ChartColor.color(value - previousPrice)
                 val valueString = cashFormatter.format(value)
                 PriceCellView(title, valueString, color)
             }
