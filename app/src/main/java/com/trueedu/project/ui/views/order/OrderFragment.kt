@@ -50,15 +50,21 @@ class OrderFragment: BaseFragment() {
     @Inject
     lateinit var local: Local
 
-    val currentTab = mutableStateOf(OrderTab.Order)
+    private lateinit var orderViewDrawer: OrderViewDrawer
+    private lateinit var modifiableViewDrawer: ModifiableViewDrawer
 
-    fun setOrderTab(tab: OrderTab) {
+    private val currentTab = mutableStateOf(OrderTab.Order)
+
+    private fun setOrderTab(tab: OrderTab) {
         currentTab.value = tab
         local.setOrderTab(tab)
     }
 
     override fun init() {
         super.init()
+        orderViewDrawer = OrderViewDrawer(vm)
+        modifiableViewDrawer = ModifiableViewDrawer(modifyVm)
+
         //currentTab.value = local.getOrderTab()
         vm.init(code)
 
@@ -95,26 +101,19 @@ class OrderFragment: BaseFragment() {
                     .padding(horizontal = 2.dp)
             ) {
                 TopStockInfoViewInternal()
+                TabViews()
 
-                Column(
-                    modifier = Modifier.weight(1f)
-                        .fillMaxWidth()
-                ) {
-                    TabViews()
-                    when (currentTab.value) {
-                        OrderTab.Order -> {
-                            Section()
-                            OrderBook(vm.sells(), vm.buys(), vm.price(), vm.previousClose())
-                        }
-                        OrderTab.Modification -> {
+                when (currentTab.value) {
+                    OrderTab.Order -> {
+                        orderViewDrawer.Draw()
+                    }
+                    OrderTab.Modification -> {
+                        modifiableViewDrawer.Draw()
+                    }
+                    else -> {
 
-                        }
-                        else -> {
-
-                        }
                     }
                 }
-                SellBuyButtons()
             }
         }
     }

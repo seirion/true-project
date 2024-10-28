@@ -1,10 +1,12 @@
 package com.trueedu.project.ui.views.order
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.model.dto.price.OrderModifiableResponse
 import com.trueedu.project.repository.remote.OrderRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
@@ -23,6 +25,8 @@ class OrderModifyViewModel @Inject constructor(
         private val TAG = OrderModifyViewModel::class.java.simpleName
     }
     val loading = mutableStateOf(false)
+    val items = mutableStateOf<OrderModifiableResponse?>(null)
+    val checked = mutableStateMapOf<String, Boolean>()
 
     fun init() {
         update()
@@ -31,10 +35,14 @@ class OrderModifyViewModel @Inject constructor(
     fun update() {
         val accountNum = tokenKeyManager.userKey.value?.accountNum ?: return
         orderRemote.modifiable(accountNum)
-            .onStart { loading.value = true }
+            .onStart {
+                loading.value = true
+                checked.clear()
+            }
             .onEach {
                 Log.d(TAG, "정정/취소 목록: $it")
                 loading.value = false
+                items.value = it
             }
             .catch {
                 Log.d(TAG, "정정/취소 실패: $it")
@@ -42,6 +50,11 @@ class OrderModifyViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun destroy() {
+    fun onChecked(code: String) {
+        if (checked.containsKey(code)) {
+            checked.remove(code)
+        } else {
+            checked[code] = true
+        }
     }
 }
