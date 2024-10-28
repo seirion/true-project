@@ -13,15 +13,21 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.views.common.TopStockInfoView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderFragment: BaseFragment() {
@@ -41,9 +47,29 @@ class OrderFragment: BaseFragment() {
     private val vm by viewModels<OrderViewModel>()
     private val modifyVm by viewModels<OrderModifyViewModel>()
 
+    @Inject
+    lateinit var local: Local
+
+    val currentTab = mutableStateOf(OrderTab.Order)
+
+    fun setOrderTab(tab: OrderTab) {
+        currentTab.value = tab
+        local.setOrderTab(tab)
+    }
+
     override fun init() {
         super.init()
+        //currentTab.value = local.getOrderTab()
         vm.init(code)
+
+        lifecycleScope.launch {
+            snapshotFlow { currentTab.value }
+                .collect {
+                    if (it == OrderTab.Modification) {
+                        modifyVm.init()
+                    }
+                }
+        }
     }
 
     override fun onDestroy() {
@@ -75,7 +101,7 @@ class OrderFragment: BaseFragment() {
                         .fillMaxWidth()
                 ) {
                     TabViews()
-                    when (vm.currentTab.value) {
+                    when (currentTab.value) {
                         OrderTab.Order -> {
                             Section()
                             OrderBook(vm.sells(), vm.buys(), vm.price(), vm.previousClose())
@@ -109,7 +135,7 @@ class OrderFragment: BaseFragment() {
 
     @Composable
     private fun TabViews() {
-        val currentTabIndex = vm.currentTab.value.ordinal
+        val currentTabIndex = currentTab.value.ordinal
 
         TabRow(
             selectedTabIndex = 0,
@@ -129,7 +155,7 @@ class OrderFragment: BaseFragment() {
             OrderTab.entries.forEachIndexed { index, tab ->
                 Tab(
                     selected = currentTabIndex == index,
-                    onClick = { vm.setOrderTab(tab) },
+                    onClick = { setOrderTab(tab) },
                     modifier = Modifier.height(32.dp),
                     enabled = index <= 1,
                     icon = {

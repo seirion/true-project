@@ -48,15 +48,7 @@ class OrderViewModel @Inject constructor(
 
     val realTimeQuotes = mutableStateOf<RealTimeOrder?>(null)
 
-    val currentTab = mutableStateOf(OrderTab.Order)
-
-    fun setOrderTab(tab: OrderTab) {
-        currentTab.value = tab
-        local.setOrderTab(tab)
-    }
-
     fun init(code: String) {
-        currentTab.value = local.getOrderTab()
         this.code = code
         priceManager.pushRequest(
             code,
