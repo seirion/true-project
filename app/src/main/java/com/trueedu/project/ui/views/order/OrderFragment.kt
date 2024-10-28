@@ -39,6 +39,7 @@ class OrderFragment: BaseFragment() {
 
     lateinit var code: String
     private val vm by viewModels<OrderViewModel>()
+    private val modifyVm by viewModels<OrderModifyViewModel>()
 
     override fun init() {
         super.init()
@@ -68,13 +69,24 @@ class OrderFragment: BaseFragment() {
                     .padding(horizontal = 2.dp)
             ) {
                 TopStockInfoViewInternal()
+
                 Column(
                     modifier = Modifier.weight(1f)
                         .fillMaxWidth()
                 ) {
                     TabViews()
-                    Section()
-                    OrderBook(vm.sells(), vm.buys(), vm.price(), vm.previousClose())
+                    when (vm.currentTab.value) {
+                        OrderTab.Order -> {
+                            Section()
+                            OrderBook(vm.sells(), vm.buys(), vm.price(), vm.previousClose())
+                        }
+                        OrderTab.Modification -> {
+
+                        }
+                        else -> {
+
+                        }
+                    }
                 }
                 SellBuyButtons()
             }

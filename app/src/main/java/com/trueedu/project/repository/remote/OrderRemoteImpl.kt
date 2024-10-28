@@ -40,14 +40,35 @@ class OrderRemoteImpl(
          * 16 : FOK최유리 (즉시체결,전량취소)
          */
         val queries = mapOf(
-            "CANO" to "", // 계좌번호 체계(8-2)의 앞 8자리
-            "ACNT_PRDT_CD" to "", // 계좌번호 체계(8-2)의 뒤 2자리
-            "PDNO" to "", // 종목번호
+            "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
+            "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
+            "PDNO" to code, // 종목번호
             "ORD_DVSN" to "00", // 주문 구분 - 일단 지정가로 주문하기
-            "ORD_QTY" to "", // 주문 수량
-            "ORD_UNPR" to "", // 주문 단가
+            "ORD_QTY" to quantity.toString(), // 주문 수량
+            "ORD_UNPR" to price.toString(), // 주문 단가
             "" to "",
         )
         orderService.buy(headers, queries)
+    }
+
+    override fun modifiable(accountNum: String) = apiCallFlow {
+        val headers = mapOf(
+            "tr_id" to "TTTC8036R", // 주식 정정 취소 가능 주문 조회
+            "custtype" to "P",
+        )
+
+        val queries = mapOf(
+            "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
+            "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
+            "CTX_AREA_FK100" to "", // 	연속조회검색조건100
+                                    // 공란 : 최초 조회시
+                                    //이전 조회 Output CTX_AREA_FK100 값 : 다음페이지 조회시(2번째부터)
+            "CTX_AREA_NK100" to "", // 연속조회키100
+                                    // 공란 : 최초 조회시
+                                    // 이전 조회 Output CTX_AREA_NK100 값 : 다음페이지 조회시(2번째부터)
+            "INQR_DVSN_1" to "1", // 조회구분1 0 : 조회순서 1 : 주문순 2 : 종목순
+            "INQR_DVSN_2" to "0", // 조회구분2 0 : 전체 1 : 매도 2 : 매수
+        )
+        orderService.modifiable(headers, queries)
     }
 }
