@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.views.order
 
+import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.trueedu.project.R
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -58,6 +60,11 @@ class OrderFragment: BaseFragment() {
     private fun setOrderTab(tab: OrderTab) {
         currentTab.value = tab
         local.setOrderTab(tab)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.FullScreenSheetKeyboardDialogTheme)
     }
 
     override fun init() {
