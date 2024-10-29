@@ -48,6 +48,10 @@ class OrderViewModel @Inject constructor(
 
     val realTimeQuotes = mutableStateOf<RealTimeOrder?>(null)
 
+    // 주문 입력 (숫자만)
+    val priceInput = mutableStateOf(0L)
+    val quantityInput = mutableStateOf(0L)
+
     fun init(code: String) {
         this.code = code
         priceManager.pushRequest(
