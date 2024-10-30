@@ -3,6 +3,7 @@
 local.properties
 build
 .DS_Store
+.kotlin/
 venv/
 executable.jar
 kospi_code.mst
