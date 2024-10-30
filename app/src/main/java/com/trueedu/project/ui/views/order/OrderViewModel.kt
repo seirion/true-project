@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.RealOrderManager
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
@@ -21,8 +22,12 @@ import com.trueedu.project.utils.decreaseQuantity
 import com.trueedu.project.utils.increasePrice
 import com.trueedu.project.utils.increaseQuantity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -32,6 +37,7 @@ import javax.inject.Inject
 class OrderViewModel @Inject constructor(
     private val local: Local,
     val stockPool: StockPool,
+    private val keyTokenKeyManager: TokenKeyManager,
     private val priceRemote: PriceRemote,
     private val orderRemote: OrderRemote,
     private val priceManager: RealPriceManager,
@@ -97,6 +103,33 @@ class OrderViewModel @Inject constructor(
     fun destroy() {
         priceManager.popRequest(code)
         orderManager.cancelRequests()
+    }
+
+    fun buy(onSuccess: () -> Unit, onFail: (String) -> Unit) {
+        val userKey = keyTokenKeyManager.userKey.value ?: return
+        if (userKey.accountNum.isNullOrEmpty()) {
+            Log.d(TAG, "order failed: empty accountNum")
+        }
+        orderRemote.buy(
+            accountNum = userKey.accountNum!!,
+            code = code,
+            price = priceInput.value,
+            quantity = quantityInput.value,
+        )
+            .flowOn(Dispatchers.Main)
+            .onEach {
+                if (it.rtCd == "0") {
+                    onSuccess()
+                } else {
+                    Log.d(TAG, "주문 실패: $it")
+                    onFail(it.msg ?: it.msg1 ?: "주문 실패")
+                }
+            }
+            .catch {
+                Log.d(TAG, "주문 실패(예외): $it")
+                onFail("주문 실패")
+            }
+            .launchIn(MainScope())
     }
 
     fun setPrice(v: Double) {

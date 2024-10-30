@@ -11,8 +11,8 @@ interface OrderRemote {
     fun buy(
         accountNum: String,
         code: String,
-        price: Int,
-        quantity: Int
+        price: String,
+        quantity: String,
     ): Flow<OrderResponse>
 
     fun modifiable(accountNum: String): Flow<OrderModifiableResponse>

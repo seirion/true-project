@@ -1,10 +1,10 @@
 package com.trueedu.project.ui.views.order
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -69,7 +69,7 @@ class OrderFragment: BaseFragment() {
 
     override fun init() {
         super.init()
-        orderViewDrawer = OrderViewDrawer(vm)
+        orderViewDrawer = OrderViewDrawer(vm, ::buy)
         modifiableViewDrawer = ModifiableViewDrawer(modifyVm)
 
         //currentTab.value = local.getOrderTab()
@@ -88,6 +88,18 @@ class OrderFragment: BaseFragment() {
     override fun onDestroy() {
         super.onDestroy()
         vm.destroy()
+    }
+
+    private fun buy() {
+        trueAnalytics.clickButton("${screenName()}__buy__click")
+        vm.buy(
+            onSuccess = {
+                Toast.makeText(requireContext(), "주문이 완료되었습니다.", Toast.LENGTH_SHORT).show()
+            },
+            onFail = { msg ->
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
     @Composable
