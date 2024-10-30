@@ -2,6 +2,7 @@ package com.trueedu.project.ui.views.order
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +32,7 @@ fun OrderBook(
     buys: List<Pair<Double, Double>>,
     price: Double, // 현재가
     previousClose: Double,
+    onClick: (Double) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
@@ -44,10 +46,14 @@ fun OrderBook(
             .verticalScroll(scrollState),
     ) {
         sells.forEach { (p, q) ->
-            SellItems(p, q, price, previousClose)
+            SellItems(p, q, price, previousClose) {
+                onClick(p)
+            }
         }
         buys.forEach { (p, q) ->
-            BuyItems(p, q, price, previousClose)
+            BuyItems(p, q, price, previousClose) {
+                onClick(p)
+            }
         }
     }
 }
@@ -77,7 +83,8 @@ private fun SellItems(
     price: Double,
     quantity: Double,
     currentPrice: Double,
-    previousClose: Double
+    previousClose: Double,
+    onClick: () -> Unit,
 ) {
     val priceString = if (price > 0.0) cashFormatter.format(price) else ""
     val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
@@ -87,7 +94,8 @@ private fun SellItems(
         quantityString,
         selected,
         ChartColor.color(price - previousClose),
-        ChartColor.up.copy(alpha = 0.1f)
+        ChartColor.up.copy(alpha = 0.1f),
+        onClick,
     )
 }
 
@@ -97,6 +105,7 @@ private fun BuyItems(
     quantity: Double,
     currentPrice: Double,
     previousClose: Double,
+    onClick: () -> Unit,
 ) {
     val priceString = if (price > 0.0) cashFormatter.format(price) else ""
     val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
@@ -106,7 +115,8 @@ private fun BuyItems(
         quantityString,
         selected,
         ChartColor.color(price - previousClose),
-        ChartColor.down.copy(alpha = 0.1f)
+        ChartColor.down.copy(alpha = 0.1f),
+        onClick,
     )
 }
 
@@ -117,6 +127,7 @@ private fun SellBuyItems(
     selected: Boolean,
     textColor: Color,
     bgColor: Color,
+    onClick: () -> Unit,
 ) {
     val border = if (selected) 1.dp else 0.dp
     Row(
@@ -124,7 +135,8 @@ private fun SellBuyItems(
         modifier = Modifier
             .height(48.dp)
             .border(border, textColor)
-            .padding(1.dp),
+            .padding(1.dp)
+            .clickable { onClick() },
     ) {
         NumberText(price, textColor, bgColor)
         Margin(1)

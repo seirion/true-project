@@ -54,7 +54,7 @@ class OrderViewModel @Inject constructor(
 
     // 주문 입력 (숫자만)
     val priceInput = mutableStateOf("")
-    val quantityInput = mutableStateOf("")
+    val quantityInput = mutableStateOf("1")
 
     fun init(code: String) {
         this.code = code
@@ -97,6 +97,10 @@ class OrderViewModel @Inject constructor(
     fun destroy() {
         priceManager.popRequest(code)
         orderManager.cancelRequests()
+    }
+
+    fun setPrice(v: Double) {
+        priceInput.value = v.toLong().toString() // 일단 정수만 처리
     }
 
     fun increasePrice() {

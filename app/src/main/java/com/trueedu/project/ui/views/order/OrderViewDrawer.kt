@@ -51,7 +51,9 @@ class OrderViewDrawer(
             ) {
                 Column {
                     Section()
-                    OrderBook(vm.sells(), vm.buys(), vm.price(), vm.previousClose())
+                    OrderBook(vm.sells(), vm.buys(), vm.price(), vm.previousClose()) {
+                        vm.setPrice(it)
+                    }
                 }
                 Column(
                     horizontalAlignment = Alignment.End,
