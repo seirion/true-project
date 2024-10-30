@@ -38,6 +38,7 @@ import com.trueedu.project.utils.getDigitInput
 
 class OrderViewDrawer(
     private val vm: OrderViewModel,
+    private val buy: () -> Unit,
 ): ComposableDrawer {
     @Composable
     override fun Draw() {
@@ -67,7 +68,7 @@ class OrderViewDrawer(
                     InputSet("수량", vm.quantityInput, vm::increaseQuantity, vm::decreaseQuantity)
                 }
             }
-            SellBuyButtons()
+            SellBuyButtons(buy)
         }
     }
 }

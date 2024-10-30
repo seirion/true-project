@@ -12,8 +12,8 @@ class OrderRemoteImpl(
     override fun buy(
         accountNum: String,
         code: String,
-        price: Int,
-        quantity: Int
+        price: String,
+        quantity: String,
     ) = apiCallFlow {
         val headers = mapOf(
             "tr_id" to "TTTC0802U", // 매수
@@ -39,16 +39,15 @@ class OrderRemoteImpl(
          * 15 : IOC최유리 (즉시체결,잔량취소)
          * 16 : FOK최유리 (즉시체결,전량취소)
          */
-        val queries = mapOf(
+        val body = mapOf(
             "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
             "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
             "PDNO" to code, // 종목번호
             "ORD_DVSN" to "00", // 주문 구분 - 일단 지정가로 주문하기
-            "ORD_QTY" to quantity.toString(), // 주문 수량
-            "ORD_UNPR" to price.toString(), // 주문 단가
-            "" to "",
+            "ORD_QTY" to quantity, // 주문 수량
+            "ORD_UNPR" to price, // 주문 단가
         )
-        orderService.buy(headers, queries)
+        orderService.buy(headers, body)
     }
 
     override fun modifiable(accountNum: String) = apiCallFlow {
