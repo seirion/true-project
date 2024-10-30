@@ -5,11 +5,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AddCircleOutline
+import androidx.compose.material.icons.outlined.RemoveCircleOutline
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -24,9 +29,11 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
+import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.utils.getDigitInput
 
 class OrderViewDrawer(
@@ -46,18 +53,16 @@ class OrderViewDrawer(
                     Section()
                     OrderBook(vm.sells(), vm.buys(), vm.price(), vm.previousClose())
                 }
-                Margin(8)
                 Column(
                     horizontalAlignment = Alignment.End,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
+                        .padding(top = 8.dp)
+                        .padding(horizontal = 2.dp)
                 ) {
-                    InputLabel("가격")
-                    DigitInput(vm.priceInput)
+                    InputSet("가격", vm.priceInput, vm::increasePrice, vm::decreasePrice)
                     Margin(24)
-                    InputLabel("수량")
-                    DigitInput(vm.quantityInput)
+                    InputSet("수량", vm.quantityInput, vm::increaseQuantity, vm::decreaseQuantity)
                 }
             }
             SellBuyButtons()
@@ -65,8 +70,30 @@ class OrderViewDrawer(
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun InputLabel(label: String) {
+private fun InputSet(
+    label: String = "가격",
+    input: MutableState<String> = mutableStateOf("1000"),
+    increase: () -> Unit = {},
+    decrease: () -> Unit = {},
+) {
+    Row {
+        InputLabel(label)
+        Spacer(modifier = Modifier.width(40.dp))
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        TouchIcon24(Icons.Outlined.RemoveCircleOutline, onClick = decrease)
+        DigitInput(input, Modifier.weight(1f))
+        TouchIcon24(Icons.Outlined.AddCircleOutline, onClick = increase)
+    }
+}
+
+@Composable
+private fun InputLabel(label: String) {
     BasicText(
         s = label,
         fontSize = 14,
@@ -75,18 +102,20 @@ fun InputLabel(label: String) {
 }
 
 @Composable
-fun DigitInput(input: MutableState<Long>) {
+private fun DigitInput(
+    input: MutableState<String>,
+    modifier: Modifier,
+) {
     var isFocused by remember { mutableStateOf(false) }
     BasicTextField(
-        value = input.value.toString(),
+        value = input.value,
         onValueChange = { it: String ->
             input.value = getDigitInput(it)
         },
-        modifier = Modifier
+        modifier = modifier
             .onFocusChanged {
                 isFocused = it.isFocused
             }
-            .fillMaxWidth()
             .background(
                 color = if (isFocused) {
                     MaterialTheme.colorScheme.surfaceDim

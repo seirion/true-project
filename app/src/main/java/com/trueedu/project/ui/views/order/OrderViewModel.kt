@@ -16,6 +16,10 @@ import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.OrderRemote
 import com.trueedu.project.repository.remote.PriceRemote
+import com.trueedu.project.utils.decreasePrice
+import com.trueedu.project.utils.decreaseQuantity
+import com.trueedu.project.utils.increasePrice
+import com.trueedu.project.utils.increaseQuantity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
@@ -49,8 +53,8 @@ class OrderViewModel @Inject constructor(
     val realTimeQuotes = mutableStateOf<RealTimeOrder?>(null)
 
     // 주문 입력 (숫자만)
-    val priceInput = mutableStateOf(0L)
-    val quantityInput = mutableStateOf(0L)
+    val priceInput = mutableStateOf("")
+    val quantityInput = mutableStateOf("")
 
     fun init(code: String) {
         this.code = code
@@ -72,6 +76,9 @@ class OrderViewModel @Inject constructor(
         priceRemote.currentPrice(code)
             .onEach {
                 basePrice.value = it
+                if (priceInput.value == "") {
+                    priceInput.value = it.output.price
+                }
             }
             .launchIn(viewModelScope)
 
@@ -90,6 +97,24 @@ class OrderViewModel @Inject constructor(
     fun destroy() {
         priceManager.popRequest(code)
         orderManager.cancelRequests()
+    }
+
+    fun increasePrice() {
+        // TODO: 상하한가 체크 필요
+        priceInput.value = increasePrice(priceInput.value)
+    }
+
+    fun decreasePrice() {
+        // TODO: 상하한가 체크 필요
+        priceInput.value = decreasePrice(priceInput.value)
+    }
+
+    fun increaseQuantity() {
+        quantityInput.value = increaseQuantity(quantityInput.value)
+    }
+
+    fun decreaseQuantity() {
+        quantityInput.value = decreaseQuantity(quantityInput.value)
     }
 
     fun stockInfo(): StockInfo? {
