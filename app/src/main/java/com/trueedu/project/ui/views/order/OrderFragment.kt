@@ -70,7 +70,7 @@ class OrderFragment: BaseFragment() {
     override fun init() {
         super.init()
         orderViewDrawer = OrderViewDrawer(vm, ::buy, ::sell)
-        modifiableViewDrawer = ModifiableViewDrawer(modifyVm)
+        modifiableViewDrawer = ModifiableViewDrawer(modifyVm, ::cancelOrder)
 
         //currentTab.value = local.getOrderTab()
         vm.init(code)
@@ -107,6 +107,19 @@ class OrderFragment: BaseFragment() {
         vm.sell(
             onSuccess = {
                 Toast.makeText(requireContext(), "매도 주문이 완료되었습니다.", Toast.LENGTH_SHORT).show()
+            },
+            onFail = { msg ->
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
+    private fun cancelOrder(orderNo: String) {
+        trueAnalytics.clickButton("${screenName()}__cancel__click")
+        modifyVm.cancel(
+            orderNo = orderNo,
+            onSuccess = {
+                Toast.makeText(requireContext(), "주문이 취소되었습니다.", Toast.LENGTH_SHORT).show()
             },
             onFail = { msg ->
                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()

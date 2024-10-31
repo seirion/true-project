@@ -1,5 +1,6 @@
 package com.trueedu.project.repository.remote
 
+import com.trueedu.project.model.dto.order.OrderModifyResponse
 import com.trueedu.project.model.dto.order.OrderResponse
 import com.trueedu.project.model.dto.price.OrderModifiableResponse
 import kotlinx.coroutines.flow.Flow
@@ -23,4 +24,9 @@ interface OrderRemote {
     ): Flow<OrderResponse>
 
     fun modifiable(accountNum: String): Flow<OrderModifiableResponse>
+
+    fun cancel(
+        accountNum: String,
+        originalOrderCode: String,
+    ): Flow<OrderModifyResponse>
 }
