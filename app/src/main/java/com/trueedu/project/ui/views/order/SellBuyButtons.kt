@@ -22,6 +22,7 @@ import com.trueedu.project.ui.theme.ChartColor
 @Composable
 fun SellBuyButtons(
     buy: () -> Unit = {},
+    sell: () -> Unit = {},
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -52,7 +53,7 @@ fun SellBuyButtons(
         Margin(8)
         val down = ChartColor.down
         Button(
-            onClick = { /* TODO */ },
+            onClick = { sell() },
             modifier = Modifier.weight(1f)
                 .fillMaxHeight(),
             colors = ButtonColors(
