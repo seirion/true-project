@@ -3,6 +3,7 @@ package com.trueedu.project.ui.views.order
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,11 +21,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.rateFormatter
 
 @Composable
 fun OrderBook(
@@ -87,10 +90,13 @@ private fun SellItems(
     onClick: () -> Unit,
 ) {
     val priceString = if (price > 0.0) cashFormatter.format(price) else ""
+    val rate = (price - previousClose) / previousClose * 100
+    val rateString = rateFormatter.format(rate, false)
     val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
     val selected = price != 0.0 && price == currentPrice
     SellBuyItems(
         priceString,
+        rateString,
         quantityString,
         selected,
         ChartColor.color(price - previousClose),
@@ -108,10 +114,13 @@ private fun BuyItems(
     onClick: () -> Unit,
 ) {
     val priceString = if (price > 0.0) cashFormatter.format(price) else ""
+    val rate = (price - previousClose) / previousClose * 100
+    val rateString = rateFormatter.format(rate, false)
     val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
     val selected = price != 0.0 && price == currentPrice
     SellBuyItems(
         priceString,
+        rateString,
         quantityString,
         selected,
         ChartColor.color(price - previousClose),
@@ -123,6 +132,7 @@ private fun BuyItems(
 @Composable
 private fun SellBuyItems(
     price: String,
+    rate: String,
     count: String,
     selected: Boolean,
     textColor: Color,
@@ -138,9 +148,38 @@ private fun SellBuyItems(
             .padding(1.dp)
             .clickable { onClick() },
     ) {
-        NumberText(price, textColor, bgColor)
+        PriceText(price, rate, textColor, bgColor)
         Margin(1)
         NumberText(count, textColor, bgColor)
+    }
+}
+
+@Composable
+private fun RowScope.PriceText(
+    s: String,
+    rate: String,
+    textColor: Color,
+    bgColor: Color,
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.End,
+        modifier = Modifier.weight(1f)
+            .fillMaxHeight()
+            .background(color = bgColor)
+            .padding(end = 4.dp),
+    ) {
+        BasicText(
+            s = s,
+            fontSize = 14,
+            fontWeight = FontWeight.W600,
+            color = textColor,
+        )
+        BasicText(
+            s = rate,
+            fontSize = 10,
+            color = textColor,
+        )
     }
 }
 
