@@ -10,8 +10,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.trueedu.project.ui.theme.ChartColor
 
@@ -65,6 +67,7 @@ fun BackTitleTopBar(
 @Composable
 fun BackStockTopBar(
     nameKr: String = "삼성전자",
+    price: String = "13,000",
     priceChange: String = "+1,150(+1.15%)",
     textColor: Color = ChartColor.up,
     onBack: () -> Unit = {},
@@ -83,7 +86,11 @@ fun BackStockTopBar(
                     fontSize = 16,
                     color = MaterialTheme.colorScheme.primary,
                 )
-                BasicText(s = priceChange, fontSize = 14, color = textColor)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    BasicText(s = price, fontSize = 14, fontWeight = FontWeight.W600, color = textColor)
+                    Margin(6)
+                    BasicText(s = priceChange, fontSize = 14, color = textColor)
+                }
             }
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(
