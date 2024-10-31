@@ -15,6 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.model.dto.price.DailyPrice
 import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.utils.formatter.cashFormatter
 
 @Preview(showBackground = true)
 @Composable
@@ -54,11 +56,17 @@ fun DailyPriceSection() {
             )
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
-        listOf("날짜", "종가", "전일대비", "거래량").forEach {
+        listOf("날짜", "종가", "전일대비", "거래량").forEachIndexed { i, it ->
+            val textAlign = if (i == 0) {
+                TextAlign.Start
+            } else {
+                TextAlign.End
+            }
             BasicText(
                 s = it,
                 fontSize = 12,
                 color = MaterialTheme.colorScheme.secondary,
+                textAlign = textAlign,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -78,17 +86,40 @@ fun DailyPriceCell(
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         listOf(
-            item.date,
-            item.close,
-            item.change,
-            item.volume,
-        ).forEach {
+            item.date to ::dateFormat,
+            item.close to ::numberFormat,
+            item.change to ::numberFormat,
+            item.volume to ::numberFormat,
+        ).forEachIndexed { i, (s, formatting) ->
+            val color = if (i == 0 || i == 3) {
+               MaterialTheme.colorScheme.secondary
+            } else {
+                ChartColor.color(item.change.toDouble())
+            }
+            val textAlign = if (i == 0) {
+                TextAlign.Start
+            } else {
+                TextAlign.End
+            }
             BasicText(
-                s = it,
+                s = formatting(s),
                 fontSize = 12,
-                color = MaterialTheme.colorScheme.secondary,
+                color = color,
+                textAlign = textAlign,
                 modifier = Modifier.weight(1f),
             )
         }
     }
+}
+
+private fun dateFormat(s: String): String {
+    return if (s.length == 8) {
+        listOf(s.substring(0, 4), s.substring(4, 6), s.substring(6, 8)).joinToString(".")
+    } else {
+        s
+    }
+}
+
+private fun numberFormat(s: String): String {
+    return cashFormatter.format(s.toDouble(), false)
 }
