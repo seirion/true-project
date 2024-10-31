@@ -6,6 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RealOrderManager
@@ -44,6 +45,7 @@ class App : Application(), LifecycleEventObserver {
         // init here
         val local = entryPointInjector(InjectModule::class.java).getLocal()
         local.migrate()
+        MobileAds.initialize(this)
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
