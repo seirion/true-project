@@ -26,6 +26,7 @@ import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
+import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.cashFormatter
 
 class ModifiableViewDrawer(
@@ -71,23 +72,31 @@ class ModifiableViewDrawer(
                 .clickable { onClick() }
         ) {
             TouchIcon24(icon) { onChecked(item.code) }
+
+            val isBuy = item.sellBuyDivisionCode == "02"
+            BasicText(
+                s = if (isBuy) "매수" else "매도" ,
+                fontSize = 12,
+                color = if (isBuy) ChartColor.up else ChartColor.down,
+                modifier = Modifier.weight(1f),
+            )
             BasicText(
                 s = item.nameKr,
                 fontSize = 12,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.weight(1.5f),
+                modifier = Modifier.weight(3f),
             )
             listOf(
-                cashFormatter.format(item.price.toDouble()),
-                cashFormatter.format(item.quantity.toDouble()),
-                item.orderTime.chunked(2).joinToString(":"),
-            ).forEach {
+                cashFormatter.format(item.price.toDouble()) to 1.5f,
+                cashFormatter.format(item.quantity.toDouble()) to 1f,
+                item.orderTime.chunked(2).joinToString(":") to 1.5f,
+            ).forEach { (s, w) ->
                 BasicText(
-                    s = it,
+                    s = s,
                     fontSize = 12,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.End,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(w),
                 )
             }
         }
@@ -98,7 +107,13 @@ class ModifiableViewDrawer(
 @Composable
 private fun ModifiableSection() {
     val borderColor = MaterialTheme.colorScheme.outlineVariant
-    val textList = listOf("종목", "가격", "수량", "시간")
+    val textList = listOf(
+        "거래" to 1f,
+        "종목" to 3f,
+        "가격" to 1.5f,
+        "수량" to 1f,
+        "시간" to 1.5f,
+    )
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -110,14 +125,15 @@ private fun ModifiableSection() {
         val textColor = MaterialTheme.colorScheme.primary
         val bgColor = MaterialTheme.colorScheme.background
         Margin(40) // chechbox 영역
-        textList.forEachIndexed { index, s ->
-            val weight = if (index == 0) 1.5f else 1f
+        VerticalDivider(thickness = 1.dp, color = borderColor)
+
+        textList.forEach { (s, w) ->
             BasicText(
                 s =  s,
                 fontSize = 12,
                 color = textColor,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.weight(weight)
+                modifier = Modifier.weight(w)
             )
             VerticalDivider(thickness = 1.dp, color = borderColor)
         }
