@@ -106,4 +106,42 @@ class OrderRemoteImpl(
         )
         orderService.modifiable(headers, queries)
     }
+
+    override fun cancel(
+        accountNum: String,
+        originalOrderCode: String,
+    ) = apiCallFlow {
+        val headers = mapOf(
+            "tr_id" to "TTTC0803U", // 주식 정정 취소 주문
+            "custtype" to "P",
+        )
+        val body = mapOf(
+            "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
+            "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
+            "KRX_FWDG_ORD_ORGNO" to "", // 주문시 한국투자증권 시스템에서 지정된 영업점코드
+            "ORGN_ODNO" to originalOrderCode, // 원주문번호
+            "ORD_DVSN" to "00", // 주문 구분 - 일단 지정가로 주문하기
+            "RVSE_CNCL_DVSN_CD" to "02", // 정정 : 01 취소 : 02
+
+            /**
+             * [잔량전부 취소/정정주문]
+             * "0" 설정 ( QTY_ALL_ORD_YN=Y 설정 )
+             *
+             * [잔량일부 취소/정정주문]
+             * 취소/정정 수량
+             */
+            "ORD_QTY" to "0", // 주문 수량
+            /**
+             * [정정]
+             * (지정가) 정정주문 1주당 가격
+             * (시장가) "0" 설정
+             *
+             * [취소]
+             * "0" 설정
+             */
+            "ORD_UNPR" to "0", // 주문 단가
+            "QTY_ALL_ORD_YN" to "Y", // 잔량전부주문여부 - Y : 잔량전부 N : 잔량일부
+        )
+        orderService.modify(headers, body)
+    }
 }

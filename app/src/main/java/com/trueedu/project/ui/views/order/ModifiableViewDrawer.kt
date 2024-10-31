@@ -11,8 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckBox
-import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
+import androidx.compose.material.icons.outlined.RemoveCircle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -31,6 +30,7 @@ import com.trueedu.project.utils.formatter.cashFormatter
 
 class ModifiableViewDrawer(
     private val vm: OrderModifyViewModel,
+    private val onCancel: (String) -> Unit, // orderNo
 ): ComposableDrawer {
     @Composable
     override fun Draw() {
@@ -45,8 +45,7 @@ class ModifiableViewDrawer(
                 item { ModifiableSection() }
                 val items = vm.items.value!!.orderModifiableDetail
                 itemsIndexed(items, key = { _, item -> item.code }) { index, item ->
-                    val checked = vm.checked.containsKey(item.code)
-                    ItemView(item, checked, vm::onChecked) {
+                    ItemView(item, onCancel) {
 
                     }
                 }
@@ -57,21 +56,18 @@ class ModifiableViewDrawer(
     @Composable
     private fun ItemView(
         item: OrderModifiableDetail,
-        checked: Boolean,
-        onChecked: (String) -> Unit,
+        onCancel: (String) -> Unit,
         onClick: () -> Unit,
     ) {
-        val icon = if (checked) {
-            Icons.Filled.CheckBox
-        } else {
-            Icons.Filled.CheckBoxOutlineBlank
-        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
                 .clickable { onClick() }
         ) {
-            TouchIcon24(icon) { onChecked(item.code) }
+            TouchIcon24(
+                icon = Icons.Outlined.RemoveCircle,
+                tint = MaterialTheme.colorScheme.error,
+            ) { onCancel(item.orderNo) }
 
             val isBuy = item.sellBuyDivisionCode == "02"
             BasicText(
@@ -124,7 +120,7 @@ private fun ModifiableSection() {
     ) {
         val textColor = MaterialTheme.colorScheme.primary
         val bgColor = MaterialTheme.colorScheme.background
-        Margin(40) // chechbox 영역
+        Margin(38) // chechbox 영역 (40 - 2)
         VerticalDivider(thickness = 1.dp, color = borderColor)
 
         textList.forEach { (s, w) ->

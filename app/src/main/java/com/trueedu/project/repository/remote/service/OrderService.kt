@@ -1,5 +1,6 @@
 package com.trueedu.project.repository.remote.service
 
+import com.trueedu.project.model.dto.order.OrderModifyResponse
 import com.trueedu.project.model.dto.order.OrderResponse
 import com.trueedu.project.model.dto.price.OrderModifiableResponse
 import retrofit2.Response
@@ -21,4 +22,10 @@ interface OrderService {
         @HeaderMap headers: Map<String, String>,
         @QueryMap queries: Map<String, String>
     ): Response<OrderModifiableResponse>
+
+    @POST("uapi/domestic-stock/v1/trading/order-rvsecncl")
+    suspend fun modify(
+        @HeaderMap headers: Map<String, String>,
+        @Body body: Map<String, String>
+    ): Response<OrderModifyResponse>
 }
