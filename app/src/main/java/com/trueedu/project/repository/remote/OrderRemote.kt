@@ -15,5 +15,12 @@ interface OrderRemote {
         quantity: String,
     ): Flow<OrderResponse>
 
+    fun sell(
+        accountNum: String,
+        code: String,
+        price: String,
+        quantity: String,
+    ): Flow<OrderResponse>
+
     fun modifiable(accountNum: String): Flow<OrderModifiableResponse>
 }

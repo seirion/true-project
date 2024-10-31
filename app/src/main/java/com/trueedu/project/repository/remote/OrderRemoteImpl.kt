@@ -1,8 +1,10 @@
 package com.trueedu.project.repository.remote
 
 import com.trueedu.project.di.NormalService
+import com.trueedu.project.model.dto.order.OrderResponse
 import com.trueedu.project.network.apiCallFlow
 import com.trueedu.project.repository.remote.service.OrderService
+import kotlinx.coroutines.flow.Flow
 
 class OrderRemoteImpl(
     @NormalService
@@ -14,9 +16,43 @@ class OrderRemoteImpl(
         code: String,
         price: String,
         quantity: String,
+    ): Flow<OrderResponse> {
+        return buySell(
+            isBuy = true,
+            accountNum = accountNum,
+            code = code,
+            price = price,
+            quantity = quantity,
+        )
+    }
+
+    override fun sell(
+        accountNum: String,
+        code: String,
+        price: String,
+        quantity: String,
+    ): Flow<OrderResponse> {
+        return buySell(
+            isBuy = false,
+            accountNum = accountNum,
+            code = code,
+            price = price,
+            quantity = quantity,
+        )
+    }
+
+    private fun buySell(
+        isBuy: Boolean,
+        accountNum: String,
+        code: String,
+        price: String,
+        quantity: String,
     ) = apiCallFlow {
+
+        // 현금 매수, 현금 매도
+        val transactionId = if (isBuy) "TTTC0802U" else "TTTC0801U"
         val headers = mapOf(
-            "tr_id" to "TTTC0802U", // 매수
+            "tr_id" to transactionId,
             "custtype" to "P",
         )
 

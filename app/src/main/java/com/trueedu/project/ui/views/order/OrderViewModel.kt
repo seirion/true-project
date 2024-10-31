@@ -106,16 +106,34 @@ class OrderViewModel @Inject constructor(
     }
 
     fun buy(onSuccess: () -> Unit, onFail: (String) -> Unit) {
+        buySell(isBuy = true, onSuccess = onSuccess, onFail = onFail)
+    }
+
+    fun sell(onSuccess: () -> Unit, onFail: (String) -> Unit) {
+        buySell(isBuy = false, onSuccess = onSuccess, onFail = onFail)
+    }
+
+    private fun buySell(isBuy: Boolean, onSuccess: () -> Unit, onFail: (String) -> Unit) {
         val userKey = keyTokenKeyManager.userKey.value ?: return
         if (userKey.accountNum.isNullOrEmpty()) {
             Log.d(TAG, "order failed: empty accountNum")
         }
-        orderRemote.buy(
-            accountNum = userKey.accountNum!!,
-            code = code,
-            price = priceInput.value,
-            quantity = quantityInput.value,
-        )
+
+        if (isBuy) {
+            orderRemote.buy(
+                accountNum = userKey.accountNum!!,
+                code = code,
+                price = priceInput.value,
+                quantity = quantityInput.value,
+            )
+        } else{
+            orderRemote.sell(
+                accountNum = userKey.accountNum!!,
+                code = code,
+                price = priceInput.value,
+                quantity = quantityInput.value,
+            )
+        }
             .flowOn(Dispatchers.Main)
             .onEach {
                 if (it.rtCd == "0") {
