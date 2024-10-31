@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TableChart
@@ -28,6 +29,7 @@ import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.views.setting.SettingFragment
+import com.trueedu.project.ui.views.spac.SpacFragment
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -64,6 +66,7 @@ class MenuFragment: BaseFragment() {
                     .padding(innerPadding)
             ) {
                 MenuItem(Icons.Outlined.Settings, "설정", ::onSettings)
+                MenuItem(Icons.Outlined.RocketLaunch, "스팩 종목 보기", ::onSpacStocks)
                 MenuItem(Icons.Outlined.TableChart, "테스트-일간 가격", ::onTest)
             }
         }
@@ -72,6 +75,11 @@ class MenuFragment: BaseFragment() {
     private fun onSettings() {
         trueAnalytics.clickButton("menu__setting__click")
         SettingFragment.show(childFragmentManager)
+    }
+
+    private fun onSpacStocks() {
+        trueAnalytics.clickButton("menu__spac__click")
+        SpacFragment.show(childFragmentManager)
     }
 
     private fun onTest() {

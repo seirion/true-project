@@ -124,6 +124,10 @@ class StockPool @Inject constructor(
         }
     }
 
+    fun search(predicate: (StockInfo) -> Boolean): List<StockInfo> {
+        return stocks.values.filter(predicate)
+    }
+
     private fun currentTimeToyyyyMMdd(): Long {
         val currentDate = Date()
         val formatter = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
