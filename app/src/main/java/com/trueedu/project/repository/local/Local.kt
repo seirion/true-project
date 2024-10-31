@@ -80,4 +80,7 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
     fun setOrderTab(tab: OrderTab) {
         orderTab = tab.name
     }
+
+    // 광고
+    var adVisible by preferences.boolean(true)
 }

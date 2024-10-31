@@ -32,6 +32,8 @@ import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
+import com.trueedu.project.ui.ads.AdmobManager
+import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
@@ -44,9 +46,9 @@ import com.trueedu.project.ui.views.home.AccountInfo
 import com.trueedu.project.ui.views.home.EmptyHome
 import com.trueedu.project.ui.views.home.ForceUpdateView
 import com.trueedu.project.ui.views.home.StockItem
+import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
-import com.trueedu.project.ui.views.order.OrderFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -72,6 +74,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var trueAnalytics: TrueAnalytics
     @Inject
     lateinit var downloadCompleteReceiver: DownloadCompleteReceiver
+    @Inject
+    lateinit var admobManager: AdmobManager
 
     private val vm by viewModels<MainViewModel>()
 
@@ -109,6 +113,8 @@ class MainActivity : AppCompatActivity() {
 
         observingScreenSettings()
         vm.init()
+        admobManager.loadNativeAd()
+
         enableEdgeToEdge()
         setContent {
             TrueProjectTheme(
@@ -153,6 +159,10 @@ class MainActivity : AppCompatActivity() {
 
                         vm.userStocks.value?.output1?.let {
                             val items = it.filter { it.holdingQuantity.toDouble() > 0 }
+                            // 광고
+                            if (local.adVisible && admobManager.nativeAd.value != null) {
+                                item { NativeAdView(admobManager.nativeAd.value!!) }
+                            }
                             itemsIndexed(items, { _, item -> item.code} ) { _, item ->
                                 StockItem(item, vm.marketPriceMode.value, ::onPriceClick) {
                                     stockPool.get(item.code)?.let {

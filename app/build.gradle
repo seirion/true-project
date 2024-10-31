@@ -51,6 +51,10 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        resValue("string", "admob_id", "ca-app-pub-3613096182343800~8743264607")
+        resValue("string", "banner_ad_unit_id", "ca-app-pub-3613096182343800/4290048111")
+        resValue("string", "native_ad_unit_id", "ca-app-pub-3613096182343800/5738861158")
     }
 
     buildTypes {
@@ -136,6 +140,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
     implementation(libs.google.play.services)
+    implementation(libs.google.play.services.ads)
     implementation(libs.coil.compose)
 
     debugImplementation(libs.flipper)
