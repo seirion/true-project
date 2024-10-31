@@ -24,6 +24,7 @@ import com.trueedu.project.ui.common.BackStockTopBar
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
+import com.trueedu.project.utils.formatter.cashFormatter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -73,6 +74,9 @@ class StockDetailFragment: BaseFragment() {
             topBar = {
                 val realTimeTrade = vm.priceManager.dataMap[stockInfo.code]
 
+                val price = realTimeTrade?.price
+                    ?: vm.basePrice.value?.output?.price?.toDouble()
+                    ?: 0.0
                 val (priceChangeStr, textColor) = when {
                     realTimeTrade != null -> priceChangeStr(realTimeTrade)
                     vm.basePrice.value != null -> priceChangeStr(vm.basePrice.value!!)
@@ -80,6 +84,7 @@ class StockDetailFragment: BaseFragment() {
                 }
                 BackStockTopBar(
                     stockInfo.nameKr,
+                    cashFormatter.format(price, false),
                     priceChangeStr,
                     textColor,
                     ::dismissAllowingStateLoss
