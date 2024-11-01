@@ -86,4 +86,8 @@ class MainViewModel @Inject constructor(
         local.marketPriceMode = state
         marketPriceMode.value = state
     }
+
+    fun updateUserAssets() {
+        userAssets.loadUserStocks()
+    }
 }

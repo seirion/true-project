@@ -23,7 +23,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.broadcast.DownloadCompleteReceiver
 import com.trueedu.project.data.GoogleAccount
@@ -51,7 +53,9 @@ import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -117,6 +121,7 @@ class MainActivity : AppCompatActivity() {
         observingScreenSettings()
         vm.init()
         admobManager.loadNativeAd()
+        userAssetUpdateRequest()
 
         enableEdgeToEdge()
         setContent {
@@ -247,6 +252,21 @@ class MainActivity : AppCompatActivity() {
                 .collectLatest {
                     keepScreenOnOff(it)
                 }
+        }
+    }
+
+    private fun userAssetUpdateRequest() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                flow {
+                    while (true) {
+                        emit(Unit)
+                        delay(1000)
+                    }
+                }.collect {
+                    vm.updateUserAssets()
+                }
+            }
         }
     }
 
