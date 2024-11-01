@@ -29,6 +29,7 @@ import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BasicText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.views.common.Badge
+import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.utils.formatter.cashFormatter
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,6 +46,11 @@ class SpacFragment: BaseFragment() {
     }
 
     private val vm by viewModels<SpacViewModel>()
+
+    private fun onPriceClick(code: String) {
+        trueAnalytics.clickButton("${screenName()}__price__click")
+        OrderFragment.show(code, parentFragmentManager)
+    }
 
     @Composable
     override fun BodyScreen() {
@@ -66,7 +72,9 @@ class SpacFragment: BaseFragment() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     itemsIndexed(vm.stocks.value, key = { _, item -> item.code }) { i, item ->
-                        SpacItem(i, item, {})
+                        SpacItem(i, item, ::onPriceClick) {
+
+                        }
                     }
                 }
             }
@@ -79,6 +87,7 @@ class SpacFragment: BaseFragment() {
 private fun SpacItem(
     index: Int = 1,
     item: StockInfo = StockInfoKospi("003456", "삼성전자", ""),
+    onPriceClick: (String) -> Unit = {},
     onClick: () -> Unit = {},
 ) {
     Row(
@@ -114,7 +123,10 @@ private fun SpacItem(
             )
         }
 
-        Column(horizontalAlignment = Alignment.End) {
+        Column(
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier.clickable { onPriceClick(item.code) }
+        ) {
             val price = item.prevPrice() // 전일 종가
             val priceString = cashFormatter.format(price?.toDouble() ?: 0.0)
             BasicText(
