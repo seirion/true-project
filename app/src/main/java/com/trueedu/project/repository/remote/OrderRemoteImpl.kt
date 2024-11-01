@@ -2,6 +2,7 @@ package com.trueedu.project.repository.remote
 
 import com.trueedu.project.di.NormalService
 import com.trueedu.project.model.dto.order.OrderResponse
+import com.trueedu.project.model.dto.price.OrderExecutionResponse
 import com.trueedu.project.network.apiCallFlow
 import com.trueedu.project.repository.remote.service.OrderService
 import kotlinx.coroutines.flow.Flow
@@ -143,5 +144,38 @@ class OrderRemoteImpl(
             "QTY_ALL_ORD_YN" to "Y", // 잔량전부주문여부 - Y : 잔량전부 N : 잔량일부
         )
         orderService.modify(headers, body)
+    }
+
+
+    override fun orderExecution(
+        accountNum: String,
+        code: String,
+        fromDate: String,
+        toDate: String,
+    ) = apiCallFlow {
+        // TTTC8001R : 주식 일별 주문 체결 조회(3개월이내)
+        // CTSC9115R : 주식 일별 주문 체결 조회(3개월이전)
+        val headers = mapOf(
+            "tr_id" to "TTTC8001R",
+            "custtype" to "P",
+        )
+        val queries = mapOf(
+            "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
+            "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
+            "INQR_STRT_DT" to fromDate, // 조회 시작 일자
+            "INQR_END_DT" to toDate, // 조회 종료 일자
+            "SLL_BUY_DVSN_CD" to "00", // 00 : 전체 01 : 매도 02 : 매수
+            "INQR_DVSN" to "00", // 조회 구분 - 00 : 역순 01 : 정순
+            "PDNO" to "", // 종목번호 - empty 이면 ?
+            "CCLD_DVSN" to "01", // 체결 구분 - 00 : 전체 01 : 체결 02 : 미체결
+            "ORD_GNO_BRNO" to "", // 주문채번지점번호(empty)
+            "ODNO" to "", // 주문번호 - 조회기간이 2일 이상인 경우, 공란 입력
+                          // - 조회기간이 1일인 경우에만 주문번호(ODNO)로 조회 가능
+            "INQR_DVSN_3" to "00", // 조회구분3 - 00 : 전체 01 : 현금 02 : 융자 03 : 대출 04 : 대주
+            "INQR_DVSN_1" to "", // 조회구분1 - 공란 : 전체 1 : ELW 2 : 프리보드
+            "CTX_AREA_FK100" to "", // 연속조회검색조건100
+            "CTX_AREA_NK100" to "", // 연속조회키100
+        )
+        orderService.orderExecution(headers, queries)
     }
 }
