@@ -191,7 +191,11 @@ fun StockItem(
             }
             val profitString = formatter.format(profit, true)
             val profitRate = if (marketPriceMode) {
-                item.priceChangeRate.toDouble()
+                try {
+                    item.priceChangeRate.toDouble()
+                } catch (e: NumberFormatException) {
+                    0.0
+                }
             } else {
                 item.profitLossRate.toDouble()
             }
