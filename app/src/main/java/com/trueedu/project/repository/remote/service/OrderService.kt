@@ -2,6 +2,7 @@ package com.trueedu.project.repository.remote.service
 
 import com.trueedu.project.model.dto.order.OrderModifyResponse
 import com.trueedu.project.model.dto.order.OrderResponse
+import com.trueedu.project.model.dto.price.OrderExecutionResponse
 import com.trueedu.project.model.dto.price.OrderModifiableResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -28,4 +29,10 @@ interface OrderService {
         @HeaderMap headers: Map<String, String>,
         @Body body: Map<String, String>
     ): Response<OrderModifyResponse>
+
+    @GET("uapi/domestic-stock/v1/trading/inquire-daily-ccld")
+    suspend fun orderExecution(
+        @HeaderMap headers: Map<String, String>,
+        @QueryMap queries: Map<String, String>
+    ): Response<OrderExecutionResponse>
 }

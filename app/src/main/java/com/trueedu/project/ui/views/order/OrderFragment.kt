@@ -48,12 +48,14 @@ class OrderFragment: BaseFragment() {
     lateinit var code: String
     private val vm by viewModels<OrderViewModel>()
     private val modifyVm by viewModels<OrderModifyViewModel>()
+    private val executionVm by viewModels<OrderExecutionViewModel>()
 
     @Inject
     lateinit var local: Local
 
     private lateinit var orderViewDrawer: OrderViewDrawer
     private lateinit var modifiableViewDrawer: ModifiableViewDrawer
+    private lateinit var orderExecutionDraw: OrderExecutionDraw
 
     private val currentTab = mutableStateOf(OrderTab.Order)
 
@@ -71,6 +73,7 @@ class OrderFragment: BaseFragment() {
         super.init()
         orderViewDrawer = OrderViewDrawer(vm, ::buy, ::sell)
         modifiableViewDrawer = ModifiableViewDrawer(modifyVm, ::cancelOrder)
+        orderExecutionDraw = OrderExecutionDraw(executionVm)
 
         //currentTab.value = local.getOrderTab()
         vm.init(code)
@@ -80,6 +83,8 @@ class OrderFragment: BaseFragment() {
                 .collect {
                     if (it == OrderTab.Modification) {
                         modifyVm.init()
+                    } else if (it == OrderTab.Execution) {
+                        executionVm.init()
                     }
                 }
         }
@@ -142,7 +147,6 @@ class OrderFragment: BaseFragment() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(horizontal = 2.dp)
             ) {
                 TopStockInfoViewInternal()
                 TabViews()
@@ -153,6 +157,9 @@ class OrderFragment: BaseFragment() {
                     }
                     OrderTab.Modification -> {
                         modifiableViewDrawer.Draw()
+                    }
+                    OrderTab.Execution -> {
+                        orderExecutionDraw.Draw()
                     }
                     else -> {
 
@@ -200,7 +207,7 @@ class OrderFragment: BaseFragment() {
                     selected = currentTabIndex == index,
                     onClick = { setOrderTab(tab) },
                     modifier = Modifier.height(32.dp),
-                    enabled = index <= 1,
+                    enabled = index <= 2,
                     icon = {
                         BasicText(
                             s = tab.label,
