@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.views
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -41,6 +43,9 @@ class StockDetailViewModel @Inject constructor(
         priceRemote.currentPrice(stockInfo.code)
             .onEach {
                 basePrice.value = it
+            }
+            .catch {
+                Log.d(TAG, "가격 데이터 받기 실패: $it")
             }
             .launchIn(viewModelScope)
     }
