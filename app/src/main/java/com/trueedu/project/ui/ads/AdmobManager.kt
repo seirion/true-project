@@ -80,7 +80,8 @@ class AdmobManager @Inject constructor(
         return AdLoader.Builder(applicationContext, applicationContext.getString(R.string.native_ad_unit_id))
             .forNativeAd { ad: NativeAd ->
                 Log.d(TAG, "ad loaded")
-                this.nativeAd.value = ad
+                nativeAd.value?.destroy()
+                nativeAd.value = ad
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
