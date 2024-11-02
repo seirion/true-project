@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DailyPriceResponse(
     @SerialName("output1")
-    val stockDetail: StockDetail,
+    val stockDetail: StockDetail?,
     @SerialName("output2")
     val dailyPrices: List<DailyPrice>,
     @SerialName("rt_cd")
@@ -71,19 +71,19 @@ data class StockDetail(
 @Serializable
 data class DailyPrice(
     @SerialName("stck_bsop_date")
-    val date: String, // yyyyMMdd
+    val date: String?, // yyyyMMdd
     @SerialName("stck_clpr")
-    val close: String, // 주식 종가
+    val close: String?, // 주식 종가
     @SerialName("stck_oprc")
-    val `open`: String, // 시가
+    val `open`: String?, // 시가
     @SerialName("stck_hgpr")
-    val high: String, // 고가
+    val high: String?, // 고가
     @SerialName("stck_lwpr")
-    val low: String, // 저가
+    val low: String?, // 저가
     @SerialName("acml_vol")
-    val volume: String, // 누적 거래량
+    val volume: String?, // 누적 거래량
     @SerialName("acml_tr_pbmn")
-    val volumeAmount: String, // 누적 거래 대금
+    val volumeAmount: String?, // 누적 거래 대금
     /*
     -flng_cls_code	락 구분 코드	String	Y	2	00:해당사항없음(락이 발생안한 경우)
     01:권리락
@@ -98,7 +98,7 @@ data class DailyPrice(
     -revl_issu_reas	재평가사유코드	String	Y	2	재평가사유코드
     */
     @SerialName("prdy_vrss_sign")
-    val changeSign: String, // 전일 대비 부호
+    val changeSign: String?, // 전일 대비 부호
     @SerialName("prdy_vrss")
-    val change: String, // 전일 대비
+    val change: String?, // 전일 대비
 )

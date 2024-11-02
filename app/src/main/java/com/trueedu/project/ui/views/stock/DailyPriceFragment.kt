@@ -67,11 +67,11 @@ class DailyPriceFragment: BaseFragment() {
                     return@LazyColumn
                 }
 
-                item { TopStockInfoViewInternal(vm.dailyPrices.value!!.stockDetail) }
+                item { TopStockInfoViewInternal(vm.dailyPrices.value!!.stockDetail!!) }
                 stickyHeader { DailyPriceSection() }
 
-                val items = vm.dailyPrices.value!!.dailyPrices
-                itemsIndexed(items, key = { _, item -> item.date }) { index, item ->
+                val items = vm.dailyPrices.value!!.dailyPrices!!
+                itemsIndexed(items, key = { _, item -> item.date!! }) { index, item ->
                     val bgColor = if (index % 2 == 0) {
                         MaterialTheme.colorScheme.background
                     } else {
