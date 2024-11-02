@@ -85,7 +85,7 @@ class SettingFragment: BaseFragment() {
 
                 SettingLabel("버전", BuildConfig.VERSION_NAME)
 
-                SettingItem("탈퇴 및 데이터 삭제", vm.updateAvailable.value) {
+                SettingItem("탈퇴 및 데이터 삭제", googleAccount.loggedIn()) {
                     trueAnalytics.enterView("setting__withdraw__click")
                     vm.withdraw(
                         onSuccess = {
