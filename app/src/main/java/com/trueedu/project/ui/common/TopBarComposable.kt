@@ -31,12 +31,12 @@ fun BackTitleTopBar(
     val iconList = listOfNotNull(
         actionIcon2, actionIcon
     )
-    val actionList = listOf(onAction2, onAction)
+    val actionList = listOfNotNull(onAction2, onAction)
     val actions: @Composable (RowScope.() -> Unit) =
         {
             Row {
                 iconList.zip(actionList).forEach { (icon, action) ->
-                    TouchIcon24(icon = icon) { action?.invoke() }
+                    TouchIcon24(icon = icon) { action.invoke() }
                 }
             }
         }
