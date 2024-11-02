@@ -40,9 +40,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.BaseFragment
+import com.trueedu.project.ui.ads.AdmobManager
+import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.DividerHorizontal
@@ -57,6 +60,7 @@ import com.trueedu.project.utils.formatter.RateFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapNotNull
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class WatchListFragment: BaseFragment() {
@@ -71,6 +75,11 @@ class WatchListFragment: BaseFragment() {
             return fragment
         }
     }
+
+    @Inject
+    lateinit var remoteConfig: RemoteConfig
+    @Inject
+    lateinit var admobManager: AdmobManager
 
     private val vm by viewModels<WatchListViewModel>()
 
@@ -97,6 +106,11 @@ class WatchListFragment: BaseFragment() {
                     actionIcon2 = Icons.Filled.Edit,
                     onAction2 = ::onEdit,
                 )
+            },
+            bottomBar = {
+                if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
+                    NativeAdView(admobManager.nativeAd.value!!)
+                }
             },
             modifier = Modifier
                 .fillMaxSize()
