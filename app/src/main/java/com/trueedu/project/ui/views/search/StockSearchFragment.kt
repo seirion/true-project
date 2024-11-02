@@ -75,14 +75,24 @@ class StockSearchFragment: BaseFragment() {
     }
 
     fun toggleWatchList(code: String) {
-        if (inWatchList(code)) {
+        val currentOn = inWatchList(code)
+        if (currentOn) {
             watchList.remove(targetPage!!, code)
         } else {
             watchList.add(targetPage!!, code)
         }
+        trueAnalytics.clickButton(
+            "${screenName()}__toggle_watch__click",
+            mapOf(
+                "code" to code,
+                "previous" to currentOn,
+                "status" to currentOn,
+            )
+        )
     }
 
     private fun gotoStockDetail(stockInfo: StockInfo) {
+        trueAnalytics.clickButton("${screenName()}__item__click")
         StockDetailFragment.show(stockInfo, parentFragmentManager)
     }
 }
