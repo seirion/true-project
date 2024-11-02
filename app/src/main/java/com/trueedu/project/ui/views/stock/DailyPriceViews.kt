@@ -94,7 +94,7 @@ fun DailyPriceCell(
             val color = if (i == 0 || i == 3) {
                MaterialTheme.colorScheme.secondary
             } else {
-                ChartColor.color(item.change.toDouble())
+                ChartColor.color(item.change!!.toDouble())
             }
             val textAlign = if (i == 0) {
                 TextAlign.Start
@@ -102,7 +102,7 @@ fun DailyPriceCell(
                 TextAlign.End
             }
             TrueText(
-                s = formatting(s),
+                s = formatting(s ?: ""),
                 fontSize = 12,
                 color = color,
                 textAlign = textAlign,

@@ -44,13 +44,23 @@ class DailyPriceViewModel @Inject constructor(
     private fun loadData(code: String) {
         priceRemote.dailyPrice(code, from.yyyyMMdd(), to.yyyyMMdd())
             .onEach {
+                if (it.rtCd != "0") {
+                    val msg = it.msg1
+                    Log.d(TAG, "failed to get daily price: $msg")
+                    return@onEach
+                }
                 Log.d(TAG, "dailyPrice: $it")
                 if (dailyPrices.value == null) {
-                    dailyPrices.value = it
+                    val prices = it.dailyPrices.filter {
+                        it.date != null
+                    }
+                    dailyPrices.value = it.copy(
+                        dailyPrices = prices
+                    )
                 } else {
                     val org = dailyPrices.value
                     val list = org!!.dailyPrices.toMutableList()
-                    list.addAll(it.dailyPrices)
+                    list.addAll(it.dailyPrices.filter { it.date != null })
                     dailyPrices.value = org.copy(
                         dailyPrices = list
                     )
