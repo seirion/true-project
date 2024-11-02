@@ -51,6 +51,7 @@ import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.order.OrderFragment
+import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -191,7 +192,11 @@ class WatchListFragment: BaseFragment() {
     }
 
     private fun gotoTrading(stockInfo: StockInfo) {
-        OrderFragment.show(stockInfo.code, parentFragmentManager)
+        if (vm.hasAppKey()) {
+            OrderFragment.show(stockInfo.code, parentFragmentManager)
+        } else {
+            AppKeyInputFragment.show(false, parentFragmentManager)
+        }
     }
 
     private fun gotoStockDetail(stockInfo: StockInfo) {

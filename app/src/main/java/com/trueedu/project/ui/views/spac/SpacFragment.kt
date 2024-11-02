@@ -30,6 +30,7 @@ import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.views.common.Badge
 import com.trueedu.project.ui.views.order.OrderFragment
+import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.utils.formatter.cashFormatter
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,7 +50,11 @@ class SpacFragment: BaseFragment() {
 
     private fun onPriceClick(code: String) {
         trueAnalytics.clickButton("${screenName()}__price__click")
-        OrderFragment.show(code, parentFragmentManager)
+        if (vm.hasAppKey()) {
+            OrderFragment.show(code, parentFragmentManager)
+        } else {
+            AppKeyInputFragment.show(false, parentFragmentManager)
+        }
     }
 
     @Composable

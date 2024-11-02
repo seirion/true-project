@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
@@ -20,6 +21,7 @@ class StockDetailViewModel @Inject constructor(
     private val stockPool: StockPool,
     private val priceRemote: PriceRemote,
     val priceManager: RealPriceManager,
+    private val tokenKeyManager: TokenKeyManager,
 ): ViewModel() {
 
     companion object {
@@ -68,5 +70,9 @@ class StockDetailViewModel @Inject constructor(
             "기준가" to stockInfo.prevPrice(),
             "전일거래량" to stockInfo.prevVolume(),
         )
+    }
+
+    fun hasAppKey(): Boolean {
+        return tokenKeyManager.userKey.value != null
     }
 }

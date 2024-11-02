@@ -5,6 +5,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.model.dto.StockInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -13,6 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SpacViewModel @Inject constructor(
     private val stockPool: StockPool,
+    private val tokenKeyManager: TokenKeyManager,
 ): ViewModel() {
     companion object {
         private val TAG = SpacViewModel::class.java.simpleName
@@ -45,5 +47,9 @@ class SpacViewModel @Inject constructor(
                     }
             }
         }
+    }
+
+    fun hasAppKey(): Boolean {
+        return tokenKeyManager.userKey.value != null
     }
 }

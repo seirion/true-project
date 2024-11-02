@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.WatchList
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
@@ -26,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WatchListViewModel @Inject constructor(
     private val watchList: WatchList,
+    private val tokenKeyManager: TokenKeyManager,
     val stockPool: StockPool,
     val priceManager: RealPriceManager,
     private val priceRemote: PriceRemote,
@@ -54,8 +56,10 @@ class WatchListViewModel @Inject constructor(
                         Log.d(TAG, "watchList: $it")
                         loading.value = false
 
-                        requestRealtimePrice()
-                        requestBasePrices()
+                        if (hasAppKey()) {
+                            requestRealtimePrice()
+                            requestBasePrices()
+                        }
                     }
             }
 
@@ -64,8 +68,10 @@ class WatchListViewModel @Inject constructor(
                 snapshotFlow { currentPage.value }
                     .distinctUntilChanged()
                     .collect {
-                        requestRealtimePrice()
-                        requestBasePrices()
+                        if (hasAppKey()) {
+                            requestRealtimePrice()
+                            requestBasePrices()
+                        }
                     }
             }
 
@@ -122,5 +128,9 @@ class WatchListViewModel @Inject constructor(
                     }
                     .launchIn(viewModelScope)
             }
+    }
+
+    fun hasAppKey(): Boolean {
+        return tokenKeyManager.userKey.value != null
     }
 }

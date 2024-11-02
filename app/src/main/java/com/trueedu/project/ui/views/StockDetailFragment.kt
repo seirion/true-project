@@ -22,6 +22,7 @@ import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackStockTopBar
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
 import com.trueedu.project.utils.formatter.cashFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -117,7 +118,11 @@ class StockDetailFragment: BaseFragment() {
 
     private fun gotoDailyPrice() {
         trueAnalytics.clickButton("stock_detail__daily_price__click")
-        DailyPriceFragment.show(stockInfo.code, childFragmentManager)
+        if (vm.hasAppKey()) {
+            DailyPriceFragment.show(stockInfo.code, childFragmentManager)
+        } else {
+            AppKeyInputFragment.show(false, childFragmentManager)
+        }
     }
 }
 
