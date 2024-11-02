@@ -54,10 +54,6 @@ class StockPool @Inject constructor(
     }
     val status = mutableStateOf(Status.LOADING)
 
-    init {
-        loadStockInfo()
-    }
-
     fun loadStockInfo() {
         if (status.value == Status.SUCCESS || status.value == Status.UPDATING) {
             return
