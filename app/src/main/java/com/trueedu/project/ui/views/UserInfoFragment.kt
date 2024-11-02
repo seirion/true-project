@@ -55,10 +55,10 @@ class UserInfoFragment: BaseFragment() {
         Scaffold(
             topBar = {
                 BackTitleTopBar(
-                    "사용자 정보",
-                    ::dismissAllowingStateLoss,
-                    Icons.AutoMirrored.Filled.Logout,
-                    ::onLogout,
+                    title = "사용자 정보",
+                    onBack = ::dismissAllowingStateLoss,
+                    actionIcon = Icons.AutoMirrored.Filled.Logout,
+                    onAction = ::onLogout,
                 )
             },
             modifier = Modifier
@@ -109,6 +109,7 @@ class UserInfoFragment: BaseFragment() {
     }
 
     private fun onLogout() {
+        trueAnalytics.clickButton("${screenName()}_logout__click")
         googleAccount.logout(requireContext()) {
             dismissAllowingStateLoss()
             Toast.makeText(requireContext(), "로그아웃 되었습니다", Toast.LENGTH_SHORT).show()
