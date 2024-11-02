@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
         observingScreenSettings()
         vm.init()
-        admobManager.loadNativeAd()
+        admobManager.init()
 
         enableEdgeToEdge()
 

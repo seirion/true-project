@@ -25,6 +25,12 @@ import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.trueedu.project.R
 import com.trueedu.project.analytics.TrueAnalytics
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -38,10 +44,42 @@ class AdmobManager @Inject constructor(
     }
     //private var rewardedAd: RewardedAd? = null
     val nativeAd = mutableStateOf<NativeAd?>(null)
+    private lateinit var adLoader: AdLoader
 
-    fun loadNativeAd() {
-        val adLoader = AdLoader.Builder(applicationContext, applicationContext.getString(R.string.native_ad_unit_id))
+    private var job: Job? = null
+
+    fun start() {
+        job = CoroutineScope(Dispatchers.Main).launch {
+            flow {
+                while (true) {
+                    delay(60_000)
+                    emit(Unit)
+                }
+            }
+                .collect {
+                    Log.d(TAG, "update ad")
+                    loadNativeAd()
+                }
+        }
+    }
+
+    fun stop() {
+        job?.cancel()
+    }
+
+    fun init() {
+        adLoader = build()
+        loadNativeAd()
+    }
+
+    private fun loadNativeAd() {
+        adLoader.loadAd(AdRequest.Builder().build())
+    }
+
+    private fun build(): AdLoader {
+        return AdLoader.Builder(applicationContext, applicationContext.getString(R.string.native_ad_unit_id))
             .forNativeAd { ad: NativeAd ->
+                Log.d(TAG, "ad loaded")
                 this.nativeAd.value = ad
             }
             .withAdListener(object : AdListener() {
@@ -61,9 +99,6 @@ class AdmobManager @Inject constructor(
                     ).build()
             )
             .build()
-
-
-        adLoader.loadAd(AdRequest.Builder().build())
     }
 }
 
@@ -117,7 +152,7 @@ fun NativeAdView(nativeAd: NativeAd) {
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .clickable(false) {  }
+            .clickable(false) { }
 
     ) {
         val colorScheme = MaterialTheme.colorScheme
