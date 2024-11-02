@@ -18,7 +18,7 @@ import androidx.fragment.app.viewModels
 import com.trueedu.project.model.dto.rank.VolumeRankingOutput
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.LoadingView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -48,7 +48,7 @@ class VolumeRankingFragment: BaseFragment() {
             if (vm.loading.value) {
                 LoadingView()
             } else if (vm.loadingFail.value) {
-                BasicText(
+                TrueText(
                     s = "데이터 로딩 실패",
                     fontSize = 18,
                     color = MaterialTheme.colorScheme.error,
@@ -75,7 +75,7 @@ private fun StockList(
             .padding(horizontal = 16.dp)
     ) {
         itemsIndexed(list, key = { _, item -> item.code }) { index, item ->
-            BasicText(
+            TrueText(
                 s = "${item.rank}. ${item.nameKr} (${item.code})",
                 fontSize = 14,
                 color = MaterialTheme.colorScheme.secondary,

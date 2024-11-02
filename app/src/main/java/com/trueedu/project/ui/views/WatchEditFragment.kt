@@ -25,7 +25,7 @@ import com.trueedu.project.data.WatchList
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.widget.dragDropColumn
 import com.trueedu.project.ui.widget.swap
 import dagger.hilt.android.AndroidEntryPoint
@@ -102,13 +102,13 @@ class WatchEditFragment: BaseFragment() {
                         verticalArrangement = Arrangement.Center,
                         modifier = Modifier.weight(1f),
                     ) {
-                        BasicText(
+                        TrueText(
                             s = stock.nameKr,
                             fontSize = 14,
                             color = MaterialTheme.colorScheme.primary,
                             maxLines = 1,
                         )
-                        BasicText(
+                        TrueText(
                             s = "(${stock.code})",
                             fontSize = 13,
                             color = MaterialTheme.colorScheme.secondary,

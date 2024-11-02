@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.model.dto.price.DailyPrice
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.cashFormatter
 
@@ -30,13 +30,13 @@ fun PriceCellView(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        BasicText(
+        TrueText(
             s = title,
             fontSize = 12,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.weight(1f)
         )
-        BasicText(
+        TrueText(
             s = value,
             fontSize = 12,
             color = color,
@@ -62,7 +62,7 @@ fun DailyPriceSection() {
             } else {
                 TextAlign.End
             }
-            BasicText(
+            TrueText(
                 s = it,
                 fontSize = 12,
                 color = MaterialTheme.colorScheme.secondary,
@@ -101,7 +101,7 @@ fun DailyPriceCell(
             } else {
                 TextAlign.End
             }
-            BasicText(
+            TrueText(
                 s = formatting(s),
                 fontSize = 12,
                 color = color,

@@ -44,7 +44,7 @@ import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
@@ -210,7 +210,7 @@ class WatchListFragment: BaseFragment() {
                 )
                 .padding(16.dp)
         ) {
-            BasicText(
+            TrueText(
                 s = item.nameKr,
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 18,
@@ -225,7 +225,7 @@ class WatchListFragment: BaseFragment() {
                     .clickable { onClick() },
                 horizontalArrangement = Arrangement.End,
             ) {
-                BasicText(
+                TrueText(
                     s = "관심종목에서 삭제",
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 16,
@@ -264,13 +264,13 @@ private fun WatchingStockItem(
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Column {
-            BasicText(
+            TrueText(
                 s = nameKr,
                 fontSize = 14,
                 color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
             )
-            BasicText(
+            TrueText(
                 s = "(${code})",
                 fontSize = 13,
                 color = MaterialTheme.colorScheme.secondary,
@@ -283,7 +283,7 @@ private fun WatchingStockItem(
                 .clickable { onTradingClick() }
         ) {
             val totalValueString = formatter.format(price)
-            BasicText(
+            TrueText(
                 s = totalValueString,
                 fontSize = 14,
                 fontWeight = FontWeight.W600,
@@ -292,7 +292,7 @@ private fun WatchingStockItem(
 
             val profitString = formatter.format(delta, true)
             val profitRateString = rateFormatter.format(rate, true)
-            BasicText(
+            TrueText(
                 s = "$profitString ($profitRateString)",
                 fontSize = 12,
                 color = ChartColor.color(delta),

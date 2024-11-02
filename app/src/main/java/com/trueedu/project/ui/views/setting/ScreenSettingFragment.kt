@@ -18,7 +18,7 @@ import androidx.fragment.app.FragmentManager
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.widget.MySwitch
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -86,7 +86,7 @@ fun OnOffSetting(
             .height(56.dp)
             .padding(horizontal = 16.dp)
     ) {
-        BasicText(s = title, fontSize = 16, color = MaterialTheme.colorScheme.primary)
+        TrueText(s = title, fontSize = 16, color = MaterialTheme.colorScheme.primary)
         MySwitch(
             checked = checked,
             onCheckedChange = onCheckedChange

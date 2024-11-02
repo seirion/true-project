@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.model.dto.account.AccountOutput1
 import com.trueedu.project.model.dto.account.AccountOutput2
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.widget.MyToggleButton
@@ -30,7 +30,7 @@ fun EmptyHome() {
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
     ) {
-        BasicText(
+        TrueText(
             s = "자산 데이터 없음",
             fontSize = 18,
             color = MaterialTheme.colorScheme.tertiary,
@@ -65,11 +65,11 @@ fun AccountInfo(
         val profitRateString = rateFormatter.format(rate, true)
 
         Column {
-            BasicText(s = "Total", fontSize = 12, color = MaterialTheme.colorScheme.outline)
+            TrueText(s = "Total", fontSize = 12, color = MaterialTheme.colorScheme.outline)
             // 총자산
-            BasicText(s = totalString, fontSize = 24, color = MaterialTheme.colorScheme.primary)
+            TrueText(s = totalString, fontSize = 24, color = MaterialTheme.colorScheme.primary)
             // 수익/수익률
-            BasicText(
+            TrueText(
                 s = "$profitString ($profitRateString)",
                 fontSize = 14,
                 color = ChartColor.color(profit)
@@ -106,7 +106,7 @@ fun AccountInfo(
 
 @Composable
 private fun HeaderTitle(s: String) {
-    BasicText(
+    TrueText(
         s = s,
         fontSize = 12,
         color = MaterialTheme.colorScheme.outline,
@@ -115,7 +115,7 @@ private fun HeaderTitle(s: String) {
 
 @Composable
 private fun RowScope.HeaderTitle(s: String) {
-    BasicText(
+    TrueText(
         s = s,
         fontSize = 12,
         color = MaterialTheme.colorScheme.outline,
@@ -125,7 +125,7 @@ private fun RowScope.HeaderTitle(s: String) {
 
 @Composable
 private fun RowScope.BodyTitle(s: String) {
-    BasicText(
+    TrueText(
         s = s,
         fontSize = 14,
         color = MaterialTheme.colorScheme.secondary,
@@ -151,7 +151,7 @@ fun StockItem(
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Column {
-            BasicText(
+            TrueText(
                 s = item.nameKr,
                 fontSize = 14,
                 color = MaterialTheme.colorScheme.primary,
@@ -163,7 +163,7 @@ fun StockItem(
             } else {
                 "${item.holdingQuantity}주" // 수량
             }
-            BasicText(
+            TrueText(
                 s = subText,
                 fontSize = 13,
                 color = MaterialTheme.colorScheme.secondary,
@@ -200,13 +200,13 @@ fun StockItem(
                 item.profitLossRate.toDouble()
             }
             val profitRateString = rateFormatter.format(profitRate, true)
-            BasicText(
+            TrueText(
                 s = totalValueString,
                 fontSize = 14,
                 fontWeight = FontWeight.W600,
                 color = ChartColor.color(profit),
             )
-            BasicText(
+            TrueText(
                 s = "$profitString ($profitRateString)",
                 fontSize = 12,
                 color = ChartColor.color(profit),

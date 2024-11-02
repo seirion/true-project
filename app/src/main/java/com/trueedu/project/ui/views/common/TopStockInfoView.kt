@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.stock.PriceCellView
@@ -44,21 +44,21 @@ fun TopStockInfoView(
             modifier = Modifier.weight(1f),
         ) {
             // 현재 가격
-            BasicText(
+            TrueText(
                 s = priceString,
                 fontSize = 24,
                 fontWeight = FontWeight.W500,
                 color = textColor,
             )
             // 전일 대비
-            BasicText(
+            TrueText(
                 s = "${cashFormatter.format(priceChange, false)} " +
                         "(${rateFormatter.format(priceChangeRate)})",
                 fontSize = 12,
                 color = ChartColor.color(priceChange)
             )
             // 거래량
-            BasicText(
+            TrueText(
                 s = cashFormatter.format(volume, false),
                 fontSize = 12,
                 color = MaterialTheme.colorScheme.secondary,

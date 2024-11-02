@@ -26,7 +26,7 @@ import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.StockInfoKospi
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.views.common.Badge
 import com.trueedu.project.ui.views.order.OrderFragment
@@ -101,7 +101,7 @@ private fun SpacItem(
     ) {
         Column {
             Row {
-                BasicText(
+                TrueText(
                     s = item.nameKr,
                     fontSize = 14,
                     color = MaterialTheme.colorScheme.primary,
@@ -116,7 +116,7 @@ private fun SpacItem(
                     Badge("관", Color(0xFFF57C00))
                 }
             }
-            BasicText(
+            TrueText(
                 s = item.listingDate() ?: "",
                 fontSize = 10,
                 color = MaterialTheme.colorScheme.secondary,
@@ -129,12 +129,12 @@ private fun SpacItem(
         ) {
             val price = item.prevPrice() // 전일 종가
             val priceString = cashFormatter.format(price?.toDouble() ?: 0.0)
-            BasicText(
+            TrueText(
                 s = priceString,
                 fontSize = 14,
                 color = MaterialTheme.colorScheme.primary,
             )
-            BasicText(
+            TrueText(
                 s = "${item.marketCap()}억",
                 fontSize = 10,
                 color = MaterialTheme.colorScheme.primary,

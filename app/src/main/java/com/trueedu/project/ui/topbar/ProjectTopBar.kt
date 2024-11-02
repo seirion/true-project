@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TouchIcon32
 import com.trueedu.project.utils.NetworkImage
@@ -73,7 +73,7 @@ fun MainTopBar(
 
 @Composable
 private fun TopBarTitle(text: String, onClick: () -> Unit) {
-    BasicText(
+    TrueText(
         s = text,
         fontSize = 16,
         color = MaterialTheme.colorScheme.primary,

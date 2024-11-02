@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.StockInfoKospi
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.TouchIcon32
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,7 +53,7 @@ fun SearchBar(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
-        placeholder = { BasicText(hint, 14, color = MaterialTheme.colorScheme.surfaceVariant) },
+        placeholder = { TrueText(hint, 14, color = MaterialTheme.colorScheme.surfaceVariant) },
         /*
         leadingIcon = {
             Icon(
@@ -124,7 +124,7 @@ fun SearchStockItem(
             .padding(horizontal = 16.dp)
     ) {
         val s = "${item.nameKr} (${item.code})"
-        BasicText(
+        TrueText(
             s = s,
             fontSize = 16,
             color = MaterialTheme.colorScheme.primary,

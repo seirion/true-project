@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
 
@@ -44,7 +44,7 @@ fun SellBuyButtons(
                 disabledContentColor = Color.Transparent,
             ),
         ) {
-            BasicText(
+            TrueText(
                 s = "매수",
                 fontSize = 18,
                 color = MaterialTheme.colorScheme.background,
@@ -63,7 +63,7 @@ fun SellBuyButtons(
                 disabledContentColor = Color.Transparent,
             ),
         ) {
-            BasicText(
+            TrueText(
                 s = "매도",
                 fontSize = 18,
                 color = MaterialTheme.colorScheme.background,

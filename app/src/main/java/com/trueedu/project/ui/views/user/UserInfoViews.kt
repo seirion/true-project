@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.RadioButtonChecked
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.RemoveCircleOutline
@@ -24,7 +22,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.utils.NetworkImage
@@ -47,7 +45,7 @@ fun AccountView(
                 .size(32.dp)
         )
         Margin(16)
-        BasicText(
+        TrueText(
             s = email,
             fontSize = 14,
             color = MaterialTheme.colorScheme.tertiary,
@@ -86,7 +84,7 @@ fun AccountNumView(
                 contentDescription = "checked"
             )
             Margin(8)
-            BasicText(
+            TrueText(
                 s = accountNum,
                 fontSize = 16,
                 color = MaterialTheme.colorScheme.primary,
@@ -120,7 +118,7 @@ fun AddIcon(
             contentDescription = "checked"
         )
         Margin(8)
-        BasicText(
+        TrueText(
             s = "계좌, 키 추가하기",
             fontSize = 16,
             color = MaterialTheme.colorScheme.primary,

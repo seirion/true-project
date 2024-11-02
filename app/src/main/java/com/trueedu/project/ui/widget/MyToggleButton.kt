@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 
 @Preview(showBackground = true)
 @Composable
@@ -81,7 +81,7 @@ fun MyToggleButton(
                     toggleClick(candidate)
                 }) {
                     val isCurrent = state == index
-                    BasicText(
+                    TrueText(
                         s = s,
                         fontSize = 14,
                         modifier = Modifier

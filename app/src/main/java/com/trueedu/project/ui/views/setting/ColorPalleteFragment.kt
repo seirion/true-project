@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -110,7 +110,7 @@ class ColorPaletteFragmentFragment: BaseFragment() {
                         .fillMaxWidth()
                         .padding(vertical = 2.dp)
                 ) {
-                    BasicText(s = name, fontSize = 14, color = MaterialTheme.colorScheme.primary)
+                    TrueText(s = name, fontSize = 14, color = MaterialTheme.colorScheme.primary)
                     Box(
                         modifier = Modifier.width(96.dp)
                             .height(48.dp)

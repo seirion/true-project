@@ -20,7 +20,7 @@ import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.ui.views.user.AccountNumView
 import com.trueedu.project.ui.views.user.AccountView
@@ -81,7 +81,7 @@ class UserInfoFragment: BaseFragment() {
                     )
                 }
                 item {
-                    BasicText(
+                    TrueText(
                         s = "계좌 목록",
                         fontSize = 16,
                         color = MaterialTheme.colorScheme.primary,

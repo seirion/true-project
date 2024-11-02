@@ -30,7 +30,7 @@ fun BottomBar(
         } else {
             MaterialTheme.colorScheme.surface
         }
-        BasicText(s = "저장", fontSize = 20, color = buttonColor)
+        TrueText(s = "저장", fontSize = 20, color = buttonColor)
     }
 }
 
