@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.cashFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
@@ -30,7 +30,7 @@ fun PriceViews(
         val changeString = cashFormatter.format(priceChange, true)
         val rateString = rateFormatter.format(rate, true)
         val textColor = ChartColor.color(priceChange)
-        BasicText(
+        TrueText(
             s = priceString,
             fontSize = 24,
             fontWeight = FontWeight.W500,
@@ -44,8 +44,8 @@ fun PriceViews(
             modifier = Modifier.weight(1f)
                 .fillMaxWidth()
         ) {
-            BasicText(s = changeString, fontSize = 14, color = textColor)
-            BasicText(s = rateString, fontSize = 12, color = textColor)
+            TrueText(s = changeString, fontSize = 14, color = textColor)
+            TrueText(s = rateString, fontSize = 12, color = textColor)
         }
     }
 }

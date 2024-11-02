@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.model.dto.price.OrderExecutionDetail
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.cashFormatter
@@ -77,8 +77,8 @@ class OrderExecutionDraw(
                     .padding(start = 4.dp),
                 horizontalAlignment = Alignment.Start
             ) {
-                BasicText(s = nameKr, fontSize = 13, fontWeight = FontWeight.W500, color = primary)
-                BasicText(s = if (isBuy) "매수" else "매도", fontSize = 12, color = chartColor)
+                TrueText(s = nameKr, fontSize = 13, fontWeight = FontWeight.W500, color = primary)
+                TrueText(s = if (isBuy) "매수" else "매도", fontSize = 12, color = chartColor)
             }
 
             val price = cashFormatter.format(item.orderUnitPrice.toDouble())
@@ -87,8 +87,8 @@ class OrderExecutionDraw(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.End
             ) {
-                BasicText(s = price, fontSize = 12, fontWeight = FontWeight.W500, color = primary)
-                BasicText(s = quantity, fontSize = 12, color = primary)
+                TrueText(s = price, fontSize = 12, fontWeight = FontWeight.W500, color = primary)
+                TrueText(s = quantity, fontSize = 12, color = primary)
             }
 
             val executionPrice = cashFormatter.format(item.averagePrice.toDouble())
@@ -98,8 +98,8 @@ class OrderExecutionDraw(
                     .padding(end = 4.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                BasicText(s = executionPrice, fontSize = 12, fontWeight = FontWeight.W500, color = primary)
-                BasicText(s = executionQuantity, fontSize = 12, color = primary)
+                TrueText(s = executionPrice, fontSize = 12, fontWeight = FontWeight.W500, color = primary)
+                TrueText(s = executionQuantity, fontSize = 12, color = primary)
             }
         }
     }
@@ -129,12 +129,12 @@ fun ExecutionListSection() {
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                BasicText(
+                TrueText(
                     s = s0,
                     fontSize = 12,
                     color = textColor,
                 )
-                BasicText(
+                TrueText(
                     s = s1,
                     fontSize = 12,
                     color = textColor,

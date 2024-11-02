@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
 
 @Preview(showBackground = true)
@@ -42,7 +42,7 @@ fun ForceUpdateView(
                 )
                 .padding(16.dp)
         ) {
-            BasicText(
+            TrueText(
                 s = "앱을 최신 버전으로 업데이트 해 주세요",
                 fontSize = 14,
                 color = MaterialTheme.colorScheme.primary,
@@ -61,7 +61,7 @@ fun ForceUpdateView(
                         .copy(alpha = 0.38f),
                 )
             ) {
-                BasicText(
+                TrueText(
                     s = "업데이트 하기",
                     fontSize = 14,
                     color = MaterialTheme.colorScheme.error,

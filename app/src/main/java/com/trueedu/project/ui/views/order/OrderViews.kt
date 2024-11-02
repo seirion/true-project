@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.cashFormatter
@@ -169,13 +169,13 @@ private fun RowScope.PriceText(
             .background(color = bgColor)
             .padding(end = 4.dp),
     ) {
-        BasicText(
+        TrueText(
             s = s,
             fontSize = 14,
             fontWeight = FontWeight.W600,
             color = textColor,
         )
-        BasicText(
+        TrueText(
             s = rate,
             fontSize = 10,
             color = textColor,
@@ -196,7 +196,7 @@ private fun RowScope.NumberText(
             .background(color = bgColor)
             .padding(end = 4.dp),
     ) {
-        BasicText(
+        TrueText(
             s = s,
             fontSize = 14,
             color = textColor,

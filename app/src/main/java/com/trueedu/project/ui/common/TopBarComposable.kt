@@ -48,7 +48,7 @@ fun BackTitleTopBar(
             )
         },
         title = {
-            BasicText(
+            TrueText(
                 s = title,
                 fontSize = 20,
                 color = MaterialTheme.colorScheme.primary
@@ -81,15 +81,15 @@ fun BackStockTopBar(
         },
         title = {
             Column {
-                BasicText(
+                TrueText(
                     s = nameKr,
                     fontSize = 16,
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    BasicText(s = price, fontSize = 14, fontWeight = FontWeight.W600, color = textColor)
+                    TrueText(s = price, fontSize = 14, fontWeight = FontWeight.W600, color = textColor)
                     Margin(6)
-                    BasicText(s = priceChange, fontSize = 14, color = textColor)
+                    TrueText(s = priceChange, fontSize = 14, color = textColor)
                 }
             }
         },

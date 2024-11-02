@@ -27,7 +27,7 @@ import com.trueedu.project.BuildConfig
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.DividerHorizontal
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -118,7 +118,7 @@ fun SettingItem(
             .padding(horizontal = 10.dp)
             .height(56.dp)
     ) {
-        BasicText(
+        TrueText(
             s = text,
             fontSize = 16,
             color = MaterialTheme.colorScheme.primary,
@@ -148,12 +148,12 @@ fun SettingLabel(
             .padding(horizontal = 10.dp)
             .height(56.dp)
     ) {
-        BasicText(
+        TrueText(
             s = title,
             fontSize = 16,
             color = MaterialTheme.colorScheme.primary,
         )
-        BasicText(
+        TrueText(
             s = value,
             fontSize = 18,
             color = MaterialTheme.colorScheme.secondary,

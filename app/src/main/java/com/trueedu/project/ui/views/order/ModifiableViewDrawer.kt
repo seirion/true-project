@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.model.dto.price.OrderModifiableDetail
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
@@ -70,13 +70,13 @@ class ModifiableViewDrawer(
             ) { onCancel(item.orderNo) }
 
             val isBuy = item.sellBuyDivisionCode == "02"
-            BasicText(
+            TrueText(
                 s = if (isBuy) "매수" else "매도" ,
                 fontSize = 12,
                 color = if (isBuy) ChartColor.up else ChartColor.down,
                 modifier = Modifier.weight(1f),
             )
-            BasicText(
+            TrueText(
                 s = item.nameKr,
                 fontSize = 12,
                 color = MaterialTheme.colorScheme.primary,
@@ -87,7 +87,7 @@ class ModifiableViewDrawer(
                 cashFormatter.format(item.quantity.toDouble()) to 1f,
                 item.orderTime.chunked(2).joinToString(":") to 1.5f,
             ).forEach { (s, w) ->
-                BasicText(
+                TrueText(
                     s = s,
                     fontSize = 12,
                     color = MaterialTheme.colorScheme.primary,
@@ -124,7 +124,7 @@ private fun ModifiableSection() {
         VerticalDivider(thickness = 1.dp, color = borderColor)
 
         textList.forEach { (s, w) ->
-            BasicText(
+            TrueText(
                 s =  s,
                 fontSize = 12,
                 color = textColor,

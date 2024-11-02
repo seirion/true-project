@@ -37,7 +37,7 @@ import com.trueedu.project.model.local.UserKey
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.BottomBar
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
@@ -208,7 +208,7 @@ class AppKeyInputFragment: BaseFragment() {
             TextInputItem("appsecret", appSecret.value, ::pasteAppSecret, ::onAppSecretChanged)
             TextInputItem("계좌번호(숫자)", accountNumber.value, ::pasteAccountNumber, ::onAccountNumberChanged, true)
 
-            BasicText(
+            TrueText(
                 s = notice,
                 fontSize = 10,
                 color = MaterialTheme.colorScheme.tertiary,
@@ -250,7 +250,7 @@ private fun TextInputItem(
                 onValueChange(it)
             },
             label = {
-                BasicText(
+                TrueText(
                     s = label,
                     fontSize = 14,
                     color = MaterialTheme.colorScheme.secondary

@@ -32,7 +32,7 @@ fun DividerHorizontal() {
 }
 
 @Composable
-fun BasicText(
+fun TrueText(
     s: String,
     fontSize: Int,
     modifier: Modifier = Modifier.wrapContentSize(),

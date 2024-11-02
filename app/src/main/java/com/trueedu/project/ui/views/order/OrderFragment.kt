@@ -25,7 +25,7 @@ import com.trueedu.project.R
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.views.common.TopStockInfoView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -209,7 +209,7 @@ class OrderFragment: BaseFragment() {
                     modifier = Modifier.height(32.dp),
                     enabled = index <= 2,
                     icon = {
-                        BasicText(
+                        TrueText(
                             s = tab.label,
                             fontSize = 14,
                             color = MaterialTheme.colorScheme.primary,

@@ -18,10 +18,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.trueedu.project.extensions.priceChangeStr
 import com.trueedu.project.model.dto.StockInfo
-import com.trueedu.project.model.dto.price.DailyPrice
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackStockTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
 import com.trueedu.project.utils.formatter.cashFormatter
@@ -108,8 +107,8 @@ class StockDetailFragment: BaseFragment() {
                             .fillMaxWidth()
                             .padding(8.dp)
                     ) {
-                        BasicText(s = it.first, fontSize = 16, color = MaterialTheme.colorScheme.primary)
-                        BasicText(s = it.second ?: "", fontSize = 16, color = MaterialTheme.colorScheme.primary)
+                        TrueText(s = it.first, fontSize = 16, color = MaterialTheme.colorScheme.primary)
+                        TrueText(s = it.second ?: "", fontSize = 16, color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -132,7 +131,7 @@ private fun LinkBox(
         modifier = Modifier.fillMaxWidth()
             .padding(8.dp)
     ) {
-        BasicText(
+        TrueText(
             s = "일별 가격",
             fontSize = 14,
             color = MaterialTheme.colorScheme.primary,

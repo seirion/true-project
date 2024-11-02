@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.BasicText
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.views.setting.SettingFragment
@@ -109,7 +109,7 @@ private fun MenuItem(
             contentDescription = "menu_icon"
         )
         Margin(8)
-        BasicText(
+        TrueText(
             s = text,
             fontSize = 16,
             color = MaterialTheme.colorScheme.primary,
