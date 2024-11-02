@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.TableChart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,12 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.views.setting.SettingFragment
 import com.trueedu.project.ui.views.spac.SpacFragment
-import com.trueedu.project.ui.views.stock.DailyPriceFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -67,7 +65,6 @@ class MenuFragment: BaseFragment() {
             ) {
                 MenuItem(Icons.Outlined.Settings, "설정", ::onSettings)
                 MenuItem(Icons.Outlined.RocketLaunch, "스팩 종목 보기", ::onSpacStocks)
-                MenuItem(Icons.Outlined.TableChart, "테스트-일간 가격", ::onTest)
             }
         }
     }
@@ -80,11 +77,6 @@ class MenuFragment: BaseFragment() {
     private fun onSpacStocks() {
         trueAnalytics.clickButton("menu__spac__click")
         SpacFragment.show(childFragmentManager)
-    }
-
-    private fun onTest() {
-        // 테스트 - 삼성전자
-        DailyPriceFragment.show("005930", childFragmentManager)
     }
 }
 
