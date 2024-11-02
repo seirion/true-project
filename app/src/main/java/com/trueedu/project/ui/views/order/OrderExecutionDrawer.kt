@@ -27,7 +27,7 @@ import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.cashFormatter
 
-class OrderExecutionDraw(
+class OrderExecutionDrawer(
     private val vm: OrderExecutionViewModel,
 ): ComposableDrawer {
 

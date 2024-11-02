@@ -107,27 +107,27 @@ class HomeDrawer(
     }
 
     private fun onItemClick(stockInfo: StockInfo) {
-        trueAnalytics.clickButton("home__item__click")
+        trueAnalytics.clickButton("${screenName()}__item__click")
         StockDetailFragment.show(stockInfo, fragmentManager)
     }
 
     private fun onAccountInfo() {
-        trueAnalytics.clickButton("home__account_info__click")
+        trueAnalytics.clickButton("${screenName()}__account_info__click")
         AppKeyInputFragment.show(false, fragmentManager)
     }
 
     private fun onSearch() {
-        trueAnalytics.clickButton("home__stock_search__click")
+        trueAnalytics.clickButton("${screenName()}__stock_search__click")
         StockSearchFragment.show(null, fragmentManager)
     }
 
     private fun onMenu() {
-        trueAnalytics.clickButton("home__menu__click")
+        trueAnalytics.clickButton("${screenName()}__menu__click")
         MenuFragment.show(fragmentManager)
     }
 
     private fun onPriceClick(code: String) {
-        trueAnalytics.clickButton("home__price__click")
+        trueAnalytics.clickButton("${screenName()}__price__click")
         OrderFragment.show(code, fragmentManager)
     }
 }

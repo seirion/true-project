@@ -55,7 +55,7 @@ class OrderFragment: BaseFragment() {
 
     private lateinit var orderViewDrawer: OrderViewDrawer
     private lateinit var modifiableViewDrawer: ModifiableViewDrawer
-    private lateinit var orderExecutionDraw: OrderExecutionDraw
+    private lateinit var orderExecutionDrawer: OrderExecutionDrawer
 
     private val currentTab = mutableStateOf(OrderTab.Order)
 
@@ -73,7 +73,7 @@ class OrderFragment: BaseFragment() {
         super.init()
         orderViewDrawer = OrderViewDrawer(vm, ::buy, ::sell)
         modifiableViewDrawer = ModifiableViewDrawer(modifyVm, ::cancelOrder)
-        orderExecutionDraw = OrderExecutionDraw(executionVm)
+        orderExecutionDrawer = OrderExecutionDrawer(executionVm)
 
         //currentTab.value = local.getOrderTab()
         vm.init(code)
@@ -159,7 +159,7 @@ class OrderFragment: BaseFragment() {
                         modifiableViewDrawer.Draw()
                     }
                     OrderTab.Execution -> {
-                        orderExecutionDraw.Draw()
+                        orderExecutionDrawer.Draw()
                     }
                     else -> {
 
