@@ -49,6 +49,10 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             launch {
                 if (firebaseDatabase.needForceUpdate()) {
+                    trueAnalytics.log(
+                        "force_update__need",
+                        mapOf("version" to BuildConfig.VERSION_NAME)
+                    )
                     Log.d(TAG, "need app update")
                     forceUpdateVisible.value = true
                 }
