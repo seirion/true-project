@@ -6,8 +6,8 @@ abstract class StockInfo(
     val attributes: String,
 ) {
     abstract fun getAttribute(key: String): String?
-    abstract fun isKospi(): Boolean
-    abstract fun isKosdaq(): Boolean
+    abstract fun kospi(): Boolean
+    abstract fun kosdaq(): Boolean
 
     abstract fun spac(): Boolean
     abstract fun halt(): Boolean
@@ -114,8 +114,8 @@ class StockInfoKospi(
         }
     }
 
-    override fun isKospi() = true
-    override fun isKosdaq() = false
+    override fun kospi() = true
+    override fun kosdaq() = false
 }
 
 /**
@@ -208,6 +208,6 @@ class StockInfoKosdaq(
 
 
 
-    override fun isKospi() = false
-    override fun isKosdaq() = true
+    override fun kospi() = false
+    override fun kosdaq() = true
 }

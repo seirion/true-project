@@ -1,7 +1,6 @@
 package com.trueedu.project.repository
 
 import android.util.Log
-import coil.compose.AsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -134,8 +133,8 @@ class FirebaseRealtimeDatabase @Inject constructor(
             return
         }
 
-        val kospi = stocks.filter { it.value.isKospi() }
-        val kosdaq = stocks.filter { it.value.isKosdaq() }
+        val kospi = stocks.filter { it.value.kospi() }
+        val kosdaq = stocks.filter { it.value.kosdaq() }
         try {
             stocksRef.child("kospi").setValue(kospi)
             stocksRef.child("kosdaq").setValue(kosdaq)
