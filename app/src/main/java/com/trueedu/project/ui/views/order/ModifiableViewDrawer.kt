@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.trueedu.project.base.ComposableDrawer
 import com.trueedu.project.model.dto.price.OrderModifiableDetail
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.LoadingView

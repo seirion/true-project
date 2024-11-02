@@ -36,6 +36,7 @@ import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.LoadingView
+import com.trueedu.project.ui.home.HomeDrawer
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
@@ -82,6 +83,8 @@ class MainActivity : AppCompatActivity() {
 
     private val vm by viewModels<MainViewModel>()
 
+    private lateinit var homeDrawer: HomeDrawer
+
     override fun onStart() {
         super.onStart()
         if (screen.keepScreenOn.value) {
@@ -119,64 +122,24 @@ class MainActivity : AppCompatActivity() {
         admobManager.loadNativeAd()
 
         enableEdgeToEdge()
+
+        homeDrawer = HomeDrawer(
+            vm = vm,
+            screen = screen,
+            stockPool = stockPool,
+            admobManager = admobManager,
+            remoteConfig = remoteConfig,
+            gotoPlayStore = ::gotoPlayStore,
+            onUserInfo = ::onUserInfo,
+            onAccountInfo = ::onAccountInfo,
+            onWatchList = ::onWatchList,
+            onSearch = ::onSearch,
+            onMenu = ::onMenu,
+            onPriceClick = ::onPriceClick,
+            onItemClick = ::onItemClick,
+        )
         setContent {
-            TrueProjectTheme(
-                n = screen.theme.intValue,
-                forceDark = screen.forceDark.value
-            ) {
-                if (vm.forceUpdateVisible.value) {
-                    ForceUpdateView(::gotoPlayStore)
-                    return@TrueProjectTheme
-                }
-                Scaffold(
-                    topBar = {
-                        MainTopBar(
-                            vm.googleSignInAccount.value,
-                            vm.accountNum.value,
-                            ::onUserInfo,
-                            ::onAccountInfo,
-                            ::onWatchList,
-                            ::onSearch,
-                            ::onMenu,
-                        )
-                    },
-                    modifier = Modifier.fillMaxSize(),
-                ) { innerPadding ->
-
-                    if (vm.loading.value) {
-                        LoadingView()
-                        return@Scaffold
-                    }
-
-                    val state = rememberLazyListState()
-                    LazyColumn(
-                        state = state,
-                        contentPadding = PaddingValues(vertical = 16.dp),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                    ) {
-                        vm.userStocks.value?.output2?.firstOrNull()?.let {
-                            item { AccountInfo(it, vm.marketPriceMode.value, vm::onChangeMarketPriceMode) }
-                        } ?: item { EmptyHome() }
-
-                        vm.userStocks.value?.output1?.let {
-                            val items = it.filter { it.holdingQuantity.toDouble() > 0 }
-                            // 광고
-                            if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
-                                item { NativeAdView(admobManager.nativeAd.value!!) }
-                            }
-                            itemsIndexed(items, { _, item -> item.code} ) { _, item ->
-                                StockItem(item, vm.marketPriceMode.value, ::onPriceClick) {
-                                    stockPool.get(item.code)?.let {
-                                        onItemClick(it)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            homeDrawer.Draw()
         }
     }
 

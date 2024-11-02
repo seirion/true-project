@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.trueedu.project.base.ComposableDrawer
 import com.trueedu.project.model.dto.price.OrderExecutionDetail
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.LoadingView
