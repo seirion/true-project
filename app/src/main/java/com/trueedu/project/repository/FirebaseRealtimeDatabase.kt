@@ -197,4 +197,19 @@ class FirebaseRealtimeDatabase @Inject constructor(
                 }
         }
     }
+
+    suspend fun loadUserConfig(): Map<String, String> {
+        val currentUser = firebaseCurrentUser()
+        if (currentUser == null) {
+            Log.d(TAG, "loadWatchList() failed: currentUser null")
+            return emptyMap()
+        }
+        val userId = currentUser.uid
+
+        val ref = database.getReference("users")
+        val snapshot = ref.child(userId).child("config")
+        val m = snapshot.get().await()
+            .getValue(object : GenericTypeIndicator<Map<String, String>>() {})
+        return m ?: emptyMap()
+    }
 }

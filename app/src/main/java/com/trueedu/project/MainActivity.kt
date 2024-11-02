@@ -27,6 +27,7 @@ import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.broadcast.DownloadCompleteReceiver
 import com.trueedu.project.data.GoogleAccount
+import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
@@ -74,6 +75,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var trueAnalytics: TrueAnalytics
     @Inject
     lateinit var downloadCompleteReceiver: DownloadCompleteReceiver
+    @Inject
+    lateinit var remoteConfig: RemoteConfig
     @Inject
     lateinit var admobManager: AdmobManager
 
@@ -160,7 +163,7 @@ class MainActivity : AppCompatActivity() {
                         vm.userStocks.value?.output1?.let {
                             val items = it.filter { it.holdingQuantity.toDouble() > 0 }
                             // 광고
-                            if (local.adVisible && admobManager.nativeAd.value != null) {
+                            if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
                                 item { NativeAdView(admobManager.nativeAd.value!!) }
                             }
                             itemsIndexed(items, { _, item -> item.code} ) { _, item ->
