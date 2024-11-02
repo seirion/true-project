@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
@@ -27,8 +28,11 @@ import com.trueedu.project.BuildConfig
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
+import com.trueedu.project.ui.common.ButtonAction
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.DividerHorizontal
+import com.trueedu.project.ui.common.PopupFragment
+import com.trueedu.project.ui.common.PopupType
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -87,18 +91,35 @@ class SettingFragment: BaseFragment() {
 
                 SettingItem("탈퇴 및 데이터 삭제", googleAccount.loggedIn()) {
                     trueAnalytics.enterView("setting__withdraw__click")
-                    vm.withdraw(
-                        onSuccess = {
-                            Toast.makeText(requireContext(), "계정 삭제 완료되었습니다", Toast.LENGTH_SHORT).show()
-                        },
-                        onFail = {
-                            Toast.makeText(requireContext(), "오류가 발생하였습니다", Toast.LENGTH_SHORT).show()
-                        },
-                    )
-                    googleAccount.revokeAccess(requireContext())
+                    showWithdrawPopup()
                 }
             }
         }
+    }
+
+    private fun showWithdrawPopup() {
+        val deleteFun: () -> Unit = {
+            vm.withdraw(
+                onSuccess = {
+                    Toast.makeText(requireContext(), "계정 삭제 완료되었습니다", Toast.LENGTH_SHORT).show()
+                },
+                onFail = {
+                    Toast.makeText(requireContext(), "오류가 발생하였습니다", Toast.LENGTH_SHORT).show()
+                },
+            )
+            googleAccount.revokeAccess(requireContext())
+        }
+        PopupFragment.show(
+            title = "계정 삭제",
+            desc = "계정의 모든 데이터가 삭제되며, 삭제된 데이터는 복구할 수 없습니다. 삭제하시겠습니까?",
+            popupType = PopupType.DELETE_CANCEL,
+            buttonActions = listOf(
+                ButtonAction(label = "삭제", onClick = deleteFun),
+                ButtonAction(label = "취소", onClick = {}),
+            ),
+            cancellable = true,
+            fragmentManager = parentFragmentManager,
+        )
     }
 }
 
