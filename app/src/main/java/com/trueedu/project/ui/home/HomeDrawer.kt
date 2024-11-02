@@ -10,7 +10,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentManager
 import com.trueedu.project.MainViewModel
+import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.base.ComposableDrawer
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.ScreenControl
@@ -21,10 +23,15 @@ import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
+import com.trueedu.project.ui.views.MenuFragment
+import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.home.AccountInfo
 import com.trueedu.project.ui.views.home.EmptyHome
 import com.trueedu.project.ui.views.home.ForceUpdateView
 import com.trueedu.project.ui.views.home.StockItem
+import com.trueedu.project.ui.views.order.OrderFragment
+import com.trueedu.project.ui.views.search.StockSearchFragment
+import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 
 class HomeDrawer(
     private val vm: MainViewModel,
@@ -32,14 +39,11 @@ class HomeDrawer(
     private val stockPool: StockPool,
     private val admobManager: AdmobManager,
     private val remoteConfig: RemoteConfig,
+    private val trueAnalytics: TrueAnalytics,
+    private val fragmentManager: FragmentManager,
     private val gotoPlayStore: () -> Unit,
     private val onUserInfo: () -> Unit,
-    private val onAccountInfo: () -> Unit,
     private val onWatchList: () -> Unit,
-    private val onSearch: () -> Unit,
-    private val onMenu: () -> Unit,
-    private val onPriceClick: (code: String) -> Unit,
-    private val onItemClick: (stockInfo: StockInfo) -> Unit,
 ): ComposableDrawer {
     @Composable
     override fun Draw() {
@@ -57,10 +61,10 @@ class HomeDrawer(
                         vm.googleSignInAccount.value,
                         vm.accountNum.value,
                         onUserInfo,
-                        onAccountInfo,
+                        ::onAccountInfo,
                         onWatchList,
-                        onSearch,
-                        onMenu,
+                        ::onSearch,
+                        ::onMenu,
                     )
                 },
                 modifier = Modifier.fillMaxSize(),
@@ -90,7 +94,7 @@ class HomeDrawer(
                             item { NativeAdView(admobManager.nativeAd.value!!) }
                         }
                         itemsIndexed(items, { _, item -> item.code} ) { _, item ->
-                            StockItem(item, vm.marketPriceMode.value, onPriceClick) {
+                            StockItem(item, vm.marketPriceMode.value, ::onPriceClick) {
                                 stockPool.get(item.code)?.let {
                                     onItemClick(it)
                                 }
@@ -100,5 +104,30 @@ class HomeDrawer(
                 }
             }
         }
+    }
+
+    private fun onItemClick(stockInfo: StockInfo) {
+        trueAnalytics.clickButton("home__item__click")
+        StockDetailFragment.show(stockInfo, fragmentManager)
+    }
+
+    private fun onAccountInfo() {
+        trueAnalytics.clickButton("home__account_info__click")
+        AppKeyInputFragment.show(false, fragmentManager)
+    }
+
+    private fun onSearch() {
+        trueAnalytics.clickButton("home__stock_search__click")
+        StockSearchFragment.show(null, fragmentManager)
+    }
+
+    private fun onMenu() {
+        trueAnalytics.clickButton("home__menu__click")
+        MenuFragment.show(fragmentManager)
+    }
+
+    private fun onPriceClick(code: String) {
+        trueAnalytics.clickButton("home__price__click")
+        OrderFragment.show(code, fragmentManager)
     }
 }

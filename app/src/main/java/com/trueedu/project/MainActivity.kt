@@ -13,16 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.broadcast.DownloadCompleteReceiver
@@ -30,27 +21,13 @@ import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.StockPool
-import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.ads.AdmobManager
-import com.trueedu.project.ui.ads.NativeAdView
-import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.home.HomeDrawer
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
-import com.trueedu.project.ui.theme.TrueProjectTheme
-import com.trueedu.project.ui.topbar.MainTopBar
-import com.trueedu.project.ui.views.MenuFragment
-import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.UserInfoFragment
 import com.trueedu.project.ui.views.WatchListFragment
-import com.trueedu.project.ui.views.home.AccountInfo
-import com.trueedu.project.ui.views.home.EmptyHome
-import com.trueedu.project.ui.views.home.ForceUpdateView
-import com.trueedu.project.ui.views.home.StockItem
-import com.trueedu.project.ui.views.order.OrderFragment
-import com.trueedu.project.ui.views.search.StockSearchFragment
-import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -129,14 +106,11 @@ class MainActivity : AppCompatActivity() {
             stockPool = stockPool,
             admobManager = admobManager,
             remoteConfig = remoteConfig,
+            trueAnalytics = trueAnalytics,
+            fragmentManager = supportFragmentManager,
             gotoPlayStore = ::gotoPlayStore,
             onUserInfo = ::onUserInfo,
-            onAccountInfo = ::onAccountInfo,
             onWatchList = ::onWatchList,
-            onSearch = ::onSearch,
-            onMenu = ::onMenu,
-            onPriceClick = ::onPriceClick,
-            onItemClick = ::onItemClick,
         )
         setContent {
             homeDrawer.Draw()
@@ -148,16 +122,6 @@ class MainActivity : AppCompatActivity() {
         unregisterReceiver(downloadCompleteReceiver)
     }
 
-    private fun onItemClick(stockInfo: StockInfo) {
-        trueAnalytics.clickButton("home__item__click")
-        StockDetailFragment.show(stockInfo, supportFragmentManager)
-    }
-
-    private fun onPriceClick(code: String) {
-        trueAnalytics.clickButton("home__price__click")
-        OrderFragment.show(code, supportFragmentManager)
-    }
-
     private fun onUserInfo() {
         trueAnalytics.clickButton("home__user_info__click")
         if (vm.googleSignInAccount.value == null) {
@@ -167,28 +131,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onAccountInfo() {
-        trueAnalytics.clickButton("home__account_info__click")
-        AppKeyInputFragment.show(false, supportFragmentManager)
-    }
-
     private fun onWatchList() {
         trueAnalytics.clickButton("home__watch_list__click")
         doAfterLogin {
             WatchListFragment.show(supportFragmentManager)
         }
     }
-
-    private fun onSearch() {
-        trueAnalytics.clickButton("home__stock_search__click")
-        StockSearchFragment.show(null, supportFragmentManager)
-    }
-
-    private fun onMenu() {
-        trueAnalytics.clickButton("home__menu__click")
-        MenuFragment.show(supportFragmentManager)
-    }
-
     private fun gotoPlayStore() {
         startActivity(
             Intent(Intent.ACTION_VIEW).apply {
