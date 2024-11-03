@@ -12,12 +12,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SpacViewModel @Inject constructor(
+class SpacListViewModel @Inject constructor(
     private val stockPool: StockPool,
     private val tokenKeyManager: TokenKeyManager,
 ): ViewModel() {
     companion object {
-        private val TAG = SpacViewModel::class.java.simpleName
+        private val TAG = SpacListViewModel::class.java.simpleName
     }
 
     val loading = mutableStateOf(true)

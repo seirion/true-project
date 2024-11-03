@@ -28,7 +28,7 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.views.setting.SettingFragment
-import com.trueedu.project.ui.views.spac.SpacFragment
+import com.trueedu.project.ui.views.spac.SpacListFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -76,7 +76,7 @@ class MenuFragment: BaseFragment() {
 
     private fun onSpacStocks() {
         trueAnalytics.clickButton("menu__spac__click")
-        SpacFragment.show(childFragmentManager)
+        SpacListFragment.show(childFragmentManager)
     }
 }
 

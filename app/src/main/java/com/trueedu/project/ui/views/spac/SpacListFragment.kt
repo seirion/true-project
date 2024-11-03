@@ -35,18 +35,18 @@ import com.trueedu.project.utils.formatter.cashFormatter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SpacFragment: BaseFragment() {
+class SpacListFragment: BaseFragment() {
     companion object {
         fun show(
             fragmentManager: FragmentManager
-        ): SpacFragment {
-            val fragment = SpacFragment()
+        ): SpacListFragment {
+            val fragment = SpacListFragment()
             fragment.show(fragmentManager, "spac")
             return fragment
         }
     }
 
-    private val vm by viewModels<SpacViewModel>()
+    private val vm by viewModels<SpacListViewModel>()
 
     private fun onPriceClick(code: String) {
         trueAnalytics.clickButton("${screenName()}__price__click")
