@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Construction
+import androidx.compose.material.icons.outlined.EditCalendar
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TrendingUp
@@ -38,6 +39,7 @@ import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.home.BottomNavScreen
+import com.trueedu.project.ui.views.ipo.IpoScheduleFragment
 import com.trueedu.project.ui.views.setting.SettingFragment
 
 class MenuScreen(
@@ -79,6 +81,7 @@ class MenuScreen(
                     MenuItem(Icons.Outlined.Settings, "설정", ::onSettings)
                     if (tokenKeyManager.userKey.value != null) {
                         MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
+                        MenuItem(Icons.Outlined.EditCalendar, "공모주 일정", ::onIpoSchedule)
                     }
                     if (BuildConfig.DEBUG) {
                         MenuItem(Icons.Outlined.Construction, "스팩 어드민", ::onSpacAdmin)
@@ -96,6 +99,11 @@ class MenuScreen(
     private fun onVolumeRanking() {
         trueAnalytics.clickButton("${screenName()}__volume_ranking__click")
         VolumeRankingFragment.show(fragmentManager)
+    }
+
+    private fun onIpoSchedule() {
+        trueAnalytics.clickButton("${screenName()}__ipo_schedule__click")
+        IpoScheduleFragment.show(fragmentManager)
     }
 
     private fun onSpacAdmin() {
