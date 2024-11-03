@@ -22,9 +22,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.StockInfoKospi
 import com.trueedu.project.ui.BaseFragment
+import com.trueedu.project.ui.ads.AdmobManager
+import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
@@ -33,6 +36,7 @@ import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.utils.formatter.cashFormatter
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SpacListFragment: BaseFragment() {
@@ -48,6 +52,11 @@ class SpacListFragment: BaseFragment() {
 
     private val vm by viewModels<SpacListViewModel>()
 
+    @Inject
+    lateinit var remoteConfig: RemoteConfig
+    @Inject
+    lateinit var admobManager: AdmobManager
+
     private fun onPriceClick(code: String) {
         trueAnalytics.clickButton("${screenName()}__price__click")
         if (vm.hasAppKey()) {
@@ -61,6 +70,11 @@ class SpacListFragment: BaseFragment() {
     override fun BodyScreen() {
         Scaffold(
             topBar = { BackTitleTopBar("스팩 종목", ::dismissAllowingStateLoss) },
+            bottomBar = {
+                if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
+                    NativeAdView(admobManager.nativeAd.value!!)
+                }
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background),
