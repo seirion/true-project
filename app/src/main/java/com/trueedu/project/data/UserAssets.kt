@@ -50,7 +50,7 @@ class UserAssets @Inject constructor(
         job = null
     }
 
-    private fun loadUserStocks(
+    fun loadUserStocks(
         onSuccess: () -> Unit = {},
         onFail: (Throwable) -> Unit = {},
     ) {

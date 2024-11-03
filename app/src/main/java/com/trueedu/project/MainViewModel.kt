@@ -81,6 +81,17 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun refresh(onSuccess: () -> Unit) {
+        tokenKeyManager.userKey.value ?: return
+        userAssets.loadUserStocks(
+            onSuccess = {
+                onSuccess()
+            },
+            onFail = {
+            }
+        )
+    }
+
     fun onChangeMarketPriceMode(selected: Int) {
         val state = selected == 0
         trueAnalytics.log(

@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
 
         homeDrawer = HomeDrawer(
+            activity = this,
             vm = vm,
             screen = screen,
             stockPool = stockPool,

@@ -1,5 +1,7 @@
 package com.trueedu.project.ui.home
 
+import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -34,6 +36,7 @@ import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 
 class HomeDrawer(
+    private val activity: Activity,
     private val vm: MainViewModel,
     private val screen: ScreenControl,
     private val stockPool: StockPool,
@@ -84,7 +87,14 @@ class HomeDrawer(
                         .padding(innerPadding)
                 ) {
                     vm.userStocks.value?.output2?.firstOrNull()?.let {
-                        item { AccountInfo(it, vm.marketPriceMode.value, vm::onChangeMarketPriceMode) }
+                        item {
+                            AccountInfo(
+                                it,
+                                vm.marketPriceMode.value,
+                                ::onRefresh,
+                                vm::onChangeMarketPriceMode
+                            )
+                        }
                     } ?: item { EmptyHome() }
 
                     vm.userStocks.value?.output1?.let {
@@ -129,5 +139,16 @@ class HomeDrawer(
     private fun onPriceClick(code: String) {
         trueAnalytics.clickButton("${screenName()}__price__click")
         OrderFragment.show(code, fragmentManager)
+    }
+
+    private fun onRefresh() {
+        trueAnalytics.clickButton("${screenName()}__refresh__click")
+        vm.refresh {
+            Toast.makeText(
+                activity.applicationContext,
+                "자산 정보를 갱신했습니다.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 }
