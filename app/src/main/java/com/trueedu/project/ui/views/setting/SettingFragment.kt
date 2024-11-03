@@ -1,5 +1,7 @@
 package com.trueedu.project.ui.views.setting
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +21,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
@@ -29,10 +30,10 @@ import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.ButtonAction
-import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.PopupFragment
 import com.trueedu.project.ui.common.PopupType
+import com.trueedu.project.ui.common.TrueText
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -87,7 +88,7 @@ class SettingFragment: BaseFragment() {
                     }
                 }
 
-                SettingLabel("버전", BuildConfig.VERSION_NAME)
+                SettingLabel("버전", BuildConfig.VERSION_NAME, true, ::gotoPlayStore)
 
                 SettingItem("탈퇴 및 데이터 삭제", googleAccount.loggedIn()) {
                     trueAnalytics.enterView("setting__withdraw__click")
@@ -119,6 +120,17 @@ class SettingFragment: BaseFragment() {
             ),
             cancellable = true,
             fragmentManager = parentFragmentManager,
+        )
+    }
+
+    private fun gotoPlayStore() {
+        trueAnalytics.enterView("setting__version__click")
+        startActivity(
+            Intent(Intent.ACTION_VIEW).apply {
+                addCategory(Intent.CATEGORY_DEFAULT)
+                data =
+                    Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+            }
         )
     }
 }
@@ -160,12 +172,14 @@ fun SettingLabel(
     title: String = "Version",
     value: String = "1.0.0",
     enabled: Boolean = true,
+    onClick: () -> Unit = {},
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(horizontal = 10.dp)
             .height(56.dp)
     ) {
