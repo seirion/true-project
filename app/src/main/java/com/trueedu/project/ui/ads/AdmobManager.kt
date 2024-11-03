@@ -81,11 +81,20 @@ class AdmobManager @Inject constructor(
             .forNativeAd { ad: NativeAd ->
                 Log.d(TAG, "ad loaded")
                 nativeAd.value?.destroy()
+                nativeAd.value = null
                 nativeAd.value = ad
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-
+                    Log.d(TAG, "광고로딩 실패: $adError")
+                    trueAnalytics.log(
+                        "native_ad__load_fail",
+                        mapOf(
+                            "code" to adError.code,
+                            "message" to adError.message,
+                            "error" to adError.toString()
+                        )
+                    )
                 }
 
                 override fun onAdClicked() {
