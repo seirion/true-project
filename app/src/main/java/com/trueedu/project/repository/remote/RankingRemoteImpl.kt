@@ -1,8 +1,10 @@
 package com.trueedu.project.repository.remote
 
 import com.trueedu.project.di.NormalService
+import com.trueedu.project.model.dto.rank.IpoScheduleResponse
 import com.trueedu.project.network.apiCallFlow
 import com.trueedu.project.repository.remote.service.RankingService
+import kotlinx.coroutines.flow.Flow
 
 class RankingRemoteImpl(
     @NormalService
@@ -30,5 +32,22 @@ class RankingRemoteImpl(
             "FID_INPUT_DATE_1" to "", // 공란
         )
         rankingService.volumeRanking(headers, queries)
+    }
+
+    override fun ipoSchedule(
+        from: String,
+        to: String,
+    ) = apiCallFlow {
+        val headers = mapOf(
+            "tr_id" to "HHKDB669108C0",
+            "custtype" to "P",
+        )
+        val queries = mapOf(
+            "SHT_CD" to "", // 종목 코드 - 공백: 전체, 특정종목 조회시 : 종목코드
+            "CTS" to "",
+            "F_DT" to from, // 조회날짜 from - yyyyMMdd
+            "T_DT" to to, // 조회날짜 to - yyyyMMdd
+        )
+        rankingService.ipoSchedule(headers, queries)
     }
 }
