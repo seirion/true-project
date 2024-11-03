@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.EditCalendar
 import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
@@ -27,6 +28,7 @@ import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.views.ipo.IpoScheduleFragment
 import com.trueedu.project.ui.views.setting.SettingFragment
 import com.trueedu.project.ui.views.spac.SpacListFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,6 +67,7 @@ class MenuFragment: BaseFragment() {
             ) {
                 MenuItem(Icons.Outlined.Settings, "설정", ::onSettings)
                 MenuItem(Icons.Outlined.RocketLaunch, "스팩 종목 보기", ::onSpacStocks)
+                MenuItem(Icons.Outlined.EditCalendar, "공모주 일정", ::onIpoSchedule)
             }
         }
     }
@@ -77,6 +80,11 @@ class MenuFragment: BaseFragment() {
     private fun onSpacStocks() {
         trueAnalytics.clickButton("menu__spac__click")
         SpacListFragment.show(childFragmentManager)
+    }
+
+    private fun onIpoSchedule() {
+        trueAnalytics.clickButton("menu__ipo_schedule__click")
+        IpoScheduleFragment.show(childFragmentManager)
     }
 }
 
