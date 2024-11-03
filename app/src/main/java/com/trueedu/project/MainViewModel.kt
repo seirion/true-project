@@ -81,6 +81,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun refresh() {
+        trueAnalytics.clickButton("home__refresh__click")
+        tokenKeyManager.userKey.value ?: return
+        userAssets.loadUserStocks {
+        }
+    }
+
     fun onChangeMarketPriceMode(selected: Int) {
         val state = selected == 0
         trueAnalytics.log(

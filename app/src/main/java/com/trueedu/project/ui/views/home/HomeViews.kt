@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,6 +21,7 @@ import com.trueedu.project.model.dto.account.AccountOutput1
 import com.trueedu.project.model.dto.account.AccountOutput2
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
+import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.widget.MyToggleButton
 import com.trueedu.project.utils.formatter.CashFormatter
@@ -43,6 +46,7 @@ fun EmptyHome() {
 fun AccountInfo(
     accountInfo: AccountOutput2,
     dailyProfitMode: Boolean,
+    onRefresh: () -> Unit,
     onChangeDailyMode: (Int) -> Unit,
 ) {
     val formatter = CashFormatter()
@@ -77,6 +81,7 @@ fun AccountInfo(
         }
 
         Column(horizontalAlignment = Alignment.End) {
+            TouchIcon24(Icons.Outlined.Refresh, onClick = onRefresh)
             MyToggleButton(
                 defaultValue = if (dailyProfitMode) 0 else 1,
                 textKeys = listOf( "시세", "수익"),

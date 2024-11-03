@@ -84,7 +84,14 @@ class HomeDrawer(
                         .padding(innerPadding)
                 ) {
                     vm.userStocks.value?.output2?.firstOrNull()?.let {
-                        item { AccountInfo(it, vm.marketPriceMode.value, vm::onChangeMarketPriceMode) }
+                        item {
+                            AccountInfo(
+                                it,
+                                vm.marketPriceMode.value,
+                                vm::refresh,
+                                vm::onChangeMarketPriceMode
+                            )
+                        }
                     } ?: item { EmptyHome() }
 
                     vm.userStocks.value?.output1?.let {
