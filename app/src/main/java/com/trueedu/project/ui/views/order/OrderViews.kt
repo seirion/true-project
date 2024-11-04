@@ -91,7 +91,11 @@ private fun SellItems(
 ) {
     val priceString = if (price > 0.0) cashFormatter.format(price) else ""
     val rate = (price - previousClose) / previousClose * 100
-    val rateString = rateFormatter.format(rate, false)
+    val rateString = if (priceString == "") {
+        ""
+    } else {
+        rateFormatter.format(rate, false)
+    }
     val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
     val selected = price != 0.0 && price == currentPrice
     SellBuyItems(
@@ -115,7 +119,11 @@ private fun BuyItems(
 ) {
     val priceString = if (price > 0.0) cashFormatter.format(price) else ""
     val rate = (price - previousClose) / previousClose * 100
-    val rateString = rateFormatter.format(rate, false)
+    val rateString = if (priceString == "") {
+        ""
+    } else {
+        rateFormatter.format(rate, false)
+    }
     val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
     val selected = price != 0.0 && price == currentPrice
     SellBuyItems(
