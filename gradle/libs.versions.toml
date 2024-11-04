@@ -5,7 +5,7 @@ coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.6"
+lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.2"
 composeBom = "2024.04.01"
 room = "2.6.0"
@@ -16,8 +16,8 @@ chucker = "4.0.0"
 okhttp-bom = "4.11.0"
 flipper = "0.240.0"
 material = "1.12.0"
-lifecycleProcess = "2.8.6"
-firebaseAuthKtx = "23.0.0"
+lifecycleProcess = "2.8.7"
+firebaseAuthKtx = "23.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -35,7 +35,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-fragment = { module = "androidx.fragment:fragment-ktx", version = "1.8.3" }
+androidx-fragment = { module = "androidx.fragment:fragment-ktx", version = "1.8.5" }
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 hilt-androidx-compiler = { module = "androidx.hilt:hilt-compiler", version = "1.2.0" }
@@ -57,11 +57,11 @@ flipper-network-plugin = { group = "com.facebook.flipper", name = "flipper-netwo
 flipper-noop = { group = "com.github.theGlenn", name = "flipper-android-no-op", version = "0.10.0" }
 soloader = { group = "com.facebook.soloader", name = "soloader", version = "0.11.0" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-material-extended = { group = "androidx.compose.material", name ="material-icons-extended", version = "1.7.2" }
+material-extended = { group = "androidx.compose.material", name ="material-icons-extended", version = "1.7.5" }
 amplitude = { module = "com.amplitude:android-sdk", version = "2.23.2" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
 
-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version = "33.5.0" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version = "33.5.1" }
 firebase-database = { module = "com.google.firebase:firebase-database-ktx" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 firebase-performance = { module = "com.google.firebase:firebase-perf-ktx" }
