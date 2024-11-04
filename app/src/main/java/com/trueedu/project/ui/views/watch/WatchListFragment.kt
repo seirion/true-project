@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.views
+package com.trueedu.project.ui.views.watch
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -52,6 +52,7 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment

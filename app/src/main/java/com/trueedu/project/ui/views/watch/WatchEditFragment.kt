@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.views
+package com.trueedu.project.ui.views.watch
 
 import android.util.Log
 import androidx.compose.foundation.background

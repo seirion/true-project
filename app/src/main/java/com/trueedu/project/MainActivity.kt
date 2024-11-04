@@ -35,7 +35,7 @@ import com.trueedu.project.ui.views.home.HomeBottomNavigation
 import com.trueedu.project.ui.views.home.HomeScreen
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.UserInfoFragment
-import com.trueedu.project.ui.views.WatchListFragment
+import com.trueedu.project.ui.views.watch.WatchListFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
