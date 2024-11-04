@@ -3,7 +3,6 @@ package com.trueedu.project
 import android.app.DownloadManager
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -109,7 +108,6 @@ class MainActivity : AppCompatActivity() {
             remoteConfig = remoteConfig,
             trueAnalytics = trueAnalytics,
             fragmentManager = supportFragmentManager,
-            gotoPlayStore = ::gotoPlayStore,
             onUserInfo = ::onUserInfo,
             onWatchList = ::onWatchList,
         )
@@ -137,15 +135,6 @@ class MainActivity : AppCompatActivity() {
         doAfterLogin {
             WatchListFragment.show(supportFragmentManager)
         }
-    }
-    private fun gotoPlayStore() {
-        startActivity(
-            Intent(Intent.ACTION_VIEW).apply {
-                addCategory(Intent.CATEGORY_DEFAULT)
-                data =
-                    Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
-            }
-        )
     }
 
     // 테스트용

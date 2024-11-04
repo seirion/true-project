@@ -1,6 +1,8 @@
 package com.trueedu.project.ui.home
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import com.trueedu.project.BuildConfig
 import com.trueedu.project.MainViewModel
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.base.ComposableDrawer
@@ -44,7 +47,6 @@ class HomeDrawer(
     private val remoteConfig: RemoteConfig,
     private val trueAnalytics: TrueAnalytics,
     private val fragmentManager: FragmentManager,
-    private val gotoPlayStore: () -> Unit,
     private val onUserInfo: () -> Unit,
     private val onWatchList: () -> Unit,
 ): ComposableDrawer {
@@ -55,7 +57,7 @@ class HomeDrawer(
             forceDark = screen.forceDark.value
         ) {
             if (vm.forceUpdateVisible.value) {
-                ForceUpdateView(gotoPlayStore)
+                ForceUpdateView(::gotoPlayStore)
                 return@TrueProjectTheme
             }
             Scaffold(
@@ -114,6 +116,16 @@ class HomeDrawer(
                 }
             }
         }
+    }
+
+    private fun gotoPlayStore() {
+        activity.startActivity(
+            Intent(Intent.ACTION_VIEW).apply {
+                addCategory(Intent.CATEGORY_DEFAULT)
+                data =
+                    Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+            }
+        )
     }
 
     private fun onItemClick(stockInfo: StockInfo) {
