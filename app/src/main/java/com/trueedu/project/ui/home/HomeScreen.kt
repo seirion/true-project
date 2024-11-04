@@ -18,7 +18,6 @@ import androidx.fragment.app.FragmentManager
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.MainViewModel
 import com.trueedu.project.analytics.TrueAnalytics
-import com.trueedu.project.base.ComposableDrawer
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.StockPool
@@ -38,7 +37,7 @@ import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 
-class HomeDrawer(
+class HomeScreen(
     private val activity: Activity,
     private val vm: MainViewModel,
     private val screen: ScreenControl,
@@ -49,7 +48,7 @@ class HomeDrawer(
     private val fragmentManager: FragmentManager,
     private val onUserInfo: () -> Unit,
     private val onWatchList: () -> Unit,
-): ComposableDrawer {
+): BottomNavScreen {
     @Composable
     override fun Draw() {
         TrueProjectTheme(
@@ -116,6 +115,15 @@ class HomeDrawer(
                 }
             }
         }
+    }
+
+    override fun onCreate() {
+    }
+
+    override fun onStart() {
+    }
+
+    override fun onStop() {
     }
 
     private fun gotoPlayStore() {

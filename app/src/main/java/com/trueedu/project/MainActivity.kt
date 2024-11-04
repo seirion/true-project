@@ -32,7 +32,7 @@ import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.home.BottomNavItem
 import com.trueedu.project.ui.home.HomeBottomNavigation
-import com.trueedu.project.ui.home.HomeDrawer
+import com.trueedu.project.ui.home.HomeScreen
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.UserInfoFragment
 import com.trueedu.project.ui.views.WatchListFragment
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     private val vm by viewModels<MainViewModel>()
 
-    private lateinit var homeDrawer: HomeDrawer
+    private lateinit var homeScreen: HomeScreen
 
     override fun onStart() {
         super.onStart()
@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
         enableEdgeToEdge()
 
-        homeDrawer = HomeDrawer(
+        homeScreen = HomeScreen(
             activity = this,
             vm = vm,
             screen = screen,
@@ -192,7 +192,7 @@ class MainActivity : AppCompatActivity() {
     fun NavigationGraph(navController: NavHostController) {
         NavHost(navController, startDestination = BottomNavItem.Home.screenRoute) {
             composable(BottomNavItem.Home.screenRoute) {
-                homeDrawer.Draw()
+                homeScreen.Draw()
             }
             composable(BottomNavItem.Watch.screenRoute) {
                 WatchScreen()

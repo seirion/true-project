@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 
 interface BottomNavScreen {
     fun onCreate()
-    fun start() // 화면이 보일 때
-    fun stop() // 화면이 가려질 때
+    fun onStart() // 화면이 보일 때
+    fun onStop() // 화면이 가려질 때
 
     fun screenName(): String {
         val simpleName = this::class.java.simpleName
