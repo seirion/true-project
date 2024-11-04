@@ -81,7 +81,7 @@ class HomeDrawer(
                 val state = rememberLazyListState()
                 LazyColumn(
                     state = state,
-                    contentPadding = PaddingValues(vertical = 16.dp),
+                    contentPadding = PaddingValues(top = 8.dp, bottom = 56.dp),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
