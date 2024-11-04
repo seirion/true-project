@@ -30,9 +30,9 @@ import com.trueedu.project.data.StockPool
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.ads.AdmobManager
-import com.trueedu.project.ui.home.BottomNavItem
-import com.trueedu.project.ui.home.HomeBottomNavigation
-import com.trueedu.project.ui.home.HomeScreen
+import com.trueedu.project.ui.views.home.BottomNavItem
+import com.trueedu.project.ui.views.home.HomeBottomNavigation
+import com.trueedu.project.ui.views.home.HomeScreen
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.UserInfoFragment
 import com.trueedu.project.ui.views.WatchListFragment

@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.home
+package com.trueedu.project.ui.views.home
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home

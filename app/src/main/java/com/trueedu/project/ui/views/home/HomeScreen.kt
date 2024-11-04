@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.home
+package com.trueedu.project.ui.views.home
 
 import android.app.Activity
 import android.content.Intent
@@ -29,10 +29,6 @@ import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
 import com.trueedu.project.ui.views.MenuFragment
 import com.trueedu.project.ui.views.StockDetailFragment
-import com.trueedu.project.ui.views.home.AccountInfo
-import com.trueedu.project.ui.views.home.EmptyHome
-import com.trueedu.project.ui.views.home.ForceUpdateView
-import com.trueedu.project.ui.views.home.StockItem
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
