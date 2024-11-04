@@ -45,7 +45,7 @@ class ModifiableViewDrawer(
             ) {
                 item { ModifiableSection() }
                 val items = vm.items.value!!.orderModifiableDetail
-                itemsIndexed(items, key = { _, item -> item.code }) { index, item ->
+                itemsIndexed(items, key = { _, item -> item.orderNo }) { index, item ->
                     ItemView(item, onCancel) {
 
                     }
