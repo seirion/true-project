@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.em
 
 @Composable
@@ -40,6 +41,7 @@ fun TrueText(
     color: Color = Color.Black,
     maxLines: Int = 1,
     textAlign: TextAlign? = null,
+    lineHeight: TextUnit = 1.5.em,
     style: TextStyle = LocalTextStyle.current,
 ) {
     Text(
@@ -51,7 +53,7 @@ fun TrueText(
         overflow = TextOverflow.Ellipsis,
         maxLines = maxLines,
         textAlign = textAlign,
-        lineHeight = 1.5.em,
+        lineHeight = lineHeight,
         style = style,
     )
 }

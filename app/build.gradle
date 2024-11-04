@@ -141,6 +141,8 @@ dependencies {
     implementation(libs.bundles.firebase)
     implementation(libs.google.play.services)
     implementation(libs.google.play.services.ads)
+    implementation(libs.accompanist.navigation.material)
+    implementation(libs.navigation.compose)
     implementation(libs.coil.compose)
 
     debugImplementation(libs.flipper)
@@ -148,5 +150,5 @@ dependencies {
     releaseImplementation(libs.flipper.noop)
     debugImplementation(libs.soloader)
 
-    ksp 'com.google.devtools.ksp:symbol-processing-api:1.9.10-1.0.13'
+    ksp libs.symbol.processing.api
 }

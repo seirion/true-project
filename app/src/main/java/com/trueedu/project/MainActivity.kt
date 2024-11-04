@@ -1,5 +1,6 @@
 package com.trueedu.project
 
+import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Intent
 import android.content.IntentFilter
@@ -12,8 +13,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.broadcast.DownloadCompleteReceiver
 import com.trueedu.project.data.GoogleAccount
@@ -23,8 +30,10 @@ import com.trueedu.project.data.StockPool
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.ads.AdmobManager
+import com.trueedu.project.ui.home.BottomNavItem
+import com.trueedu.project.ui.home.HomeBottomNavigation
 import com.trueedu.project.ui.home.HomeDrawer
-import com.trueedu.project.ui.ranking.VolumeRankingFragment
+import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.UserInfoFragment
 import com.trueedu.project.ui.views.WatchListFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -111,8 +120,25 @@ class MainActivity : AppCompatActivity() {
             onUserInfo = ::onUserInfo,
             onWatchList = ::onWatchList,
         )
+
         setContent {
-            homeDrawer.Draw()
+            TrueProjectTheme(
+                n = screen.theme.intValue,
+                forceDark = screen.forceDark.value
+            ) {
+                MainScreen()
+            }
+        }
+    }
+
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @Composable
+    fun MainScreen() {
+        val navController = rememberNavController()
+        Scaffold(
+            bottomBar = { HomeBottomNavigation(navController = navController) }
+        ) { _ ->
+            NavigationGraph(navController = navController)
         }
     }
 
@@ -135,11 +161,6 @@ class MainActivity : AppCompatActivity() {
         doAfterLogin {
             WatchListFragment.show(supportFragmentManager)
         }
-    }
-
-    // 테스트용
-    private fun gotoVolumeRanking() {
-        VolumeRankingFragment.show(supportFragmentManager)
     }
 
     private fun observingScreenSettings() {
@@ -165,5 +186,20 @@ class MainActivity : AppCompatActivity() {
         } else {
             googleAccount.login(this, action)
         }
+    }
+
+    @Composable
+    fun NavigationGraph(navController: NavHostController) {
+        NavHost(navController, startDestination = BottomNavItem.Home.screenRoute) {
+            composable(BottomNavItem.Home.screenRoute) {
+                homeDrawer.Draw()
+            }
+            composable(BottomNavItem.Watch.screenRoute) {
+                WatchScreen()
+            }
+        }
+    }
+    @Composable
+    fun WatchScreen() {
     }
 }
