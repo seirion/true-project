@@ -15,6 +15,7 @@ import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -47,8 +48,10 @@ class WatchListViewModel @Inject constructor(
       */
     val basePrices = mutableStateMapOf<String, PriceResponse?>()
 
-    init {
-        viewModelScope.launch {
+    var job: Job? = null
+
+    fun init() {
+        job = viewModelScope.launch {
             launch {
                 snapshotFlow { watchList.list.value }
                     .filter { it.isNotEmpty() }
@@ -74,8 +77,13 @@ class WatchListViewModel @Inject constructor(
                         }
                     }
             }
-
         }
+    }
+
+    fun onStop() {
+        cancelRealtimePrice()
+        job?.cancel()
+        job = null
     }
 
     // 일단 고정
@@ -104,7 +112,7 @@ class WatchListViewModel @Inject constructor(
         priceManager.pushRequest(TAG, codes)
     }
 
-    fun cancelRealtimePrice() {
+    private fun cancelRealtimePrice() {
         priceManager.popRequest(TAG)
     }
 
