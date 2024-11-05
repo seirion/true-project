@@ -15,11 +15,18 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.broadcast.DownloadCompleteReceiver
@@ -30,11 +37,12 @@ import com.trueedu.project.data.StockPool
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.ads.AdmobManager
-import com.trueedu.project.ui.views.home.BottomNavItem
-import com.trueedu.project.ui.views.home.HomeBottomNavigation
-import com.trueedu.project.ui.views.home.HomeScreen
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.UserInfoFragment
+import com.trueedu.project.ui.views.home.BottomNavItem
+import com.trueedu.project.ui.views.home.BottomNavScreen
+import com.trueedu.project.ui.views.home.HomeBottomNavigation
+import com.trueedu.project.ui.views.home.HomeScreen
 import com.trueedu.project.ui.views.watch.WatchListFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -131,10 +139,53 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun screenOf(route: String?): BottomNavScreen? {
+        return when (route) {
+            BottomNavItem.Home.screenRoute -> homeScreen
+            BottomNavItem.Watch.screenRoute -> null
+            else -> null
+        }
+    }
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
     fun MainScreen() {
         val navController = rememberNavController()
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+        val lifecycleObserver = remember {
+            LifecycleEventObserver { owner, event ->
+                if (owner !is NavBackStackEntry) return@LifecycleEventObserver
+                val screen = screenOf(owner.destination.route) ?: return@LifecycleEventObserver
+
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> {
+                    }
+                    Lifecycle.Event.ON_START -> {
+                        screen.onStart()
+                    }
+                    Lifecycle.Event.ON_RESUME -> {
+                    }
+                    Lifecycle.Event.ON_PAUSE -> {
+                    }
+                    Lifecycle.Event.ON_STOP -> {
+                        screen.onStop()
+                    }
+                    Lifecycle.Event.ON_DESTROY -> {
+                    }
+                    else -> {}
+                }
+            }
+        }
+
+        // Lifecycle observer 등록 및 해제
+        DisposableEffect(navBackStackEntry) {
+            navBackStackEntry?.lifecycle?.addObserver(lifecycleObserver)
+            onDispose {
+                navBackStackEntry?.lifecycle?.removeObserver(lifecycleObserver)
+            }
+        }
+
         Scaffold(
             bottomBar = { HomeBottomNavigation(navController = navController) }
         ) { _ ->
@@ -199,6 +250,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     @Composable
     fun WatchScreen() {
     }

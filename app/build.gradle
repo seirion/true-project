@@ -143,6 +143,7 @@ dependencies {
     implementation(libs.google.play.services.ads)
     implementation(libs.accompanist.navigation.material)
     implementation(libs.navigation.compose)
+    implementation(libs.navigation.fragment)
     implementation(libs.coil.compose)
 
     debugImplementation(libs.flipper)

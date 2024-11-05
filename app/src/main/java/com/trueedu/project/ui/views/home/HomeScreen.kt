@@ -3,6 +3,7 @@ package com.trueedu.project.ui.views.home
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +46,10 @@ class HomeScreen(
     private val onUserInfo: () -> Unit,
     private val onWatchList: () -> Unit,
 ): BottomNavScreen {
+    companion object {
+        private val TAG = HomeScreen::class.java.simpleName
+    }
+
     @Composable
     override fun Draw() {
         TrueProjectTheme(
@@ -114,12 +119,15 @@ class HomeScreen(
     }
 
     override fun onCreate() {
+        Log.d(TAG, "onCreate")
     }
 
     override fun onStart() {
+        Log.d(TAG, "onStart")
     }
 
     override fun onStop() {
+        Log.d(TAG, "onStop")
     }
 
     private fun gotoPlayStore() {
