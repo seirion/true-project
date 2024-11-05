@@ -1,4 +1,4 @@
-package com.trueedu.project.ui.views
+package com.trueedu.project.ui.views.menu
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,61 +22,65 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
-import com.trueedu.project.ui.BaseFragment
+import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.theme.TrueProjectTheme
+import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.setting.SettingFragment
 import com.trueedu.project.ui.views.spac.SpacListFragment
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
-class MenuFragment: BaseFragment() {
+class MenuScreen(
+    private val screen: ScreenControl,
+    private val trueAnalytics: TrueAnalytics,
+    private val fragmentManager: FragmentManager,
+): BottomNavScreen {
     companion object {
-        fun show(
-            fragmentManager: FragmentManager
-        ): MenuFragment {
-            val fragment = MenuFragment()
-            fragment.show(fragmentManager, "menu")
-            return fragment
-        }
+        private val TAG = MenuScreen::class.java.simpleName
     }
 
     @Composable
-    override fun BodyScreen() {
-        Scaffold(
-            topBar = {
-                BackTitleTopBar(
-                    "메뉴",
-                    onBack = ::dismissAllowingStateLoss,
-                    actionIcon = Icons.Outlined.Search,
-                    onAction = {}, // TODO
-                )
-            },
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background),
-        ) { innerPadding ->
-            Column(
+    override fun Draw() {
+        TrueProjectTheme(
+            n = screen.theme.intValue,
+            forceDark = screen.forceDark.value
+        ) {
+            Scaffold(
+                topBar = {
+                    BackTitleTopBar(
+                        "메뉴",
+                        onBack = null,
+                        actionIcon = Icons.Outlined.Search,
+                        onAction = {}, // TODO
+                    )
+                },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                MenuItem(Icons.Outlined.Settings, "설정", ::onSettings)
-                MenuItem(Icons.Outlined.RocketLaunch, "스팩 종목 보기", ::onSpacStocks)
+                    .background(color = MaterialTheme.colorScheme.background),
+            ) { innerPadding ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    MenuItem(Icons.Outlined.Settings, "설정", ::onSettings)
+                    MenuItem(Icons.Outlined.RocketLaunch, "스팩 종목 보기", ::onSpacStocks)
+                }
             }
         }
     }
 
     private fun onSettings() {
         trueAnalytics.clickButton("menu__setting__click")
-        SettingFragment.show(childFragmentManager)
+        SettingFragment.show(fragmentManager)
     }
 
     private fun onSpacStocks() {
         trueAnalytics.clickButton("menu__spac__click")
-        SpacListFragment.show(childFragmentManager)
+        SpacListFragment.show(fragmentManager)
     }
 }
 

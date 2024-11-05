@@ -29,7 +29,6 @@ import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
-import com.trueedu.project.ui.views.MenuFragment
 import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.search.StockSearchFragment
@@ -68,7 +67,6 @@ class HomeScreen(
                         onUserInfo,
                         ::onAccountInfo,
                         ::onSearch,
-                        ::onMenu,
                     )
                 },
                 modifier = Modifier.fillMaxSize()
@@ -150,11 +148,6 @@ class HomeScreen(
     private fun onSearch() {
         trueAnalytics.clickButton("${screenName()}__stock_search__click")
         StockSearchFragment.show(null, fragmentManager)
-    }
-
-    private fun onMenu() {
-        trueAnalytics.clickButton("${screenName()}__menu__click")
-        MenuFragment.show(fragmentManager)
     }
 
     private fun onPriceClick(code: String) {
