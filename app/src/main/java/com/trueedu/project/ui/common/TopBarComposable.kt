@@ -22,7 +22,7 @@ import com.trueedu.project.ui.theme.ChartColor
 @Composable
 fun BackTitleTopBar(
     title: String = "타이틀",
-    onBack: () -> Unit = {},
+    onBack: (() -> Unit)? = {},
     actionIcon: ImageVector? = null,
     onAction: (() -> Unit)? = null,
     actionIcon2: ImageVector? = null,
@@ -40,12 +40,15 @@ fun BackTitleTopBar(
                 }
             }
         }
+
     TopAppBar(
         navigationIcon = {
-            TouchIcon32(
-                icon = Icons.Filled.ChevronLeft,
-                onClick = onBack,
-            )
+            if (onBack != null) {
+                TouchIcon32(
+                    icon = Icons.Filled.ChevronLeft,
+                    onClick = onBack,
+                )
+            }
         },
         title = {
             TrueText(

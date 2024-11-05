@@ -90,7 +90,7 @@ class WatchScreen(
             topBar = {
                 BackTitleTopBar(
                     title = "관심 종목 ${vm.currentPage.value ?: ""}",
-                    onBack = {},
+                    onBack = null,
                     actionIcon = Icons.Filled.Search,
                     onAction = ::onSearch,
                     actionIcon2 = Icons.Filled.Edit,
