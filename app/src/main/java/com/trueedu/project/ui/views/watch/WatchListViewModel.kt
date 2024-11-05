@@ -7,6 +7,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
@@ -29,6 +30,7 @@ import javax.inject.Inject
 class WatchListViewModel @Inject constructor(
     private val watchList: WatchList,
     private val tokenKeyManager: TokenKeyManager,
+    val googleAccount: GoogleAccount,
     val stockPool: StockPool,
     val priceManager: RealPriceManager,
     private val priceRemote: PriceRemote,
@@ -85,6 +87,8 @@ class WatchListViewModel @Inject constructor(
         job?.cancel()
         job = null
     }
+
+    fun loggedIn() = googleAccount.loggedIn()
 
     // 일단 고정
     fun pageCount() = WatchList.MAX_GROUP_SIZE
