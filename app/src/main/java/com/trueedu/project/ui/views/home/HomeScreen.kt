@@ -118,11 +118,8 @@ class HomeScreen(
         }
     }
 
-    override fun onCreate() {
-        Log.d(TAG, "onCreate")
-    }
-
     override fun onStart() {
+        trueAnalytics.log("${screenName()}__enter")
         Log.d(TAG, "onStart")
     }
 
