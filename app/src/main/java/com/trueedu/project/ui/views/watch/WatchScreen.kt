@@ -6,10 +6,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -53,6 +55,7 @@ import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.home.BottomNavScreen
+import com.trueedu.project.ui.views.home.HomeBottomNavHeight
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
@@ -96,12 +99,14 @@ class WatchScreen(
             },
             bottomBar = {
                 if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
-                    NativeAdView(admobManager.nativeAd.value!!)
+                    Box(modifier = Modifier.fillMaxWidth().padding(bottom = HomeBottomNavHeight)) {
+                        NativeAdView(admobManager.nativeAd.value!!)
+                    }
                 }
             },
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background),
+                .navigationBarsPadding(),
         ) { innerPadding ->
 
             if (pagerState == null) {

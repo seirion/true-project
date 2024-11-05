@@ -2,7 +2,10 @@ package com.trueedu.project.ui.views.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +23,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.trueedu.project.ui.common.TrueText
 
+val HomeBottomNavHeight = 48.dp
+
+// 하단 navigation bar 높이
+@Composable
+fun navigationBarHeight() = WindowInsets.navigationBars
+    .asPaddingValues()
+    .calculateBottomPadding()
+
 @Composable
 fun HomeBottomNavigation(
     modifier: Modifier = Modifier,
@@ -35,11 +46,15 @@ fun HomeBottomNavigation(
         BottomNavItem.Watch,
     )
 
+    val bottomNavigationBarHeight = WindowInsets.navigationBars
+        .asPaddingValues()
+        .calculateBottomPadding()
+
     AnimatedVisibility(
         visible = items.map { it.screenRoute }.contains(currentRoute)
     ) {
         NavigationBar(
-            modifier = modifier.height(64.dp),
+            modifier = modifier.height(HomeBottomNavHeight + navigationBarHeight()),
             containerColor = containerColor,
             contentColor = contentColor,
         ) {
