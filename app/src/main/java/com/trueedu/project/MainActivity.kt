@@ -131,6 +131,7 @@ class MainActivity : AppCompatActivity() {
             onUserInfo = ::onUserInfo,
         )
         watchScreen = WatchScreen(
+            activity = this,
             vm = watchVm,
             admobManager = admobManager,
             remoteConfig = remoteConfig,
@@ -230,14 +231,6 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GoogleAccount.RC_SIGN_IN) {
             googleAccount.handleActivityResult(requestCode, resultCode, data, this)
-        }
-    }
-
-    private fun doAfterLogin(action: () -> Unit) {
-        if (googleAccount.loggedIn()) {
-            action()
-        } else {
-            googleAccount.login(this, action)
         }
     }
 

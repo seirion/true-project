@@ -1,6 +1,8 @@
 package com.trueedu.project.ui.views.watch
 
+import android.app.Activity
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -65,6 +67,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapNotNull
 
 class WatchScreen(
+    private val activity: Activity,
     private val vm: WatchListViewModel,
     private val admobManager: AdmobManager,
     private val remoteConfig: RemoteConfig,
@@ -181,6 +184,10 @@ class WatchScreen(
     }
 
     override fun onStart() {
+        if (!vm.loggedIn()) {
+            Toast.makeText(activity, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show()
+            vm.googleAccount.login(activity)
+        }
         vm.init()
     }
 
@@ -188,15 +195,27 @@ class WatchScreen(
         vm.onStop()
     }
 
+    private fun doAfterLogin(action: () -> Unit) {
+        if (vm.googleAccount.loggedIn()) {
+            action()
+        } else {
+            vm.googleAccount.login(activity, action)
+        }
+    }
+
     private fun onSearch() {
         trueAnalytics.clickButton("watch_list__search__click")
-        StockSearchFragment.show(vm.currentPage.value, fragmentManager)
+        doAfterLogin {
+            StockSearchFragment.show(vm.currentPage.value, fragmentManager)
+        }
     }
 
     private fun onEdit() {
         trueAnalytics.clickButton("watch_list__edit__click")
-        if (vm.loading.value || vm.currentPage.value != null) {
-            WatchEditFragment.show(vm.currentPage.value!!, fragmentManager)
+        doAfterLogin {
+            if (!vm.loading.value || vm.currentPage.value != null) {
+                WatchEditFragment.show(vm.currentPage.value!!, fragmentManager)
+            }
         }
     }
 
