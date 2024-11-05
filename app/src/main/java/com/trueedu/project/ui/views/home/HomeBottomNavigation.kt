@@ -44,11 +44,8 @@ fun HomeBottomNavigation(
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Watch,
+        BottomNavItem.Menu,
     )
-
-    val bottomNavigationBarHeight = WindowInsets.navigationBars
-        .asPaddingValues()
-        .calculateBottomPadding()
 
     AnimatedVisibility(
         visible = items.map { it.screenRoute }.contains(currentRoute)

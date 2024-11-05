@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +34,6 @@ fun MainTopBar(
     onUserInfoClick: () -> Unit = {},
     onAccountInfoClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
-    onMenuClick: () -> Unit = {}
 ) {
     val title = accountNum.ifEmpty {
         "등록 계좌 없음"
@@ -58,7 +56,6 @@ fun MainTopBar(
         },
         actions = {
             TouchIcon24(icon = Icons.Outlined.Search, onClick = onSearchClick)
-            TouchIcon24(icon = Icons.Outlined.Menu, onClick = onMenuClick)
         },
         title = { TopBarTitle(title, onAccountInfoClick) },
         colors = TopAppBarDefaults.smallTopAppBarColors(

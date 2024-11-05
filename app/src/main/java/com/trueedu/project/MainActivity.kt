@@ -43,6 +43,7 @@ import com.trueedu.project.ui.views.home.BottomNavItem
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.HomeBottomNavigation
 import com.trueedu.project.ui.views.home.HomeScreen
+import com.trueedu.project.ui.views.menu.MenuScreen
 import com.trueedu.project.ui.views.watch.WatchListViewModel
 import com.trueedu.project.ui.views.watch.WatchScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,6 +81,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var homeScreen: HomeScreen
     private lateinit var watchScreen: WatchScreen
+    private lateinit var menuScreen: MenuScreen
 
     override fun onStart() {
         super.onStart()
@@ -135,6 +137,11 @@ class MainActivity : AppCompatActivity() {
             vm = watchVm,
             admobManager = admobManager,
             remoteConfig = remoteConfig,
+            trueAnalytics = trueAnalytics,
+            fragmentManager = supportFragmentManager,
+        )
+        menuScreen = MenuScreen(
+            screen = screen,
             trueAnalytics = trueAnalytics,
             fragmentManager = supportFragmentManager,
         )
@@ -242,6 +249,9 @@ class MainActivity : AppCompatActivity() {
             }
             composable(BottomNavItem.Watch.screenRoute) {
                 watchScreen.Draw()
+            }
+            composable(BottomNavItem.Menu.screenRoute) {
+                menuScreen.Draw()
             }
         }
     }
