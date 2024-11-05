@@ -19,6 +19,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
@@ -44,6 +45,8 @@ import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.HomeBottomNavigation
 import com.trueedu.project.ui.views.home.HomeScreen
 import com.trueedu.project.ui.views.watch.WatchListFragment
+import com.trueedu.project.ui.views.watch.WatchListViewModel
+import com.trueedu.project.ui.views.watch.WatchScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -75,8 +78,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var admobManager: AdmobManager
 
     private val vm by viewModels<MainViewModel>()
+    private val watchVm by viewModels<WatchListViewModel>()
 
     private lateinit var homeScreen: HomeScreen
+    private lateinit var watchScreen: WatchScreen
 
     override fun onStart() {
         super.onStart()
@@ -128,6 +133,13 @@ class MainActivity : AppCompatActivity() {
             onUserInfo = ::onUserInfo,
             onWatchList = ::onWatchList,
         )
+        watchScreen = WatchScreen(
+            vm = watchVm,
+            admobManager = admobManager,
+            remoteConfig = remoteConfig,
+            trueAnalytics = trueAnalytics,
+            fragmentManager = supportFragmentManager,
+        )
 
         setContent {
             TrueProjectTheme(
@@ -142,7 +154,7 @@ class MainActivity : AppCompatActivity() {
     private fun screenOf(route: String?): BottomNavScreen? {
         return when (route) {
             BottomNavItem.Home.screenRoute -> homeScreen
-            BottomNavItem.Watch.screenRoute -> null
+            BottomNavItem.Watch.screenRoute -> watchScreen
             else -> null
         }
     }
@@ -246,12 +258,8 @@ class MainActivity : AppCompatActivity() {
                 homeScreen.Draw()
             }
             composable(BottomNavItem.Watch.screenRoute) {
-                WatchScreen()
+                watchScreen.Draw()
             }
         }
-    }
-
-    @Composable
-    fun WatchScreen() {
     }
 }

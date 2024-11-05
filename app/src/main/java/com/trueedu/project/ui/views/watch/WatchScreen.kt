@@ -39,57 +39,43 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.viewModels
+import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
-import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.StockDetailFragment
-import com.trueedu.project.ui.views.search.StockSearchFragment
+import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.order.OrderFragment
+import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapNotNull
-import javax.inject.Inject
 
-@AndroidEntryPoint
-class WatchListFragment: BaseFragment() {
+class WatchScreen(
+    private val vm: WatchListViewModel,
+    private val admobManager: AdmobManager,
+    private val remoteConfig: RemoteConfig,
+    private val trueAnalytics: TrueAnalytics,
+    private val fragmentManager: FragmentManager,
+): BottomNavScreen {
     companion object {
-        private val TAG = WatchListFragment::class.java.simpleName
-
-        fun show(
-            fragmentManager: FragmentManager
-        ): WatchListFragment {
-            val fragment = WatchListFragment()
-            fragment.show(fragmentManager, "watch-list")
-            return fragment
-        }
+        private val TAG = WatchScreen::class.java.simpleName
     }
 
-    @Inject
-    lateinit var remoteConfig: RemoteConfig
-    @Inject
-    lateinit var admobManager: AdmobManager
-
-    private val vm by viewModels<WatchListViewModel>()
-
-    @OptIn(ExperimentalFoundationApi::class)
     private var pagerState: PagerState? = null
 
-    @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    override fun BodyScreen() {
+    override fun Draw() {
         LaunchedEffect(pagerState) {
             snapshotFlow { pagerState?.currentPage }
                 .mapNotNull { it?.mod(vm.pageCount()) }
@@ -101,7 +87,7 @@ class WatchListFragment: BaseFragment() {
             topBar = {
                 BackTitleTopBar(
                     title = "관심 종목 ${vm.currentPage.value ?: ""}",
-                    onBack = ::dismissAllowingStateLoss,
+                    onBack = {},
                     actionIcon = Icons.Filled.Search,
                     onAction = ::onSearch,
                     actionIcon2 = Icons.Filled.Edit,
@@ -189,33 +175,36 @@ class WatchListFragment: BaseFragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        // vm.cancelRealtimePrice()
+    override fun onStart() {
+        vm.init()
+    }
+
+    override fun onStop() {
+        vm.onStop()
     }
 
     private fun onSearch() {
         trueAnalytics.clickButton("watch_list__search__click")
-        StockSearchFragment.show(vm.currentPage.value, parentFragmentManager)
+        StockSearchFragment.show(vm.currentPage.value, fragmentManager)
     }
 
     private fun onEdit() {
         trueAnalytics.clickButton("watch_list__edit__click")
         if (vm.loading.value || vm.currentPage.value != null) {
-            WatchEditFragment.show(vm.currentPage.value!!, parentFragmentManager)
+            WatchEditFragment.show(vm.currentPage.value!!, fragmentManager)
         }
     }
 
     private fun gotoTrading(stockInfo: StockInfo) {
         if (vm.hasAppKey()) {
-            OrderFragment.show(stockInfo.code, parentFragmentManager)
+            OrderFragment.show(stockInfo.code, fragmentManager)
         } else {
-            AppKeyInputFragment.show(false, parentFragmentManager)
+            AppKeyInputFragment.show(false, fragmentManager)
         }
     }
 
     private fun gotoStockDetail(stockInfo: StockInfo) {
-        StockDetailFragment.show(stockInfo, parentFragmentManager)
+        StockDetailFragment.show(stockInfo, fragmentManager)
     }
 
     @Composable
