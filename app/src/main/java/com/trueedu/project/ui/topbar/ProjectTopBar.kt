@@ -8,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
@@ -21,9 +20,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TouchIcon32
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.utils.NetworkImage
 
 
@@ -35,7 +34,6 @@ fun MainTopBar(
     accountNum: String = "74341523-01",
     onUserInfoClick: () -> Unit = {},
     onAccountInfoClick: () -> Unit = {},
-    onWatchListClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onMenuClick: () -> Unit = {}
 ) {
@@ -59,7 +57,6 @@ fun MainTopBar(
             }
         },
         actions = {
-            TouchIcon24(icon = Icons.Outlined.StarOutline, onClick = onWatchListClick)
             TouchIcon24(icon = Icons.Outlined.Search, onClick = onSearchClick)
             TouchIcon24(icon = Icons.Outlined.Menu, onClick = onMenuClick)
         },
