@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.R
+import com.trueedu.project.data.UserAssets
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -52,10 +53,13 @@ class OrderFragment: BaseFragment() {
 
     @Inject
     lateinit var local: Local
+    @Inject
+    lateinit var userAssets: UserAssets
 
     private lateinit var orderViewDrawer: OrderViewDrawer
     private lateinit var modifiableViewDrawer: ModifiableViewDrawer
     private lateinit var orderExecutionDrawer: OrderExecutionDrawer
+    private lateinit var balanceDrawer: BalanceDrawer
 
     private val currentTab = mutableStateOf(OrderTab.Order)
 
@@ -74,8 +78,8 @@ class OrderFragment: BaseFragment() {
         orderViewDrawer = OrderViewDrawer(vm, ::buy, ::sell)
         modifiableViewDrawer = ModifiableViewDrawer(modifyVm, ::cancelOrder)
         orderExecutionDrawer = OrderExecutionDrawer(executionVm)
+        balanceDrawer = BalanceDrawer(userAssets, ::gotoOrder)
 
-        //currentTab.value = local.getOrderTab()
         vm.init(code)
 
         lifecycleScope.launch {
@@ -85,9 +89,16 @@ class OrderFragment: BaseFragment() {
                         modifyVm.init()
                     } else if (it == OrderTab.Execution) {
                         executionVm.init()
+                    } else if (it == OrderTab.Balance) {
+                        balanceDrawer.init()
                     }
                 }
         }
+    }
+
+    private fun gotoOrder(code: String) {
+        setOrderTab(OrderTab.Order)
+        vm.init(code)
     }
 
     override fun onDestroy() {
@@ -136,7 +147,7 @@ class OrderFragment: BaseFragment() {
     override fun BodyScreen() {
         Scaffold(
             topBar = {
-                val stockName = vm.stockInfo()?.nameKr ?: ""
+                val stockName = vm.nameKr.value
                 BackTitleTopBar(stockName, ::dismissAllowingStateLoss)
             },
             modifier = Modifier
@@ -161,8 +172,8 @@ class OrderFragment: BaseFragment() {
                     OrderTab.Execution -> {
                         orderExecutionDrawer.Draw()
                     }
-                    else -> {
-
+                    OrderTab.Balance -> {
+                        balanceDrawer.Draw()
                     }
                 }
             }
@@ -207,7 +218,7 @@ class OrderFragment: BaseFragment() {
                     selected = currentTabIndex == index,
                     onClick = { setOrderTab(tab) },
                     modifier = Modifier.height(32.dp),
-                    enabled = index <= 2,
+                    enabled = true,
                     icon = {
                         TrueText(
                             s = tab.label,

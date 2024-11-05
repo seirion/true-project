@@ -51,6 +51,7 @@ class OrderViewModel @Inject constructor(
     }
 
     private var code: String = ""
+    val nameKr = mutableStateOf("")
 
     // api 응답
     private val tradeBase = mutableStateOf<TradeResponse?>(null)
@@ -64,6 +65,7 @@ class OrderViewModel @Inject constructor(
 
     fun init(code: String) {
         this.code = code
+        nameKr.value = stockPool.get(code)?.nameKr ?: ""
         priceManager.pushRequest(
             code,
             listOf(code)
@@ -172,7 +174,7 @@ class OrderViewModel @Inject constructor(
         quantityInput.value = decreaseQuantity(quantityInput.value)
     }
 
-    fun stockInfo(): StockInfo? {
+    private fun stockInfo(): StockInfo? {
         return stockPool.get(code)
     }
 
