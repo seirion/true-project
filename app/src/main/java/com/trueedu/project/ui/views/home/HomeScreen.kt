@@ -27,6 +27,7 @@ import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.LoadingView
+import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
 import com.trueedu.project.ui.views.StockDetailFragment
@@ -95,7 +96,13 @@ class HomeScreen(
                                 vm::onChangeMarketPriceMode
                             )
                         }
-                    } ?: item { EmptyHome() }
+                    } ?: item {
+                        if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
+                            NativeAdView(admobManager.nativeAd.value!!)
+                            Margin(32)
+                        }
+                        EmptyHome()
+                    }
 
                     vm.userStocks.value?.output1?.let {
                         val items = it.filter { it.holdingQuantity.toDouble() > 0 }
