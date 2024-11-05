@@ -45,7 +45,6 @@ class HomeScreen(
     private val trueAnalytics: TrueAnalytics,
     private val fragmentManager: FragmentManager,
     private val onUserInfo: () -> Unit,
-    private val onWatchList: () -> Unit,
 ): BottomNavScreen {
     companion object {
         private val TAG = HomeScreen::class.java.simpleName
@@ -68,7 +67,6 @@ class HomeScreen(
                         vm.accountNum.value,
                         onUserInfo,
                         ::onAccountInfo,
-                        onWatchList,
                         ::onSearch,
                         ::onMenu,
                     )

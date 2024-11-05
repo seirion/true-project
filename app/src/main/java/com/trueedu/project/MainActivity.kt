@@ -19,7 +19,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
@@ -44,7 +43,6 @@ import com.trueedu.project.ui.views.home.BottomNavItem
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.HomeBottomNavigation
 import com.trueedu.project.ui.views.home.HomeScreen
-import com.trueedu.project.ui.views.watch.WatchListFragment
 import com.trueedu.project.ui.views.watch.WatchListViewModel
 import com.trueedu.project.ui.views.watch.WatchScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -131,7 +129,6 @@ class MainActivity : AppCompatActivity() {
             trueAnalytics = trueAnalytics,
             fragmentManager = supportFragmentManager,
             onUserInfo = ::onUserInfo,
-            onWatchList = ::onWatchList,
         )
         watchScreen = WatchScreen(
             vm = watchVm,
@@ -216,13 +213,6 @@ class MainActivity : AppCompatActivity() {
             googleAccount.login(this)
         } else {
             UserInfoFragment.show(supportFragmentManager)
-        }
-    }
-
-    private fun onWatchList() {
-        trueAnalytics.clickButton("home__watch_list__click")
-        doAfterLogin {
-            WatchListFragment.show(supportFragmentManager)
         }
     }
 
