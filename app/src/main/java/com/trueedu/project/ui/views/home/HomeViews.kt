@@ -69,9 +69,13 @@ fun AccountInfo(
         val profitRateString = rateFormatter.format(rate, true)
 
         Column {
-            TrueText(s = "Total", fontSize = 12, color = MaterialTheme.colorScheme.outline)
             // 총자산
-            TrueText(s = totalString, fontSize = 24, color = MaterialTheme.colorScheme.primary)
+            TrueText(
+                s = totalString,
+                fontSize = 24,
+                fontWeight = FontWeight.W500,
+                color = MaterialTheme.colorScheme.primary
+            )
             // 수익/수익률
             TrueText(
                 s = "$profitString ($profitRateString)",
