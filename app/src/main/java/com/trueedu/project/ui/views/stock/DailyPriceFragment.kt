@@ -17,6 +17,7 @@ import com.trueedu.project.model.dto.price.StockDetail
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.LoadingView
+import com.trueedu.project.ui.common.listBackgroundColor
 import com.trueedu.project.ui.views.common.TopStockInfoView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -72,11 +73,7 @@ class DailyPriceFragment: BaseFragment() {
 
                 val items = vm.dailyPrices.value!!.dailyPrices!!
                 itemsIndexed(items, key = { _, item -> item.date!! }) { index, item ->
-                    val bgColor = if (index % 2 == 0) {
-                        MaterialTheme.colorScheme.background
-                    } else {
-                        MaterialTheme.colorScheme.surfaceDim
-                    }
+                    val bgColor = listBackgroundColor(index)
                     DailyPriceCell(item, bgColor)
 
                     if (index == items.lastIndex) {

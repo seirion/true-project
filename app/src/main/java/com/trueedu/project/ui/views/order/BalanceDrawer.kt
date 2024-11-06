@@ -31,6 +31,7 @@ import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.common.listBackgroundColor
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
@@ -89,11 +90,7 @@ class BalanceDrawer(
     ) {
         val formatter = CashFormatter()
         val rateFormatter = RateFormatter()
-        val bgColor = if (index % 2 == 0) {
-            MaterialTheme.colorScheme.background
-        } else {
-            MaterialTheme.colorScheme.surfaceDim
-        }
+        val bgColor = listBackgroundColor(index)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,

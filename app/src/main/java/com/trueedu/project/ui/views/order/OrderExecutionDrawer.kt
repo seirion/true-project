@@ -24,6 +24,7 @@ import com.trueedu.project.base.ComposableDrawer
 import com.trueedu.project.model.dto.price.OrderExecutionDetail
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.LoadingView
+import com.trueedu.project.ui.common.listBackgroundColor
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.cashFormatter
 
@@ -44,11 +45,7 @@ class OrderExecutionDrawer(
                 item { ExecutionListSection() }
                 val items = vm.response.value!!.orderExecutionDetail ?: emptyList()
                 itemsIndexed(items, key = { _, item -> item.orderNo }) { index, item ->
-                    val bgColor = if (index % 2 == 0) {
-                        MaterialTheme.colorScheme.background
-                    } else {
-                        MaterialTheme.colorScheme.surfaceDim
-                    }
+                    val bgColor = listBackgroundColor(index)
                     ItemView(item, bgColor) {}
                 }
             }
