@@ -301,7 +301,7 @@ private fun WatchingStockItem(
                 onClick = onClick,
                 onLongClick = onLongClick
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(8.dp)
     ) {
         Column {
             TrueText(
