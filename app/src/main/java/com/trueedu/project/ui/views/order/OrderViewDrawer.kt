@@ -26,15 +26,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.base.ComposableDrawer
-import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.utils.getDigitInput
 
 class OrderViewDrawer(
@@ -79,7 +81,7 @@ class OrderViewDrawer(
 @Composable
 private fun InputSet(
     label: String = "가격",
-    input: MutableState<String> = mutableStateOf("1000"),
+    input: MutableState<TextFieldValue> = mutableStateOf(TextFieldValue("1000")),
     increase: () -> Unit = {},
     decrease: () -> Unit = {},
 ) {
@@ -108,18 +110,28 @@ private fun InputLabel(label: String) {
 
 @Composable
 private fun DigitInput(
-    input: MutableState<String>,
+    input: MutableState<TextFieldValue>,
     modifier: Modifier,
 ) {
     var isFocused by remember { mutableStateOf(false) }
     BasicTextField(
         value = input.value,
-        onValueChange = { it: String ->
-            input.value = getDigitInput(it)
+        onValueChange = {
+            val text = getDigitInput(it.text)
+            input.value = it.copy(
+                text = text,
+                selection = TextRange(text.length)
+            )
         },
         modifier = modifier
             .onFocusChanged {
                 isFocused = it.isFocused
+                if (it.isFocused) {
+                    // 포커스를 받았을 때 커서를 텍스트 끝으로 이동
+                    input.value = input.value.copy(
+                        selection = TextRange(input.value.text.length)
+                    )
+                }
             }
             .background(
                 color = if (isFocused) {
