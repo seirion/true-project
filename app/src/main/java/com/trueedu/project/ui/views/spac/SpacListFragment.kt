@@ -92,7 +92,7 @@ class SpacListFragment: BaseFragment() {
                 ) {
                     itemsIndexed(vm.stocks.value, key = { _, item -> item.code }) { i, item ->
                         SpacItem(i, item, vm.priceMap[item.code], ::onPriceClick) {
-
+                            SpacDetailFragment.show(item.code, parentFragmentManager)
                         }
                     }
                 }
