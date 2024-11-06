@@ -1,5 +1,6 @@
 package com.trueedu.project.data
 
+import android.os.SystemClock
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.model.event.WebSocketKeyIssued
@@ -12,6 +13,7 @@ import com.trueedu.project.repository.remote.service.WebSocketService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -37,6 +39,8 @@ class WsMessageHandler @Inject constructor(
 
     // 디버깅 용
     val on = mutableStateOf(false)
+    private var foreground = false
+    private var stopAt = 0L // background 로 진입한 시각
 
     // 거래 데이터
     val tradeSignal = MutableSharedFlow<RealTimeTrade>()
@@ -62,13 +66,23 @@ class WsMessageHandler @Inject constructor(
     // 앱이 foreground 상태가 될 때
     fun start() {
         Log.d(TAG, "start")
-        startWebSocket()
+        foreground = true
+
+        val current = SystemClock.elapsedRealtime()
+        MainScope().launch {
+            if (current < stopAt + 2000) {
+                delay(2000)
+            }
+            startWebSocket()
+        }
     }
 
     // 앱이 background 상태가 될 때
     fun stop() {
         Log.d(TAG, "stop")
+        foreground = false
         webSocketService.disconnect()
+        stopAt = SystemClock.elapsedRealtime()
     }
 
     fun send(jsonString: String) {
@@ -82,6 +96,8 @@ class WsMessageHandler @Inject constructor(
             Log.d(TAG, "websocket key is empty")
             return
         }
+
+        if (!foreground) return
 
         webSocketService.disconnect()
         webSocketService.connect(object: WebSocketListener() {
@@ -118,6 +134,15 @@ class WsMessageHandler @Inject constructor(
                 super.onFailure(webSocket, t, response)
                 Log.d(TAG, "onFailure: ${t.message}")
                 on.value = false
+
+                // 실패하였으면 다시 연결 시도 해 본다
+                if (foreground) {
+                    Log.d(TAG, "retry in 2000ms")
+                    MainScope().launch {
+                        delay(2000)
+                        startWebSocket()
+                    }
+                }
             }
         })
     }
