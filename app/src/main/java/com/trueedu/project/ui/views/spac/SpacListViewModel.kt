@@ -1,5 +1,7 @@
 package com.trueedu.project.ui.views.spac
 
+import android.util.Log
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
@@ -7,7 +9,11 @@ import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,6 +21,7 @@ import javax.inject.Inject
 class SpacListViewModel @Inject constructor(
     private val stockPool: StockPool,
     private val tokenKeyManager: TokenKeyManager,
+    private val priceRemote: PriceRemote,
 ): ViewModel() {
     companion object {
         private val TAG = SpacListViewModel::class.java.simpleName
@@ -22,6 +29,7 @@ class SpacListViewModel @Inject constructor(
 
     val loading = mutableStateOf(true)
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
+    val priceMap = mutableStateMapOf<String, Double>()
 
     init {
         viewModelScope.launch {
@@ -47,6 +55,36 @@ class SpacListViewModel @Inject constructor(
                     }
             }
         }
+    }
+
+    private var job: Job? = null
+    private var requestIndex = 0
+
+    fun onStart() {
+        if (tokenKeyManager.userKey.value == null) return
+
+        job = viewModelScope.launch {
+            flow {
+                while (true) {
+                    delay(100)
+                    emit(requestIndex++)
+                }
+            }.collect {
+                val s = stocks.value.getOrNull(it) ?: return@collect
+                priceRemote.currentPrice(s.code)
+                    .collect {
+                        try {
+                            priceMap[s.code] = it.output.price.toDouble()
+                        } catch (e: NumberFormatException) {
+                            Log.d(TAG, "prcie format error: ${it.output.price}\n$e")
+                        }
+                    }
+            }
+        }
+    }
+
+    fun onStop() {
+        job?.cancel()
     }
 
     fun hasAppKey(): Boolean {

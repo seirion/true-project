@@ -91,13 +91,23 @@ class SpacListFragment: BaseFragment() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     itemsIndexed(vm.stocks.value, key = { _, item -> item.code }) { i, item ->
-                        SpacItem(i, item, ::onPriceClick) {
+                        SpacItem(i, item, vm.priceMap[item.code], ::onPriceClick) {
 
                         }
                     }
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vm.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
     }
 }
 
@@ -106,6 +116,7 @@ class SpacListFragment: BaseFragment() {
 private fun SpacItem(
     index: Int = 1,
     item: StockInfo = StockInfoKospi("003456", "삼성전자", ""),
+    currentPrice: Double? = null,
     onPriceClick: (String) -> Unit = {},
     onClick: () -> Unit = {},
 ) {
@@ -146,8 +157,10 @@ private fun SpacItem(
             horizontalAlignment = Alignment.End,
             modifier = Modifier.clickable { onPriceClick(item.code) }
         ) {
-            val price = item.prevPrice() // 전일 종가
-            val priceString = cashFormatter.format(price?.toDouble() ?: 0.0)
+            val price = currentPrice
+                ?: item.prevPrice()?.toDouble() // 전일 종가
+                ?: 0.0
+            val priceString = cashFormatter.format(price)
             TrueText(
                 s = priceString,
                 fontSize = 14,
