@@ -52,69 +52,64 @@ class HomeScreen(
 
     @Composable
     override fun Draw() {
-        TrueProjectTheme(
-            n = screen.theme.intValue,
-            forceDark = screen.forceDark.value
-        ) {
-            if (vm.forceUpdateVisible.value) {
-                ForceUpdateView(::gotoPlayStore)
-                return@TrueProjectTheme
-            }
-            Scaffold(
-                topBar = {
-                    MainTopBar(
-                        vm.googleSignInAccount.value,
-                        vm.accountNum.value,
-                        onUserInfo,
-                        ::onAccountInfo,
-                        ::onSearch,
-                    )
-                },
-                modifier = Modifier.fillMaxSize()
-                    .navigationBarsPadding(),
-            ) { innerPadding ->
+        if (vm.forceUpdateVisible.value) {
+            ForceUpdateView(::gotoPlayStore)
+            return
+        }
+        Scaffold(
+            topBar = {
+                MainTopBar(
+                    vm.googleSignInAccount.value,
+                    vm.accountNum.value,
+                    onUserInfo,
+                    ::onAccountInfo,
+                    ::onSearch,
+                )
+            },
+            modifier = Modifier.fillMaxSize()
+                .navigationBarsPadding(),
+        ) { innerPadding ->
 
-                if (vm.loading.value) {
-                    LoadingView()
-                    return@Scaffold
+            if (vm.loading.value) {
+                LoadingView()
+                return@Scaffold
+            }
+
+            val state = rememberLazyListState()
+            LazyColumn(
+                state = state,
+                contentPadding = PaddingValues(top = 8.dp, bottom = 56.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                vm.userStocks.value?.output2?.firstOrNull()?.let {
+                    item {
+                        AccountInfo(
+                            it,
+                            vm.marketPriceMode.value,
+                            ::onRefresh,
+                            vm::onChangeMarketPriceMode
+                        )
+                    }
+                } ?: item {
+                    if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
+                        NativeAdView(admobManager.nativeAd.value!!)
+                        Margin(32)
+                    }
+                    EmptyHome()
                 }
 
-                val state = rememberLazyListState()
-                LazyColumn(
-                    state = state,
-                    contentPadding = PaddingValues(top = 8.dp, bottom = 56.dp),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    vm.userStocks.value?.output2?.firstOrNull()?.let {
-                        item {
-                            AccountInfo(
-                                it,
-                                vm.marketPriceMode.value,
-                                ::onRefresh,
-                                vm::onChangeMarketPriceMode
-                            )
-                        }
-                    } ?: item {
-                        if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
-                            NativeAdView(admobManager.nativeAd.value!!)
-                            Margin(32)
-                        }
-                        EmptyHome()
+                vm.userStocks.value?.output1?.let {
+                    val items = it.filter { it.holdingQuantity.toDouble() > 0 }
+                    // 광고
+                    if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
+                        item { NativeAdView(admobManager.nativeAd.value!!) }
                     }
-
-                    vm.userStocks.value?.output1?.let {
-                        val items = it.filter { it.holdingQuantity.toDouble() > 0 }
-                        // 광고
-                        if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
-                            item { NativeAdView(admobManager.nativeAd.value!!) }
-                        }
-                        itemsIndexed(items, { _, item -> item.code} ) { _, item ->
-                            StockItem(item, vm.marketPriceMode.value, ::onPriceClick) {
-                                stockPool.get(item.code)?.let {
-                                    onItemClick(it)
-                                }
+                    itemsIndexed(items, { _, item -> item.code} ) { _, item ->
+                        StockItem(item, vm.marketPriceMode.value, ::onPriceClick) {
+                            stockPool.get(item.code)?.let {
+                                onItemClick(it)
                             }
                         }
                     }

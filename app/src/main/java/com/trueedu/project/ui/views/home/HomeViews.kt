@@ -59,7 +59,7 @@ fun AccountInfo(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 8.dp)
             .padding(bottom = 8.dp)
     ) {
         val profit = accountInfo.profitLossSumTotalAmount.toDouble()
@@ -162,7 +162,7 @@ fun StockItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onItemClick(item.code) }
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(8.dp)
     ) {
         Column {
             TrueText(

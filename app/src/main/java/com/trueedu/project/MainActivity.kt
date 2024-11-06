@@ -214,6 +214,7 @@ class MainActivity : AppCompatActivity() {
             NavigationGraph(navController = navController)
         }
 
+        // 소켓 연결 상태 표시
         if (BuildConfig.DEBUG) {
             OnOffState(wsMessageHandler.on.value)
         }
