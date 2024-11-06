@@ -3,6 +3,7 @@ package com.trueedu.project.ui.views.order
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.RealOrderManager
@@ -60,8 +61,8 @@ class OrderViewModel @Inject constructor(
     val realTimeQuotes = mutableStateOf<RealTimeOrder?>(null)
 
     // 주문 입력 (숫자만)
-    val priceInput = mutableStateOf("")
-    val quantityInput = mutableStateOf("1")
+    val priceInput = mutableStateOf(TextFieldValue(""))
+    val quantityInput = mutableStateOf(TextFieldValue("1"))
 
     fun init(code: String) {
         this.code = code
@@ -84,8 +85,10 @@ class OrderViewModel @Inject constructor(
         priceRemote.currentPrice(code)
             .onEach {
                 basePrice.value = it
-                if (priceInput.value == "") {
-                    priceInput.value = it.output.price
+                if (priceInput.value.text == "") {
+                    priceInput.value = priceInput.value.copy(
+                        text = it.output.price
+                    )
                 }
             }
             .launchIn(viewModelScope)
@@ -125,15 +128,15 @@ class OrderViewModel @Inject constructor(
             orderRemote.buy(
                 accountNum = userKey.accountNum!!,
                 code = code,
-                price = priceInput.value,
-                quantity = quantityInput.value,
+                price = priceInput.value.text,
+                quantity = quantityInput.value.text,
             )
         } else{
             orderRemote.sell(
                 accountNum = userKey.accountNum!!,
                 code = code,
-                price = priceInput.value,
-                quantity = quantityInput.value,
+                price = priceInput.value.text,
+                quantity = quantityInput.value.text,
             )
         }
             .flowOn(Dispatchers.Main)
@@ -153,25 +156,35 @@ class OrderViewModel @Inject constructor(
     }
 
     fun setPrice(v: Double) {
-        priceInput.value = v.toLong().toString() // 일단 정수만 처리
+        priceInput.value = priceInput.value.copy(
+            text = v.toLong().toString() // 일단 정수만 처리
+        )
     }
 
     fun increasePrice() {
         // TODO: 상하한가 체크 필요
-        priceInput.value = increasePrice(priceInput.value)
+        priceInput.value = priceInput.value.copy(
+            text = increasePrice(priceInput.value.text)
+        )
     }
 
     fun decreasePrice() {
         // TODO: 상하한가 체크 필요
-        priceInput.value = decreasePrice(priceInput.value)
+        priceInput.value = priceInput.value.copy(
+            text = decreasePrice(priceInput.value.text)
+        )
     }
 
     fun increaseQuantity() {
-        quantityInput.value = increaseQuantity(quantityInput.value)
+        quantityInput.value = quantityInput.value.copy(
+            text = increaseQuantity(quantityInput.value.text)
+        )
     }
 
     fun decreaseQuantity() {
-        quantityInput.value = decreaseQuantity(quantityInput.value)
+        quantityInput.value = quantityInput.value.copy(
+            text = decreaseQuantity(quantityInput.value.text)
+        )
     }
 
     private fun stockInfo(): StockInfo? {
