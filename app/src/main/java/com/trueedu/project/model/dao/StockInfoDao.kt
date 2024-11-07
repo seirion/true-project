@@ -1,0 +1,12 @@
+package com.trueedu.project.model.dao
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "stocks")
+data class StockInfoLocal(
+    @PrimaryKey
+    val code: String,
+    val nameKr: String,
+    val attributes: String,
+)
