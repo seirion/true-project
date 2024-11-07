@@ -99,7 +99,10 @@ class UserInfoFragment: BaseFragment() {
                             vm.delete(item.accountNum!!)
                             Toast.makeText(requireContext(), "삭제했습니다", Toast.LENGTH_SHORT).show()
                         },
-                        onClick = { vm.onSelected(index) }
+                        onClick = {
+                            vm.onSelected(index)
+                            dismissAllowingStateLoss()
+                        }
                     )
                 }
 
