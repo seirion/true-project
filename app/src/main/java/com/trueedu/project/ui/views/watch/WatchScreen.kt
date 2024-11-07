@@ -2,7 +2,6 @@ package com.trueedu.project.ui.views.watch
 
 import android.app.Activity
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -63,11 +62,8 @@ import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.launch
 
 class WatchScreen(
     private val activity: Activity,
@@ -187,14 +183,6 @@ class WatchScreen(
     }
 
     override fun onStart() {
-        MainScope().launch {
-            // 바로 로그인 체크하면 종종 로그인 실패로 잘못 처리되는 경우가 있음
-            delay(500)
-            if (!vm.loggedIn()) {
-                Toast.makeText(activity, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show()
-                vm.googleAccount.login(activity)
-            }
-        }
         vm.init()
     }
 
