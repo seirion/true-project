@@ -157,9 +157,9 @@ fun SettingItem(
             color = MaterialTheme.colorScheme.primary,
         )
         Icon(
-            modifier = Modifier.size(28.dp),
+            modifier = Modifier.size(24.dp),
             imageVector = Icons.Outlined.ChevronRight,
-            tint = MaterialTheme.colorScheme.tertiary,
+            tint = MaterialTheme.colorScheme.primary,
             contentDescription = "next"
         )
     }

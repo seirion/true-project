@@ -80,7 +80,7 @@ fun AccountNumView(
             Icon(
                 modifier = Modifier.size(24.dp),
                 imageVector = icon,
-                tint = MaterialTheme.colorScheme.tertiary,
+                tint = MaterialTheme.colorScheme.primary,
                 contentDescription = "checked"
             )
             Margin(8)
@@ -114,7 +114,7 @@ fun AddIcon(
         Icon(
             modifier = Modifier.size(24.dp),
             imageVector = Icons.Outlined.Add,
-            tint = MaterialTheme.colorScheme.tertiary,
+            tint = MaterialTheme.colorScheme.primary,
             contentDescription = "checked"
         )
         Margin(8)

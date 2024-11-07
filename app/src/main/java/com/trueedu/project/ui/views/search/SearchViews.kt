@@ -67,6 +67,7 @@ fun SearchBar(
                 IconButton(onClick = { searchText.value = "" }) {
                     Icon(
                         imageVector = Icons.Default.Close,
+                        tint = MaterialTheme.colorScheme.primary,
                         contentDescription = "Clear"
                     )
                 }

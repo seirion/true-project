@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TouchIcon24(
     icon: ImageVector,
-    tint: Color = MaterialTheme.colorScheme.tertiary,
+    tint: Color = MaterialTheme.colorScheme.primary,
     onClick: () -> Unit
 ) {
     TouchIconWithSize(24.dp, tint, icon, onClick)
@@ -36,7 +36,7 @@ fun TouchIcon24(
 @Composable
 fun TouchIcon32(
     icon: ImageVector,
-    tint: Color = MaterialTheme.colorScheme.tertiary,
+    tint: Color = MaterialTheme.colorScheme.primary,
     onClick: () -> Unit
 ) {
     TouchIconWithSize(32.dp, tint, icon, onClick)

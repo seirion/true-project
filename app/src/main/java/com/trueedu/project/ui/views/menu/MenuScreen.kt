@@ -101,7 +101,7 @@ private fun MenuItem(
         Icon(
             modifier = Modifier.size(28.dp),
             imageVector = icon,
-            tint = MaterialTheme.colorScheme.tertiary,
+            tint = MaterialTheme.colorScheme.primary,
             contentDescription = "menu_icon"
         )
         Margin(8)

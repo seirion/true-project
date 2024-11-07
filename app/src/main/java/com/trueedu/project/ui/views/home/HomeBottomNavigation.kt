@@ -64,6 +64,7 @@ fun HomeBottomNavigation(
                             Icon(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = item.icon(selected),
+                                tint = MaterialTheme.colorScheme.primary,
                                 contentDescription = "home-item"
                             )
                             val color = if (selected) {
