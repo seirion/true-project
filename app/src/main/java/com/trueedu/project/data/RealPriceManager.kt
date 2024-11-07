@@ -1,6 +1,8 @@
 package com.trueedu.project.data
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.snapshotFlow
 import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.model.ws.TransactionId
 import com.trueedu.project.model.ws.WsRequest
@@ -49,6 +51,14 @@ class RealPriceManager @Inject constructor(
     fun start() {
         job = MainScope().launch(Dispatchers.IO) {
             launch {
+                snapshotFlow { wsMessageHandler.on.value }
+                    .collect {
+                        if (it) {
+                            resumeRequests()
+                        }
+                    }
+            }
+            launch {
                 wsMessageHandler.observeEvent()
                     .filter { it.header.transactionId == TransactionId.RealTimeTrade }
                     .collect {
@@ -78,9 +88,18 @@ class RealPriceManager @Inject constructor(
     }
 
     /**
+     * 웹소켓이 끊어졌다가 재연결되면 현재의 요청을 다시 시도
+     */
+    fun resumeRequests() {
+        Log.d(TAG, "websocket connection recovered")
+        beginRequests()
+    }
+
+    /**
      * 기존에 있떤 요청을 취소하고 새 요청을 추가함
      */
     fun pushRequest(name: String, codes: List<String>) {
+        Log.d("TAG", "pushRequest: $name ${codes.size}")
         // 기존 처리 중단
         if (requestStack.isNotEmpty()) {
             cancelRequests()
@@ -107,6 +126,7 @@ class RealPriceManager @Inject constructor(
      * 현재 요청을 취소하고 예전 요청을 복구
      */
     fun popRequest(name: String) {
+        Log.d(TAG, "popRequest: $name ")
         if (requestStack.isEmpty()) return
         if (requestStack.last().first != name) return
 
