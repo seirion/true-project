@@ -63,6 +63,9 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
 
     // 사용자 계정 정보
 
+    // 면책 조항 표시
+    var disclaimerVisible by preferences.boolean(true)
+
     // UI
     var forceDark by preferences.boolean(false)
     var theme by preferences.int(1)
