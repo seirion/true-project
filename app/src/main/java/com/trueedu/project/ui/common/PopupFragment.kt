@@ -27,6 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.R
+import com.trueedu.project.data.ScreenControl
+import com.trueedu.project.ui.theme.TrueProjectTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 data class ButtonAction(
     val label: String,
@@ -58,6 +62,7 @@ enum class PopupType {
     }
 }
 
+@AndroidEntryPoint
 class PopupFragment: DialogFragment() {
     companion object {
         private val TAG = PopupFragment::class.java.simpleName
@@ -86,6 +91,9 @@ class PopupFragment: DialogFragment() {
     private var popupType: PopupType = PopupType.OK
     private val actions: MutableList<ButtonAction> = mutableListOf()
 
+    @Inject
+    lateinit var screen: ScreenControl
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.PopupDialog)
@@ -104,8 +112,13 @@ class PopupFragment: DialogFragment() {
         root.setBackgroundColor(Color.Transparent.toArgb())
 
         root.setContent {
-            PopupBody(popupType, title, desc, actions) {
-                dismissAllowingStateLoss()
+            TrueProjectTheme(
+                n = screen.theme.intValue,
+                forceDark = screen.forceDark.value
+            ) {
+                PopupBody(popupType, title, desc, actions) {
+                    dismissAllowingStateLoss()
+                }
             }
         }
         return root
