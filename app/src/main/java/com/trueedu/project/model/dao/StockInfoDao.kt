@@ -9,4 +9,5 @@ data class StockInfoLocal(
     val code: String,
     val nameKr: String,
     val attributes: String,
+    val kospi: Boolean,
 )

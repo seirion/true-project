@@ -15,7 +15,7 @@ class StockInfoParseTest {
 
         assertEquals("005930", stockInfo.code)
         assertEquals("삼성전자", stockInfo.nameKr)
-        assertEquals("003862449", stockInfo.marketCap())
+        assertEquals("3862449", stockInfo.marketCap())
         assertEquals("19750611", stockInfo.listingDate())
         assertEquals("000064700", stockInfo.prevPrice())
         assertEquals("000037566016", stockInfo.prevVolume())

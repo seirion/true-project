@@ -32,7 +32,7 @@ class SettingViewModel @Inject constructor(
 
                         }
                         StockPool.Status.SUCCESS -> {
-                            updateAvailable.value = stockPool.needToDownloadMasterFiles()
+                            updateAvailable.value = false // FIXME
                             stockUpdateLabel.value = if (updateAvailable.value) {
                                 ""
                             } else {
