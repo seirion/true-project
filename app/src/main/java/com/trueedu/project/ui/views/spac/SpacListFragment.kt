@@ -17,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
@@ -29,9 +28,10 @@ import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
-import com.trueedu.project.ui.views.common.Badge
+import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.views.common.DesignatedBadge
+import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.utils.formatter.cashFormatter
@@ -139,11 +139,11 @@ private fun SpacItem(
 
                 if (item.halt()) {
                     Margin(2)
-                    Badge("정", MaterialTheme.colorScheme.error)
+                    HaltBadge()
                 }
                 if (item.designated()) {
                     Margin(2)
-                    Badge("관", Color(0xFFF57C00))
+                    DesignatedBadge()
                 }
             }
             TrueText(

@@ -11,7 +11,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.ui.common.TrueText
 
-@Preview(showBackground = true)
 @Composable
 fun Badge(
     s: String = "정",
@@ -29,4 +28,16 @@ fun Badge(
             color = Color.White,
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HaltBadge() {
+    Badge("정", Color(0xFFBA1A1A))
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DesignatedBadge() {
+    Badge("관", Color(0xFFF57C00))
 }
