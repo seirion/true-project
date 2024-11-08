@@ -149,7 +149,7 @@ private fun RowScope.BodyTitle(s: String) {
 }
 
 @Composable
-fun StockItem(
+fun HomeStockItem(
     item: AccountOutput1,
     marketPriceMode: Boolean,
     onPriceClick: (String) -> Unit,

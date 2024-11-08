@@ -104,7 +104,7 @@ class HomeScreen(
                         item { NativeAdView(admobManager.nativeAd.value!!) }
                     }
                     itemsIndexed(items, { _, item -> item.code} ) { _, item ->
-                        StockItem(item, vm.marketPriceMode.value, ::onPriceClick) {
+                        HomeStockItem(item, vm.marketPriceMode.value, ::onPriceClick) {
                             stockPool.get(item.code)?.let {
                                 onItemClick(it)
                             }

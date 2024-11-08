@@ -88,7 +88,7 @@ fun TouchIconWithSizeRotating(
             .size(size + padding * 2)
             .clip(CircleShape)
             .graphicsLayer {
-                rotationZ = angle % 360f
+                rotationZ = 360f - (angle % 360f)
             }
             .clickable {
                 if (rotationTarget % 360 == 0) {
