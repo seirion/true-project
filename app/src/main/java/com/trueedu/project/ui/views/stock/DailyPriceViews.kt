@@ -17,6 +17,7 @@ import com.trueedu.project.model.dto.price.DailyPrice
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.dateFormat
 
 @Preview(showBackground = true)
 @Composable
@@ -109,14 +110,6 @@ fun DailyPriceCell(
                 modifier = Modifier.weight(1f),
             )
         }
-    }
-}
-
-private fun dateFormat(s: String): String {
-    return if (s.length == 8) {
-        listOf(s.substring(0, 4), s.substring(4, 6), s.substring(6, 8)).joinToString(".")
-    } else {
-        s
     }
 }
 

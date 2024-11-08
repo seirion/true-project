@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.ui.views.common.DesignatedBadge
+import com.trueedu.project.ui.views.common.HaltBadge
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
@@ -73,6 +75,8 @@ fun BackStockTopBar(
     price: String = "13,000",
     priceChange: String = "+1,150(+1.15%)",
     textColor: Color = ChartColor.up,
+    halt: Boolean = false,
+    designated: Boolean = false,
     onBack: () -> Unit = {},
 ) {
     TopAppBar(
@@ -84,11 +88,21 @@ fun BackStockTopBar(
         },
         title = {
             Column {
-                TrueText(
-                    s = nameKr,
-                    fontSize = 16,
-                    color = MaterialTheme.colorScheme.primary,
-                )
+                Row {
+                    TrueText(
+                        s = nameKr,
+                        fontSize = 16,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    if (halt) {
+                        Margin(2)
+                        HaltBadge()
+                    }
+                    if (designated) {
+                        Margin(2)
+                        DesignatedBadge()
+                    }
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TrueText(s = price, fontSize = 14, fontWeight = FontWeight.W600, color = textColor)
                     Margin(6)
