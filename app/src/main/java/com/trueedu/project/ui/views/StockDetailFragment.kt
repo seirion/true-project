@@ -50,12 +50,6 @@ class StockDetailFragment: BaseFragment() {
         if (!::stockInfo.isInitialized) {
             dismissAllowingStateLoss()
         }
-        // push
-    }
-
-    override fun onStop() {
-        super.onStop()
-        // pop
     }
 
     override fun init() {
