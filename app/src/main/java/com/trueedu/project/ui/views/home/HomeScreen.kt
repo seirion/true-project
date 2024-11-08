@@ -21,14 +21,12 @@ import com.trueedu.project.BuildConfig
 import com.trueedu.project.MainViewModel
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RemoteConfig
-import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
-import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.topbar.MainTopBar
 import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.order.OrderFragment
@@ -38,7 +36,6 @@ import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 class HomeScreen(
     private val activity: Activity,
     private val vm: MainViewModel,
-    private val screen: ScreenControl,
     private val stockPool: StockPool,
     private val admobManager: AdmobManager,
     private val remoteConfig: RemoteConfig,

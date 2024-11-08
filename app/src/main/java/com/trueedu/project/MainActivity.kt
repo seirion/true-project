@@ -149,7 +149,6 @@ class MainActivity : AppCompatActivity() {
         homeScreen = HomeScreen(
             activity = this,
             vm = vm,
-            screen = screen,
             stockPool = stockPool,
             admobManager = admobManager,
             remoteConfig = remoteConfig,

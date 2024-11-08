@@ -87,7 +87,7 @@ fun AccountInfo(
         Column(horizontalAlignment = Alignment.End) {
             TouchIconWithSizeRotating(
                 size = 24.dp,
-                tint= MaterialTheme.colorScheme.tertiary,
+                tint= MaterialTheme.colorScheme.primary,
                 icon = Icons.Outlined.Sync,
                 onClick = onRefresh
             )
