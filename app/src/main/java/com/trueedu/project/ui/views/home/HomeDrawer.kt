@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -65,7 +64,6 @@ fun HomeDrawer(
         modifier = Modifier.fillMaxHeight()
             .padding(end = 60.dp)
             .background(MaterialTheme.colorScheme.surface)
-            .statusBarsPadding()
             .navigationBarsPadding()
     ) { innerPadding ->
         val state = rememberLazyListState()
