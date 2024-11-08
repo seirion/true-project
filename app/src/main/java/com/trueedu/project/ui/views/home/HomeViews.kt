@@ -26,6 +26,7 @@ import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.widget.MyToggleButton
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
+import com.trueedu.project.utils.formatter.cashFormatter
 
 @Composable
 fun EmptyHome() {
@@ -175,7 +176,8 @@ fun StockItem(
             val subText = if (marketPriceMode) {
                 "(${item.code})" // 종목 코드
             } else {
-                "${item.holdingQuantity}주" // 수량
+                val priceString = cashFormatter.format(item.purchaseAveragePrice.toDouble())
+                "${priceString}원 • ${item.holdingQuantity}주" // 수량
             }
             TrueText(
                 s = subText,
