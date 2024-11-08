@@ -14,11 +14,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -44,10 +49,11 @@ import com.trueedu.project.ui.common.PopupFragment
 import com.trueedu.project.ui.common.PopupType
 import com.trueedu.project.ui.dev.OnOffState
 import com.trueedu.project.ui.theme.TrueProjectTheme
-import com.trueedu.project.ui.views.UserInfoFragment
+import com.trueedu.project.ui.views.UserInfoViewModel
 import com.trueedu.project.ui.views.home.BottomNavItem
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.HomeBottomNavigation
+import com.trueedu.project.ui.views.home.HomeDrawer
 import com.trueedu.project.ui.views.home.HomeScreen
 import com.trueedu.project.ui.views.menu.MenuScreen
 import com.trueedu.project.ui.views.watch.WatchListViewModel
@@ -87,10 +93,13 @@ class MainActivity : AppCompatActivity() {
 
     private val vm by viewModels<MainViewModel>()
     private val watchVm by viewModels<WatchListViewModel>()
+    private val homeDrawerVm by viewModels<UserInfoViewModel>()
 
     private lateinit var homeScreen: HomeScreen
     private lateinit var watchScreen: WatchScreen
     private lateinit var menuScreen: MenuScreen
+
+    private var openDrawer: (() -> Unit)? = null
 
     override fun onStart() {
         super.onStart()
@@ -238,12 +247,30 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        Scaffold(
-            bottomBar = { HomeBottomNavigation(navController = navController) }
-        ) { _ ->
-            NavigationGraph(navController = navController)
+        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+        val scope = rememberCoroutineScope()
+        if (openDrawer == null) {
+            openDrawer = {
+                scope.launch { drawerState.open() }
+            }
         }
-
+        val login = googleAccount.loginSignal.collectAsState(false)
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            gesturesEnabled = login.value && navBackStackEntry?.destination?.route == BottomNavItem.Home.screenRoute,
+            drawerContent = {
+                HomeDrawer(this, homeDrawerVm, googleAccount, trueAnalytics, supportFragmentManager) {
+                    scope.launch { drawerState.close() }
+                }
+            },
+            content = {
+                Scaffold(
+                    bottomBar = { HomeBottomNavigation(navController = navController) },
+                ) { _ ->
+                    NavigationGraph(navController = navController)
+                }
+            }
+        )
         // 소켓 연결 상태 표시
         if (BuildConfig.DEBUG) {
             OnOffState(wsMessageHandler.on.value)
@@ -260,7 +287,7 @@ class MainActivity : AppCompatActivity() {
         if (vm.googleSignInAccount.value == null) {
             googleAccount.login(this)
         } else {
-            UserInfoFragment.show(supportFragmentManager)
+            openDrawer?.invoke()
         }
     }
 
