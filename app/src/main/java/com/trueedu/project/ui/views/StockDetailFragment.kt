@@ -81,6 +81,8 @@ class StockDetailFragment: BaseFragment() {
                     cashFormatter.format(price, false),
                     priceChangeStr,
                     textColor,
+                    stockInfo.halt(),
+                    stockInfo.designated(),
                     ::dismissAllowingStateLoss
                 )
             },
