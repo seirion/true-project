@@ -23,6 +23,7 @@ import com.trueedu.project.ui.common.BackStockTopBar
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
+import com.trueedu.project.ui.views.setting.SettingItem
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
 import com.trueedu.project.utils.formatter.cashFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -95,7 +96,8 @@ class StockDetailFragment: BaseFragment() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                LinkBox(::gotoDailyPrice)
+                SettingItem("일별 가격", true, ::gotoDailyPrice)
+
                 vm.infoList.value.forEach {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -119,24 +121,5 @@ class StockDetailFragment: BaseFragment() {
         } else {
             AppKeyInputFragment.show(false, childFragmentManager)
         }
-    }
-}
-
-@Composable
-private fun LinkBox(
-   onDailyPrice: () -> Unit,
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        TrueText(
-            s = "일별 가격",
-            fontSize = 14,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable { onDailyPrice() }
-        )
     }
 }
