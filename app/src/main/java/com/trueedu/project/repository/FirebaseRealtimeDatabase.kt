@@ -82,6 +82,16 @@ class FirebaseRealtimeDatabase @Inject constructor(
         return 0
     }
 
+    suspend fun lastUpdatedTime(): Long {
+        try {
+            val snapshot = stocksRef.get().await()
+            val lastUpdatedAt = snapshot.child("lastUpdatedAt").getValue(Long::class.java)
+            return lastUpdatedAt ?: 0L
+        } catch (e: Exception) {
+            return 0L
+        }
+    }
+
     suspend fun loadStocks(): Pair<Long, Map<String, StockInfo>> {
         Log.d(TAG, "loadStocks()")
         try {

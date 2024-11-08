@@ -11,7 +11,6 @@ import com.trueedu.project.ui.views.order.OrderTab
 import com.trueedu.project.utils.parseDateString
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -83,4 +82,7 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
     fun setOrderTab(tab: OrderTab) {
         orderTab = tab.name
     }
+
+    // 종목 다운로드 시각 yyyyMMddHHmm
+    var stockUpdatedAt by preferences.long(0L)
 }

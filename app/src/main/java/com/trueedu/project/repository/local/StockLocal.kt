@@ -10,4 +10,8 @@ class StockLocal @Inject constructor(
     suspend fun getAllStocks(): List<StockInfoLocal> {
         return stockInfoLocalDao.getAllStocks()
     }
+
+    suspend fun setAllStocks(stocks: List<StockInfoLocal>)  {
+        return stockInfoLocalDao.insertAll(stocks)
+    }
 }
