@@ -55,9 +55,6 @@ class StockPool @Inject constructor(
 
         CoroutineScope(Dispatchers.IO).launch {
             val localStocks = loadLocalStocks()
-            withContext(Dispatchers.Main) {
-                this@StockPool.stocks = localStocks
-            }
 
             // 리모트 데이터가 필요한 지 체크
             val remoteUpdatedTime = firebaseRealtimeDatabase.lastUpdatedTime()
@@ -87,8 +84,10 @@ class StockPool @Inject constructor(
                 }
             } else {
                 Log.d(TAG, "종목 업데이트 불필요: ${localStocks.size}")
-                status.value = Status.SUCCESS
-                this@StockPool.stocks = localStocks
+                withContext(Dispatchers.Main) {
+                    status.value = Status.SUCCESS
+                    this@StockPool.stocks = localStocks
+                }
             }
         }
     }
