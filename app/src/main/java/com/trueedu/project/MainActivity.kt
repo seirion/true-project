@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -171,6 +172,16 @@ class MainActivity : AppCompatActivity() {
         )
 
         setContent {
+            DisposableEffect(screen.forceDark.value) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT,
+                    ) { screen.forceDark.value },
+                )
+                onDispose {}
+            }
+
             TrueProjectTheme(
                 n = screen.theme.intValue,
                 forceDark = screen.forceDark.value
