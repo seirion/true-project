@@ -34,7 +34,7 @@ fun navigationBarHeight() = WindowInsets.navigationBars
 @Composable
 fun HomeBottomNavigation(
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.background,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = MaterialTheme.colorScheme.primary,
     indicatorColor: Color = MaterialTheme.colorScheme.outlineVariant,
     navController: NavHostController
@@ -52,8 +52,6 @@ fun HomeBottomNavigation(
     ) {
         NavigationBar(
             modifier = modifier.height(HomeBottomNavHeight + navigationBarHeight()),
-            containerColor = containerColor,
-            contentColor = contentColor,
         ) {
             items.forEach { item ->
                 val selected = currentRoute == item.screenRoute
