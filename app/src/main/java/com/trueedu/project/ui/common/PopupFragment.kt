@@ -43,10 +43,13 @@ enum class PopupType {
     DELETE_CANCEL,
     ;
 
+    /**
+     * return textColor, backgroundColor
+     */
     fun mainColor(colorScheme: ColorScheme): Pair<Color, Color> {
         return when (this) {
             OK -> {
-                colorScheme.background to colorScheme.surfaceDim
+                colorScheme.background to colorScheme.inverseSurface
             }
             YES_NO -> {
                 colorScheme.background to colorScheme.primaryContainer
@@ -57,8 +60,11 @@ enum class PopupType {
         }
     }
 
+    /**
+     * return textColor, backgroundColor
+     */
     fun cancelColor(colorScheme: ColorScheme): Pair<Color, Color> {
-        return colorScheme.background to colorScheme.surfaceDim
+        return colorScheme.background to colorScheme.outline
     }
 }
 
