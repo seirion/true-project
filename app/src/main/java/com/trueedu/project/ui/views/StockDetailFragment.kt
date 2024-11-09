@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -15,17 +17,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.extensions.priceChangeStr
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
+import com.trueedu.project.ui.assets.EditAssetFragment
 import com.trueedu.project.ui.common.BackStockTopBar
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
+import com.trueedu.project.ui.widget.ItemWithIcon
 import com.trueedu.project.ui.widget.SettingItem
 import com.trueedu.project.utils.formatter.cashFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,6 +58,8 @@ class StockDetailFragment: BaseFragment() {
     lateinit var remoteConfig: RemoteConfig
     @Inject
     lateinit var admobManager: AdmobManager
+    @Inject
+    lateinit var googleAccount: GoogleAccount
 
     override fun onStart() {
         super.onStart()
@@ -112,7 +119,7 @@ class StockDetailFragment: BaseFragment() {
                 SettingItem("일별 가격", true, ::gotoDailyPrice)
 
                 if (stockInfo.spac()) {
-                    SettingItem("보유 수정", true, ::gotoDailyPrice)
+                    ItemWithIcon("보유 수정", Icons.Outlined.Edit, true, ::editAssets)
                 }
 
                 vm.infoList.value.forEach {
@@ -137,6 +144,17 @@ class StockDetailFragment: BaseFragment() {
             DailyPriceFragment.show(stockInfo.code, childFragmentManager)
         } else {
             AppKeyInputFragment.show(false, childFragmentManager)
+        }
+    }
+
+    private fun editAssets() {
+        trueAnalytics.clickButton("stock_detail__edit_assets__click")
+        if (googleAccount.loggedIn()) {
+            EditAssetFragment.show(stockInfo.code, childFragmentManager)
+        } else {
+            googleAccount.login(requireActivity()) {
+                // TODO: 로그인 성공 후 다시 시도
+            }
         }
     }
 }
