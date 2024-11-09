@@ -1,7 +1,6 @@
 package com.trueedu.project.ui.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,8 +25,8 @@ import com.trueedu.project.ui.common.BackStockTopBar
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
-import com.trueedu.project.ui.views.setting.SettingItem
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
+import com.trueedu.project.ui.widget.SettingItem
 import com.trueedu.project.utils.formatter.cashFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -111,6 +110,10 @@ class StockDetailFragment: BaseFragment() {
                     .padding(innerPadding)
             ) {
                 SettingItem("일별 가격", true, ::gotoDailyPrice)
+
+                if (stockInfo.spac()) {
+                    SettingItem("보유 수정", true, ::gotoDailyPrice)
+                }
 
                 vm.infoList.value.forEach {
                     Row(
