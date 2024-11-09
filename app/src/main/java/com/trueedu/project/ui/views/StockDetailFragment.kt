@@ -16,9 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.extensions.priceChangeStr
 import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.ui.BaseFragment
+import com.trueedu.project.ui.ads.AdmobManager
+import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.BackStockTopBar
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
@@ -27,6 +30,7 @@ import com.trueedu.project.ui.views.setting.SettingItem
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
 import com.trueedu.project.utils.formatter.cashFormatter
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class StockDetailFragment: BaseFragment() {
@@ -45,6 +49,11 @@ class StockDetailFragment: BaseFragment() {
     lateinit var stockInfo: StockInfo
 
     private val vm by viewModels<StockDetailViewModel>()
+
+    @Inject
+    lateinit var remoteConfig: RemoteConfig
+    @Inject
+    lateinit var admobManager: AdmobManager
 
     override fun onStart() {
         super.onStart()
@@ -86,6 +95,11 @@ class StockDetailFragment: BaseFragment() {
                     stockInfo.designated(),
                     ::dismissAllowingStateLoss
                 )
+            },
+            bottomBar = {
+                if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
+                    NativeAdView(admobManager.nativeAd.value!!)
+                }
             },
             modifier = Modifier
                 .fillMaxSize()
