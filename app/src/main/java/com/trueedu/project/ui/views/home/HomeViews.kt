@@ -17,12 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.trueedu.project.model.dto.StockInfo
 import com.trueedu.project.model.dto.account.AccountOutput1
 import com.trueedu.project.model.dto.account.AccountOutput2
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIconWithSizeRotating
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.ui.views.common.DesignatedBadge
+import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.widget.MyToggleButton
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
@@ -151,6 +154,7 @@ private fun RowScope.BodyTitle(s: String) {
 @Composable
 fun HomeStockItem(
     item: AccountOutput1,
+    stock: StockInfo?,
     marketPriceMode: Boolean,
     onPriceClick: (String) -> Unit,
     onItemClick: (String) -> Unit,
@@ -166,12 +170,22 @@ fun HomeStockItem(
             .padding(8.dp)
     ) {
         Column {
-            TrueText(
-                s = item.nameKr,
-                fontSize = 14,
-                color = MaterialTheme.colorScheme.primary,
-                maxLines = 1,
-            )
+            Row {
+                TrueText(
+                    s = item.nameKr,
+                    fontSize = 14,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                )
+                if (stock?.halt() == true) {
+                    Margin(2)
+                    HaltBadge()
+                }
+                if (stock?.designated() == true) {
+                    Margin(2)
+                    DesignatedBadge()
+                }
+            }
 
             val subText = if (marketPriceMode) {
                 "(${item.code})" // 종목 코드
