@@ -1,4 +1,4 @@
-package com.trueedu.project.model.dto
+package com.trueedu.project.model.dto.firebase
 
 abstract class StockInfo(
     val code: String,

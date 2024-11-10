@@ -10,7 +10,7 @@ import com.trueedu.project.data.RealOrderManager
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
-import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
 import com.trueedu.project.model.ws.RealTimeOrder

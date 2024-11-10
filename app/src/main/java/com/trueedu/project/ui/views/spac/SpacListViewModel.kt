@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
-import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job

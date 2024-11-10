@@ -1,16 +1,14 @@
 package com.trueedu.project.ui.views.spac
 
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
-import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

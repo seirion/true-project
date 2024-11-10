@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.trueedu.project.data.RemoteConfig
-import com.trueedu.project.model.dto.StockInfo
-import com.trueedu.project.model.dto.StockInfoKospi
+import com.trueedu.project.model.dto.firebase.StockInfo
+import com.trueedu.project.model.dto.firebase.StockInfoKospi
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView

@@ -45,7 +45,7 @@ import androidx.fragment.app.FragmentManager
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.StockPool
-import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.BackTitleTopBar

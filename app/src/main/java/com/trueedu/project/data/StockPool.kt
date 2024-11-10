@@ -3,9 +3,9 @@ package com.trueedu.project.data
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.model.dao.StockInfoLocal
-import com.trueedu.project.model.dto.StockInfo
-import com.trueedu.project.model.dto.StockInfoKosdaq
-import com.trueedu.project.model.dto.StockInfoKospi
+import com.trueedu.project.model.dto.firebase.StockInfo
+import com.trueedu.project.model.dto.firebase.StockInfoKosdaq
+import com.trueedu.project.model.dto.firebase.StockInfoKospi
 import com.trueedu.project.repository.FirebaseRealtimeDatabase
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.local.StockLocal

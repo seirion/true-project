@@ -20,7 +20,7 @@ import androidx.fragment.app.viewModels
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.extensions.priceChangeStr
-import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
