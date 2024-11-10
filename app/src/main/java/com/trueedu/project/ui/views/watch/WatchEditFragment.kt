@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.WatchList
-import com.trueedu.project.model.dto.StockInfo
+import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.TrueText

@@ -11,9 +11,9 @@ import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.ValueEventListener
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.data.GoogleAccount
-import com.trueedu.project.model.dto.StockInfo
-import com.trueedu.project.model.dto.StockInfoKosdaq
-import com.trueedu.project.model.dto.StockInfoKospi
+import com.trueedu.project.model.dto.firebase.StockInfo
+import com.trueedu.project.model.dto.firebase.StockInfoKosdaq
+import com.trueedu.project.model.dto.firebase.StockInfoKospi
 import com.trueedu.project.repository.local.Local
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

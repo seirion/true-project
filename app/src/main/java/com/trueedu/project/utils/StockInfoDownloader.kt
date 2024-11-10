@@ -6,9 +6,9 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
-import com.trueedu.project.model.dto.StockInfo
-import com.trueedu.project.model.dto.StockInfoKosdaq
-import com.trueedu.project.model.dto.StockInfoKospi
+import com.trueedu.project.model.dto.firebase.StockInfo
+import com.trueedu.project.model.dto.firebase.StockInfoKosdaq
+import com.trueedu.project.model.dto.firebase.StockInfoKospi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

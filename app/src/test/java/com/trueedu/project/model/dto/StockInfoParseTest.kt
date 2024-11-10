@@ -1,5 +1,6 @@
 package com.trueedu.project.model.dto
 
+import com.trueedu.project.model.dto.firebase.StockInfoKospi
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
