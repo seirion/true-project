@@ -55,6 +55,8 @@ import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.StockDetailFragment
+import com.trueedu.project.ui.views.common.DesignatedBadge
+import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.HomeBottomNavHeight
 import com.trueedu.project.ui.views.order.OrderFragment
@@ -157,6 +159,8 @@ class WatchScreen(
                             delta = delta,
                             rate = rate,
                             volume = volume,
+                            halt = stock.halt(),
+                            designated = stock.designated(),
                             onTradingClick = { gotoTrading(stock) },
                             onClick = { gotoStockDetail(stock) },
                         ) {
@@ -274,6 +278,8 @@ private fun WatchingStockItem(
     delta: Double,
     rate: Double,
     volume: Double,
+    halt: Boolean,
+    designated: Boolean,
     onTradingClick: () -> Unit,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -292,12 +298,22 @@ private fun WatchingStockItem(
             .padding(8.dp)
     ) {
         Column {
-            TrueText(
-                s = nameKr,
-                fontSize = 14,
-                color = MaterialTheme.colorScheme.primary,
-                maxLines = 1,
-            )
+            Row {
+                TrueText(
+                    s = nameKr,
+                    fontSize = 14,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                )
+                if (halt) {
+                    Margin(2)
+                    HaltBadge()
+                }
+                if (designated) {
+                    Margin(2)
+                    DesignatedBadge()
+                }
+            }
             TrueText(
                 s = "(${code})",
                 fontSize = 13,
