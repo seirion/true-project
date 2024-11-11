@@ -78,14 +78,9 @@ fun BackStockTopBar(
     halt: Boolean = false,
     designated: Boolean = false,
     onBack: () -> Unit = {},
+    actions: @Composable (RowScope.() -> Unit) = {},
 ) {
     TopAppBar(
-        navigationIcon = {
-            TouchIcon32(
-                icon = Icons.Filled.ChevronLeft,
-                onClick = onBack,
-            )
-        },
         title = {
             Column {
                 Row {
@@ -110,6 +105,13 @@ fun BackStockTopBar(
                 }
             }
         },
+        navigationIcon = {
+            TouchIcon32(
+                icon = Icons.Filled.ChevronLeft,
+                onClick = onBack,
+            )
+        },
+        actions = actions,
         colors = TopAppBarDefaults.smallTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             titleContentColor = MaterialTheme.colorScheme.primary,
