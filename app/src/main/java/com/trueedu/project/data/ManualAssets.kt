@@ -13,12 +13,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AssetManager @Inject constructor(
+class ManualAssets @Inject constructor(
     private val firebaseAssets: FirebaseAssetsManager,
     private val googleAccount: GoogleAccount,
 ) {
     companion object {
-        private val TAG = AssetManager::class.java.simpleName
+        private val TAG = ManualAssets::class.java.simpleName
     }
 
     val assets = mutableStateOf<List<UserAsset>>(emptyList())

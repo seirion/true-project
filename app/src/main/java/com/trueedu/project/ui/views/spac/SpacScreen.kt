@@ -62,8 +62,8 @@ class SpacScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                item { TotalAssetView(vm.assetManager.assets.value) }
-                itemsIndexed(vm.assetManager.assets.value, { _, item -> item.code}) { index, item ->
+                item { TotalAssetView(vm.manualAssets.assets.value) }
+                itemsIndexed(vm.manualAssets.assets.value, { _, item -> item.code}) { index, item ->
                     val stock = vm.stockPool.get(item.code)!!
                     val currentPrice = null
                     SpacAssetItem(item, stock, currentPrice, {}, {})

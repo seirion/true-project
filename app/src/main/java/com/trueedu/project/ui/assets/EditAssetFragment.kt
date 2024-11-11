@@ -17,7 +17,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.R
-import com.trueedu.project.data.AssetManager
+import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.firebase.UserAsset
 import com.trueedu.project.ui.BaseFragment
@@ -50,7 +50,7 @@ class EditAssetFragment: BaseFragment() {
     }
 
     @Inject
-    lateinit var assetManager: AssetManager
+    lateinit var manualAssets: ManualAssets
     @Inject
     lateinit var stockPool: StockPool
 
@@ -111,7 +111,7 @@ class EditAssetFragment: BaseFragment() {
     private fun onSave() {
         trueAnalytics.clickButton("${screenName()}__save__click")
         val stock = stockPool.get(code)
-        assetManager.addAsset(
+        manualAssets.addAsset(
             UserAsset(
                 code = code,
                 nameKr = stock?.nameKr?: "",

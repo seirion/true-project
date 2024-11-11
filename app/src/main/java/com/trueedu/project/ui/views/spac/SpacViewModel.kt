@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.trueedu.project.data.AssetManager
+import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.StockPool
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SpacViewModel @Inject constructor(
-    val assetManager: AssetManager,
+    val manualAssets: ManualAssets,
     val stockPool: StockPool,
 ): ViewModel() {
     val loading = mutableStateOf(false)
