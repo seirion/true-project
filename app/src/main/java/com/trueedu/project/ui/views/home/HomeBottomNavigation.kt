@@ -44,6 +44,7 @@ fun HomeBottomNavigation(
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Watch,
+        BottomNavItem.Spac,
         BottomNavItem.Menu,
     )
 
