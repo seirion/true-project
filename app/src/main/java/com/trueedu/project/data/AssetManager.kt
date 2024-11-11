@@ -1,5 +1,6 @@
 package com.trueedu.project.data
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.data.firebase.FirebaseAssetsManager
 import com.trueedu.project.model.dto.firebase.UserAsset
@@ -16,6 +17,10 @@ class AssetManager @Inject constructor(
     private val firebaseAssets: FirebaseAssetsManager,
     private val googleAccount: GoogleAccount,
 ) {
+    companion object {
+        private val TAG = AssetManager::class.java.simpleName
+    }
+
     val assets = mutableStateOf<List<UserAsset>>(emptyList())
     init {
         MainScope().launch {
@@ -33,8 +38,10 @@ class AssetManager @Inject constructor(
     }
 
     private fun load() {
+        Log.d(TAG, "load()")
         CoroutineScope(Dispatchers.IO).launch {
             val assetList = firebaseAssets.loadAssets()
+            Log.d(TAG, "assetList: $assetList")
             withContext(Dispatchers.Main) {
                 assets.value = assetList
             }

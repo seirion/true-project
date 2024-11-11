@@ -8,4 +8,7 @@ class UserAsset(
     val nameKr: String,
     val price: Double,
     val quantity: Double,
-)
+) {
+    // No-argument constructor required for Firebase
+    constructor() : this("000000", "", 0.0, 0.0)
+}

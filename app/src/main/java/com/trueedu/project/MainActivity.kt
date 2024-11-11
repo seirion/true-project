@@ -56,6 +56,8 @@ import com.trueedu.project.ui.views.home.HomeBottomNavigation
 import com.trueedu.project.ui.views.home.HomeDrawer
 import com.trueedu.project.ui.views.home.HomeScreen
 import com.trueedu.project.ui.views.menu.MenuScreen
+import com.trueedu.project.ui.views.spac.SpacScreen
+import com.trueedu.project.ui.views.spac.SpacViewModel
 import com.trueedu.project.ui.views.watch.WatchListViewModel
 import com.trueedu.project.ui.views.watch.WatchScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -93,10 +95,12 @@ class MainActivity : AppCompatActivity() {
 
     private val vm by viewModels<MainViewModel>()
     private val watchVm by viewModels<WatchListViewModel>()
+    private val spacVm by viewModels<SpacViewModel>()
     private val homeDrawerVm by viewModels<UserInfoViewModel>()
 
     private lateinit var homeScreen: HomeScreen
     private lateinit var watchScreen: WatchScreen
+    private lateinit var spacScreen: SpacScreen
     private lateinit var menuScreen: MenuScreen
 
     private var openDrawer: (() -> Unit)? = null
@@ -174,6 +178,7 @@ class MainActivity : AppCompatActivity() {
             trueAnalytics = trueAnalytics,
             fragmentManager = supportFragmentManager,
         )
+        spacScreen = SpacScreen(spacVm)
         menuScreen = MenuScreen(
             screen = screen,
             trueAnalytics = trueAnalytics,
@@ -204,6 +209,8 @@ class MainActivity : AppCompatActivity() {
         return when (route) {
             BottomNavItem.Home.screenRoute -> homeScreen
             BottomNavItem.Watch.screenRoute -> watchScreen
+            BottomNavItem.Spac.screenRoute -> spacScreen
+            BottomNavItem.Menu.screenRoute -> menuScreen
             else -> null
         }
     }
@@ -316,6 +323,9 @@ class MainActivity : AppCompatActivity() {
             }
             composable(BottomNavItem.Watch.screenRoute) {
                 watchScreen.Draw()
+            }
+            composable(BottomNavItem.Spac.screenRoute) {
+                spacScreen.Draw()
             }
             composable(BottomNavItem.Menu.screenRoute) {
                 menuScreen.Draw()
