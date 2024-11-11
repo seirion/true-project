@@ -1,14 +1,18 @@
 package com.trueedu.project.ui.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -30,7 +34,6 @@ import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
-import com.trueedu.project.ui.widget.ItemWithIcon
 import com.trueedu.project.ui.widget.SettingItem
 import com.trueedu.project.utils.formatter.cashFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -92,6 +95,21 @@ class StockDetailFragment: BaseFragment() {
                     vm.basePrice.value != null -> priceChangeStr(vm.basePrice.value!!)
                     else -> "" to ChartColor.up
                 }
+                val actions: @Composable RowScope.() -> Unit =
+                    if (stockInfo.spac()) {
+                        @Composable
+                        {
+                            Icon(
+                                modifier = Modifier.size(24.dp)
+                                    .clickable { editAssets() },
+                                imageVector = Icons.Outlined.Edit,
+                                tint = MaterialTheme.colorScheme.primary,
+                                contentDescription = "edit",
+                            )
+                        }
+                    } else {
+                        {}
+                    }
                 BackStockTopBar(
                     stockInfo.nameKr,
                     cashFormatter.format(price, false),
@@ -99,7 +117,8 @@ class StockDetailFragment: BaseFragment() {
                     textColor,
                     stockInfo.halt(),
                     stockInfo.designated(),
-                    ::dismissAllowingStateLoss
+                    ::dismissAllowingStateLoss,
+                    actions = actions
                 )
             },
             bottomBar = {
@@ -117,10 +136,6 @@ class StockDetailFragment: BaseFragment() {
                     .padding(innerPadding)
             ) {
                 SettingItem("일별 가격", true, ::gotoDailyPrice)
-
-                if (stockInfo.spac()) {
-                    ItemWithIcon("보유 수정", Icons.Outlined.Edit, true, ::editAssets)
-                }
 
                 vm.infoList.value.forEach {
                     Row(
