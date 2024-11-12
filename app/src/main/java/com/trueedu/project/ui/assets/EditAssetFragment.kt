@@ -29,7 +29,6 @@ import com.trueedu.project.ui.common.ButtonAction
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.PopupFragment
 import com.trueedu.project.ui.common.PopupType
-import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.widget.InputSet
 import com.trueedu.project.utils.decreasePrice
 import com.trueedu.project.utils.decreaseQuantity
@@ -98,10 +97,10 @@ class EditAssetFragment: BaseFragment() {
         if (!::code.isInitialized) dismissAllowingStateLoss()
         Scaffold(
             topBar = {
-                val title = if (editMode.value)  "보유 종목 편집" else "보유 종목 추가"
+                val nameKr = stockPool.get(code)?.nameKr?: ""
                 val onAction = if (editMode.value) ::onDelete else null
                 BackTitleTopBar(
-                    title = title,
+                    title = nameKr,
                     onBack = ::dismissAllowingStateLoss,
                     actionIcon = Icons.Outlined.Delete,
                     onAction = onAction,
