@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.model.dto.firebase.StockInfo
@@ -19,6 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SpacListViewModel @Inject constructor(
+    private val manualAssets: ManualAssets,
     private val stockPool: StockPool,
     private val tokenKeyManager: TokenKeyManager,
     private val priceRemote: PriceRemote,
@@ -89,5 +91,9 @@ class SpacListViewModel @Inject constructor(
 
     fun hasAppKey(): Boolean {
         return tokenKeyManager.userKey.value != null
+    }
+
+    fun hasStock(code: String): Boolean {
+        return manualAssets.assets.value.any { it.code == code }
     }
 }

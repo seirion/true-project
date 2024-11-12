@@ -32,6 +32,7 @@ import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.views.common.DesignatedBadge
 import com.trueedu.project.ui.views.common.HaltBadge
+import com.trueedu.project.ui.views.common.HoldingBadge
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.utils.formatter.cashFormatter
@@ -91,7 +92,7 @@ class SpacListFragment: BaseFragment() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     itemsIndexed(vm.stocks.value, key = { _, item -> item.code }) { i, item ->
-                        SpacItem(i, item, vm.priceMap[item.code], ::onPriceClick) {
+                        SpacItem(i, item, vm.priceMap[item.code], vm.hasStock(item.code), ::onPriceClick) {
                             SpacDetailFragment.show(item.code, parentFragmentManager)
                         }
                     }
@@ -117,6 +118,7 @@ private fun SpacItem(
     index: Int = 1,
     item: StockInfo = StockInfoKospi("003456", "삼성전자", ""),
     currentPrice: Double? = null,
+    hasThisStock: Boolean = true,
     onPriceClick: (String) -> Unit = {},
     onClick: () -> Unit = {},
 ) {
@@ -137,6 +139,10 @@ private fun SpacItem(
                     color = MaterialTheme.colorScheme.primary,
                 )
 
+                if (hasThisStock) {
+                    Margin(2)
+                    HoldingBadge()
+                }
                 if (item.halt()) {
                     Margin(2)
                     HaltBadge()
