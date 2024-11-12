@@ -60,4 +60,17 @@ class ManualAssets @Inject constructor(
             }
         }
     }
+
+    fun deleteAsset(code: String, onSuccess: () -> Unit) {
+        val assetList = assets.value
+            .filterNot { it.code == code }
+        assets.value = assetList
+
+        CoroutineScope(Dispatchers.IO).launch {
+            firebaseAssets.writeAssets(assets.value)
+            withContext(Dispatchers.Main) {
+                onSuccess()
+            }
+        }
+    }
 }

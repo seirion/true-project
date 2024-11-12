@@ -6,6 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -23,7 +25,11 @@ import com.trueedu.project.model.dto.firebase.UserAsset
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BottomBar
+import com.trueedu.project.ui.common.ButtonAction
 import com.trueedu.project.ui.common.Margin
+import com.trueedu.project.ui.common.PopupFragment
+import com.trueedu.project.ui.common.PopupType
+import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.widget.InputSet
 import com.trueedu.project.utils.decreasePrice
 import com.trueedu.project.utils.decreaseQuantity
@@ -58,6 +64,7 @@ class EditAssetFragment: BaseFragment() {
 
     private val buttonEnabled = mutableStateOf(false)
 
+    private val editMode = mutableStateOf(false)
     // 주문 입력 (숫자만)
     val priceInput = mutableStateOf(TextFieldValue(""))
     val quantityInput = mutableStateOf(TextFieldValue("1"))
@@ -68,6 +75,13 @@ class EditAssetFragment: BaseFragment() {
     }
 
     override fun init() {
+        manualAssets.assets.value.firstOrNull { it.code == code }?.let { myAsset ->
+            // 이 종목을 이미 보유한 경우 원래 값을 입력 해 줌
+            priceInput.value = myAsset.price.toInt().toString().let { TextFieldValue(it) }
+            quantityInput.value = myAsset.quantity.toInt().toString().let { TextFieldValue(it) }
+            editMode.value = true // 편집 모드임
+        }
+
         lifecycleScope.launch {
             merge(
                 snapshotFlow { priceInput.value.text },
@@ -84,9 +98,13 @@ class EditAssetFragment: BaseFragment() {
         if (!::code.isInitialized) dismissAllowingStateLoss()
         Scaffold(
             topBar = {
+                val title = if (editMode.value)  "보유 종목 편집" else "보유 종목 추가"
+                val onAction = if (editMode.value) ::onDelete else null
                 BackTitleTopBar(
-                    title = "보유 종목 추가",
+                    title = title,
                     onBack = ::dismissAllowingStateLoss,
+                    actionIcon = Icons.Outlined.Delete,
+                    onAction = onAction,
                 )
             },
             bottomBar = { BottomBar("저장", buttonEnabled.value, ::onSave) },
@@ -121,6 +139,28 @@ class EditAssetFragment: BaseFragment() {
         ) {
             dismissAllowingStateLoss()
             Toast.makeText(requireContext(), "추가되었습니다", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun onDelete() {
+        trueAnalytics.clickButton("${screenName()}__delete__click")
+        PopupFragment.show(
+            title = "종목 삭제",
+            desc = "종목을 삭제합니다",
+            popupType = PopupType.DELETE_CANCEL,
+            buttonActions = listOf(
+                ButtonAction(label = "삭제", onClick = ::delete),
+                ButtonAction(label = "취소", onClick = {}),
+            ),
+            cancellable = true,
+            fragmentManager = parentFragmentManager,
+        )
+    }
+
+    private fun delete() {
+        manualAssets.deleteAsset(code) {
+            Toast.makeText(requireContext(), "삭제되었습니다", Toast.LENGTH_SHORT).show()
+            dismissAllowingStateLoss()
         }
     }
 
