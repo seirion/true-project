@@ -65,7 +65,9 @@ class SpacScreen(
                 item { TotalAssetView(vm.manualAssets.assets.value) }
                 itemsIndexed(vm.manualAssets.assets.value, { _, item -> item.code}) { index, item ->
                     val stock = vm.stockPool.get(item.code)!!
-                    val currentPrice = null
+
+                    // 현재 가격이 없으면 전일 가격으로 표시함
+                    val currentPrice = vm.priceMap[item.code] ?: stock.prevPrice()?.toDouble()
                     SpacAssetItem(item, stock, currentPrice, {}, {})
                 }
             }
@@ -73,9 +75,11 @@ class SpacScreen(
     }
 
     override fun onStart() {
+        vm.onStart()
     }
 
     override fun onStop() {
+        vm.onStop()
     }
 }
 
@@ -143,9 +147,18 @@ fun SpacAssetItem(
         ) {
             val totalValue = item.price * item.quantity
             val totalValueString = cashFormatter.format(totalValue)
-            val profit = 0.0 // FIXME
+            val profit = if (currentPrice == null) {
+                0.0
+            } else {
+                (currentPrice - item.price) * item.quantity
+            }
             val profitString = cashFormatter.format(profit)
-            val profitRateString = rateFormatter.format(0.0, true) // FIXME
+            val profitRate = if (currentPrice == null || item.price == 0.0) {
+                0.0
+            } else {
+                (currentPrice - item.price) / item.price
+            }
+            val profitRateString = rateFormatter.format(profitRate, true)
             TrueText(
                 s = totalValueString,
                 fontSize = 14,
