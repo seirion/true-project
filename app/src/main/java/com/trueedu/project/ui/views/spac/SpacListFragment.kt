@@ -30,6 +30,7 @@ import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.common.DesignatedBadge
 import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.common.HoldingBadge
@@ -93,7 +94,7 @@ class SpacListFragment: BaseFragment() {
                 ) {
                     itemsIndexed(vm.stocks.value, key = { _, item -> item.code }) { i, item ->
                         SpacItem(i, item, vm.priceMap[item.code], vm.hasStock(item.code), ::onPriceClick) {
-                            SpacDetailFragment.show(item.code, parentFragmentManager)
+                            StockDetailFragment.show(item, parentFragmentManager)
                         }
                     }
                 }
