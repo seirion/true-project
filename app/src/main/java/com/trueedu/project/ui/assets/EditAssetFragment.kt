@@ -66,7 +66,7 @@ class EditAssetFragment: BaseFragment() {
     private val editMode = mutableStateOf(false)
     // 주문 입력 (숫자만)
     val priceInput = mutableStateOf(TextFieldValue(""))
-    val quantityInput = mutableStateOf(TextFieldValue("1"))
+    val quantityInput = mutableStateOf(TextFieldValue("0"))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
