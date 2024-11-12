@@ -178,7 +178,11 @@ class MainActivity : AppCompatActivity() {
             trueAnalytics = trueAnalytics,
             fragmentManager = supportFragmentManager,
         )
-        spacScreen = SpacScreen(spacVm)
+        spacScreen = SpacScreen(
+            vm = spacVm,
+            trueAnalytics = trueAnalytics,
+            fragmentManager = supportFragmentManager,
+        )
         menuScreen = MenuScreen(
             screen = screen,
             trueAnalytics = trueAnalytics,
