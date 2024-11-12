@@ -72,7 +72,9 @@ class SpacListViewModel @Inject constructor(
                     emit(requestIndex++)
                 }
             }.collect {
-                val s = stocks.value.getOrNull(it) ?: return@collect
+                val size = stocks.value.size
+                if (size == 0) return@collect
+                val s = stocks.value.getOrNull(it % size) ?: return@collect
                 priceRemote.currentPrice(s.code)
                     .collect {
                         try {
