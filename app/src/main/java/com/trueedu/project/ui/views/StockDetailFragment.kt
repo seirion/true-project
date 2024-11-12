@@ -1,7 +1,6 @@
 package com.trueedu.project.ui.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,10 +8,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -30,6 +27,7 @@ import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.assets.EditAssetFragment
 import com.trueedu.project.ui.common.BackStockTopBar
+import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
@@ -99,13 +97,7 @@ class StockDetailFragment: BaseFragment() {
                     if (stockInfo.spac()) {
                         @Composable
                         {
-                            Icon(
-                                modifier = Modifier.size(24.dp)
-                                    .clickable { editAssets() },
-                                imageVector = Icons.Outlined.Edit,
-                                tint = MaterialTheme.colorScheme.primary,
-                                contentDescription = "edit",
-                            )
+                            TouchIcon24(Icons.Outlined.Edit, onClick = ::editAssets)
                         }
                     } else {
                         {}
