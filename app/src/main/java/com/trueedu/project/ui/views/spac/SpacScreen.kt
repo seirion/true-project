@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -48,7 +50,15 @@ class SpacScreen(
     override fun Draw() {
         Scaffold(
             topBar = {
-                BackTitleTopBar("보유 스팩 종목")
+                BackTitleTopBar(
+                    title = "보유 스팩 종목",
+                    onBack = null,
+                    actionIcon = Icons.Outlined.Search,
+                    onAction = {
+                        trueAnalytics.clickButton("${screenName()}__search__click")
+                        SpacListFragment.show(fragmentManager)
+                    }
+                )
             },
             modifier = Modifier
                 .fillMaxSize()
