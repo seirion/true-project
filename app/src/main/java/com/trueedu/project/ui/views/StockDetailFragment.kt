@@ -160,7 +160,8 @@ class StockDetailFragment: BaseFragment() {
             EditAssetFragment.show(stockInfo.code, childFragmentManager)
         } else {
             googleAccount.login(requireActivity()) {
-                // TODO: 로그인 성공 후 다시 시도
+                // 로그인 성공 후 다시 시도
+                EditAssetFragment.show(stockInfo.code, childFragmentManager)
             }
         }
     }

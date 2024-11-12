@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentManager
+import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.firebase.UserAsset
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -26,6 +28,7 @@ import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.common.DesignatedBadge
 import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.home.BottomNavScreen
@@ -34,6 +37,8 @@ import com.trueedu.project.utils.formatter.rateFormatter
 
 class SpacScreen(
     private val vm: SpacViewModel,
+    private val trueAnalytics: TrueAnalytics,
+    private val fragmentManager: FragmentManager,
 ): BottomNavScreen {
     companion object {
         private val TAG = SpacScreen::class.java.simpleName
@@ -68,7 +73,18 @@ class SpacScreen(
 
                     // 현재 가격이 없으면 전일 가격으로 표시함
                     val currentPrice = vm.priceMap[item.code] ?: stock.prevPrice()?.toDouble()
-                    SpacAssetItem(item, stock, currentPrice, {}, {})
+                    SpacAssetItem(
+                        item = item,
+                        stock = stock,
+                        currentPrice = currentPrice,
+                        onItemClick = {
+                            trueAnalytics.clickButton("${screenName()}__item__click")
+                            StockDetailFragment.show(stock, fragmentManager)
+                        },
+                        onPriceClick = {
+
+                        }
+                    )
                 }
             }
         }
