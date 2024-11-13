@@ -222,4 +222,17 @@ class FirebaseRealtimeDatabase @Inject constructor(
             .getValue(object : GenericTypeIndicator<Map<String, String>>() {})
         return m ?: emptyMap()
     }
+
+    suspend fun writeUserConfig(m: Map<String, String>) {
+        val currentUser = firebaseCurrentUser()
+        if (currentUser == null) {
+            Log.d(TAG, "loadWatchList() failed: currentUser null")
+            return
+        }
+        val userId = currentUser.uid
+
+        val ref = database.getReference("users")
+        val snapshot = ref.child(userId).child("config")
+        snapshot.setValue(m)
+    }
 }
