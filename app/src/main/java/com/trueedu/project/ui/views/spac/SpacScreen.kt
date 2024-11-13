@@ -77,7 +77,7 @@ class SpacScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                item { TotalAssetView(vm.manualAssets.assets.value) }
+                item { TotalAssetView(vm.manualAssets.assets.value, vm.totalValues.value) }
                 itemsIndexed(vm.manualAssets.assets.value, { _, item -> item.code}) { index, item ->
                     val stock = vm.stockPool.get(item.code)!!
 
@@ -110,9 +110,10 @@ class SpacScreen(
 }
 
 @Composable
-fun TotalAssetView(assets: List<UserAsset>) {
+fun TotalAssetView(assets: List<UserAsset>, spacProfit: SpacProfit) {
     val total = assets.sumOf { it.price * it.quantity }
     val totalString = cashFormatter.format(total)
+
     TrueText(
         s = totalString,
         fontSize = 24,
@@ -121,6 +122,22 @@ fun TotalAssetView(assets: List<UserAsset>) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
+    )
+
+    if (spacProfit.totalCost == 0.0) return
+
+    val profit = spacProfit.totalValue - spacProfit.totalCost
+    val profitString = cashFormatter.format(profit)
+
+    val rate = profit / spacProfit.totalCost * 100
+    val profitRateString = rateFormatter.format(rate, true)
+
+    // 수익/수익률
+    TrueText(
+        s = "$profitString ($profitRateString)",
+        fontSize = 14,
+        color = ChartColor.color(profit),
+        modifier = Modifier.padding(horizontal = 8.dp)
     )
 }
 
@@ -182,7 +199,7 @@ fun SpacAssetItem(
             val profitRate = if (currentPrice == null || item.price == 0.0) {
                 0.0
             } else {
-                (currentPrice - item.price) / item.price
+                (currentPrice - item.price) / item.price * 100
             }
             val profitRateString = rateFormatter.format(profitRate, true)
             TrueText(
