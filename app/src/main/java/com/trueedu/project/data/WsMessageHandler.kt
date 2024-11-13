@@ -132,7 +132,7 @@ class WsMessageHandler @Inject constructor(
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 super.onFailure(webSocket, t, response)
-                Log.d(TAG, "onFailure: ${t.message}")
+                Log.e(TAG, "onFailure: ${t.message}")
                 on.value = false
 
                 // 실패하였으면 다시 연결 시도 해 본다

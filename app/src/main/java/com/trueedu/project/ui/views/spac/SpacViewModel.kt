@@ -30,6 +30,7 @@ class SpacViewModel @Inject constructor(
     }
 
     val loading = mutableStateOf(false)
+    val totalValues = mutableStateOf(SpacProfit.empty)
 
     /**
      * api 를 통해 받은 현재 가격
@@ -80,6 +81,7 @@ class SpacViewModel @Inject constructor(
                     .collect {
                         try {
                             priceMap[s.code] = it.output.price.toDouble()
+                            updateTotalValues()
                         } catch (e: NumberFormatException) {
                             Log.d(TAG, "prcie format error: ${it.output.price}\n$e")
                         }
@@ -90,5 +92,16 @@ class SpacViewModel @Inject constructor(
 
     fun onStop() {
         job?.cancel()
+    }
+
+    private fun updateTotalValues() {
+        if (loading.value) return
+
+        val totalCost = manualAssets.assets.value.sumOf { it.price * it.quantity }
+        val totalValue = manualAssets.assets.value.sumOf {
+            val p = priceMap[it.code] ?: stockPool.get(it.code)?.prevPrice()?.toDouble() ?: it.price
+            p * it.quantity
+        }
+        totalValues.value = SpacProfit(totalCost, totalValue)
     }
 }
