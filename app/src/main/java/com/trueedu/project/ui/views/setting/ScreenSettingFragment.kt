@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import com.trueedu.project.BuildConfig
+import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -39,6 +41,8 @@ class ScreenSettingFragment: BaseFragment() {
 
     @Inject
     lateinit var local: Local
+    @Inject
+    lateinit var remoteConfig: RemoteConfig
 
     @Composable
     override fun BodyScreen() {
@@ -55,6 +59,9 @@ class ScreenSettingFragment: BaseFragment() {
             ) {
                 OnOffSetting("강제 다크모드", screen.forceDark.value, ::setForceDarkMode)
                 OnOffSetting("항상 화면 켜두기", screen.keepScreenOn.value, ::setKeepScreenOn)
+                if (BuildConfig.DEBUG) {
+                    OnOffSetting("광고", remoteConfig.adVisible.value, ::setAdVisible)
+                }
             }
         }
     }
@@ -69,6 +76,11 @@ class ScreenSettingFragment: BaseFragment() {
         screen.keepScreenOn.value = on
         local.keepScreenOn = on
         trueAnalytics.clickToggleButton("${screenName()}__keep_screen__click", !on)
+    }
+
+    private fun setAdVisible(on: Boolean) {
+        trueAnalytics.clickToggleButton("${screenName()}__ad_visible__click", !on)
+        remoteConfig.setAdVisible(on)
     }
 }
 
