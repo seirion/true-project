@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -53,6 +55,7 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.graphics.DrawCandle
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.common.DesignatedBadge
@@ -103,7 +106,9 @@ class WatchScreen(
             },
             bottomBar = {
                 if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
-                    Box(modifier = Modifier.fillMaxWidth().padding(bottom = HomeBottomNavHeight)) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = HomeBottomNavHeight)) {
                         NativeAdView(admobManager.nativeAd.value!!)
                     }
                 }
@@ -156,6 +161,10 @@ class WatchScreen(
                             nameKr = stock.nameKr,
                             code = code,
                             price = price,
+                            prevClose = tradeData?.previousClose ?: basePrice?.previousClosePrice?.toDouble(),
+                            open = tradeData?.open ?: basePrice?.open?.toDouble(),
+                            high = tradeData?.high ?: basePrice?.high?.toDouble(),
+                            low = tradeData?.low ?: basePrice?.low?.toDouble(),
                             delta = delta,
                             rate = rate,
                             volume = volume,
@@ -253,7 +262,8 @@ class WatchScreen(
             DividerHorizontal()
             Margin(16)
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .clickable { onClick() },
                 horizontalArrangement = Arrangement.End,
             ) {
@@ -275,6 +285,10 @@ private fun WatchingStockItem(
     nameKr: String,
     code: String,
     price: Double,
+    prevClose: Double?,
+    open: Double?,
+    high: Double?,
+    low: Double?,
     delta: Double,
     rate: Double,
     volume: Double,
@@ -297,7 +311,7 @@ private fun WatchingStockItem(
             )
             .padding(8.dp)
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Row {
                 TrueText(
                     s = nameKr,
@@ -321,26 +335,44 @@ private fun WatchingStockItem(
             )
         }
 
-        Column(
-            horizontalAlignment = Alignment.End,
-            modifier = Modifier
-                .clickable { onTradingClick() }
+        Row(
+            modifier = Modifier.width(140.dp)
+                .height(40.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            val totalValueString = formatter.format(price)
-            TrueText(
-                s = totalValueString,
-                fontSize = 14,
-                fontWeight = FontWeight.W600,
-                color = ChartColor.color(delta),
-            )
+            // ohlc 데이터가 있으면 캔들 표시
+            if (prevClose != null && open != null && high != null && low != null) {
+                DrawCandle(
+                    prevClose = prevClose,
+                    open = open,
+                    high = high,
+                    low = low,
+                    close = price,
+                )
+            }
 
-            val profitString = formatter.format(delta, true)
-            val profitRateString = rateFormatter.format(rate, true)
-            TrueText(
-                s = "$profitString ($profitRateString)",
-                fontSize = 12,
-                color = ChartColor.color(delta),
-            )
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier
+                    .clickable { onTradingClick() }
+            ) {
+                val totalValueString = formatter.format(price)
+                TrueText(
+                    s = totalValueString,
+                    fontSize = 14,
+                    fontWeight = FontWeight.W600,
+                    color = ChartColor.color(delta),
+                )
+
+                val profitString = formatter.format(delta, true)
+                val profitRateString = rateFormatter.format(rate, true)
+                TrueText(
+                    s = "$profitString ($profitRateString)",
+                    fontSize = 12,
+                    color = ChartColor.color(delta),
+                )
+            }
         }
     }
 }
