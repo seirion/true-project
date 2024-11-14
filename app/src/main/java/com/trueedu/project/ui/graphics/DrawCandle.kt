@@ -20,6 +20,11 @@ fun DrawCandle(
     low: Double,
     close: Double,
 ) {
+    // 값이 0으로 오는 경우가 있어서 값 보정
+    val open = if (open == 0.0) prevClose else open
+    val high = if (high == 0.0) prevClose else high
+    val low = if (low == 0.0) prevClose else low
+
     val color = ChartColor.color(close - open)
     val bgColor = candleBgColor()
     Canvas(
@@ -66,12 +71,14 @@ fun DrawScope.drawCandle(
     )
 
     // 캔들 몸통 그리기
+    // open close 값이 같으면 아무것도 나오지 안아 약간 두께를 준다
     val bodyTop = minOf(openY, closeY)
     val bodyBottom = maxOf(openY, closeY)
+    val bodyHeight = (bodyBottom - bodyTop).coerceAtLeast(1.dp.toPx())
     drawRect(
         color = color,
         topLeft = Offset((canvasWidth - candleWidth) / 2, bodyTop),
-        size = Size(candleWidth, bodyBottom - bodyTop),
+        size = Size(candleWidth, bodyHeight),
     )
 
     // 캔들 심지 그리기
