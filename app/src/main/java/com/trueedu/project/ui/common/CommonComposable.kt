@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.em
 @Composable
 fun DividerHorizontal() {
     HorizontalDivider(
-        color = MaterialTheme.colorScheme.outline,
+        color = MaterialTheme.colorScheme.outlineVariant,
         thickness = 1.dp,
     )
 }

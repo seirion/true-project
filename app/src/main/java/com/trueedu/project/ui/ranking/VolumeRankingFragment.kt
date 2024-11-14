@@ -24,6 +24,7 @@ import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.common.listBackgroundColor
 import com.trueedu.project.utils.formatter.intFormatter
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -77,14 +78,16 @@ private fun StockList(
         contentPadding = PaddingValues(vertical = 8.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 8.dp)
     ) {
         itemsIndexed(list, key = { _, item -> item.code }) { index, item ->
+            val bgColor = listBackgroundColor(index)
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
+                    .background(color = bgColor)
                     .padding(vertical = 4.dp)
+                    .padding(horizontal = 8.dp)
             ) {
                 TrueText(
                     s = "${item.rank}. ${item.nameKr}",
