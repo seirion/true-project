@@ -18,8 +18,8 @@ import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -55,24 +55,22 @@ class WatchListViewModel @Inject constructor(
     fun init() {
         job = viewModelScope.launch {
             launch {
-                snapshotFlow { watchList.list.value }
-                    .filter { it.isNotEmpty() }
-                    .collect {
-                        Log.d(TAG, "watchList: $it")
+                combine(
+                    snapshotFlow { watchList.list.value },
+                    snapshotFlow { currentPage.value }
+                ) { list, page ->
+                    if (list.isEmpty() || page == null) {
+                        emptyList()
+                    } else {
+                        list[page]
+                    }
+                }
+                    .distinctUntilChanged()
+                    .collect { list ->
+                        if (list.isEmpty()) return@collect
+                        Log.d(TAG, "watchList: $list")
                         loading.value = false
 
-                        if (hasAppKey()) {
-                            requestRealtimePrice()
-                            requestBasePrices()
-                        }
-                    }
-            }
-
-            launch {
-                // 페이지가 바뀌면 종목을 변경해 주어야 함
-                snapshotFlow { currentPage.value }
-                    .distinctUntilChanged()
-                    .collect {
                         if (hasAppKey()) {
                             requestRealtimePrice()
                             requestBasePrices()
