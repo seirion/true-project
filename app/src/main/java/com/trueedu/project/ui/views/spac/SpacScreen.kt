@@ -34,6 +34,7 @@ import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.common.DesignatedBadge
 import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.home.BottomNavScreen
+import com.trueedu.project.ui.views.home.EmptyHome
 import com.trueedu.project.utils.formatter.cashFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
 
@@ -66,6 +67,11 @@ class SpacScreen(
         ) { innerPadding ->
             if (vm.loading.value) {
                 LoadingView()
+                return@Scaffold
+            }
+
+            if (vm.manualAssets.assets.value.isEmpty()) {
+                EmptyHome()
                 return@Scaffold
             }
 
