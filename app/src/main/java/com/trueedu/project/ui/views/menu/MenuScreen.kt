@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,6 +29,7 @@ import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.setting.SettingFragment
@@ -68,19 +70,25 @@ class MenuScreen(
                 ) {
                     MenuItem(Icons.Outlined.Settings, "설정", ::onSettings)
                     MenuItem(Icons.Outlined.RocketLaunch, "스팩 종목 보기", ::onSpacStocks)
+                    MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
                 }
             }
         }
     }
 
     private fun onSettings() {
-        trueAnalytics.clickButton("menu__setting__click")
+        trueAnalytics.clickButton("${screenName()}__setting__click")
         SettingFragment.show(fragmentManager)
     }
 
     private fun onSpacStocks() {
-        trueAnalytics.clickButton("menu__spac__click")
+        trueAnalytics.clickButton("${screenName()}__spac__click")
         SpacListFragment.show(fragmentManager)
+    }
+
+    private fun onVolumeRanking() {
+        trueAnalytics.clickButton("${screenName()}__volume_ranking__click")
+        VolumeRankingFragment.show(fragmentManager)
     }
 }
 

@@ -72,7 +72,7 @@ private fun StockList(
         contentPadding = PaddingValues(vertical = 8.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 8.dp)
     ) {
         itemsIndexed(list, key = { _, item -> item.code }) { index, item ->
             TrueText(
