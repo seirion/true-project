@@ -36,7 +36,7 @@ import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.common.HoldingBadge
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -167,7 +167,7 @@ private fun SpacItem(
             val price = currentPrice
                 ?: item.prevPrice()?.toDouble() // 전일 종가
                 ?: 0.0
-            val priceString = cashFormatter.format(price)
+            val priceString = intFormatter.format(price)
             TrueText(
                 s = priceString,
                 fontSize = 14,

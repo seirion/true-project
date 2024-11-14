@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.trueedu.project.model.dto.price.DailyPrice
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.dateFormat
 
 @Preview(showBackground = true)
@@ -114,5 +114,5 @@ fun DailyPriceCell(
 }
 
 private fun numberFormat(s: String): String {
-    return cashFormatter.format(s.toDouble(), false)
+    return intFormatter.format(s.toDouble(), false)
 }

@@ -13,7 +13,7 @@ import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.stock.PriceCellView
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
 
 /**
@@ -32,7 +32,7 @@ fun TopStockInfoView(
     high: Double,
     low: Double,
 ) {
-    val priceString = cashFormatter.format(price)
+    val priceString = intFormatter.format(price)
     val textColor = ChartColor.color(priceChange)
 
     Row(
@@ -52,14 +52,14 @@ fun TopStockInfoView(
             )
             // 전일 대비
             TrueText(
-                s = "${cashFormatter.format(priceChange, false)} " +
+                s = "${intFormatter.format(priceChange, false)} " +
                         "(${rateFormatter.format(priceChangeRate)})",
                 fontSize = 12,
                 color = ChartColor.color(priceChange)
             )
             // 거래량
             TrueText(
-                s = cashFormatter.format(volume, false),
+                s = intFormatter.format(volume, false),
                 fontSize = 12,
                 color = MaterialTheme.colorScheme.secondary,
             )
@@ -74,7 +74,7 @@ fun TopStockInfoView(
                 "저가" to low,
             ).forEach { (title, value) ->
                 val color = ChartColor.color(value - previousPrice)
-                val valueString = cashFormatter.format(value)
+                val valueString = intFormatter.format(value)
                 PriceCellView(title, valueString, color)
             }
         }

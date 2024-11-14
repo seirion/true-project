@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.theme.ChartColor
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
 
 @Composable
@@ -89,14 +89,14 @@ private fun SellItems(
     previousClose: Double,
     onClick: () -> Unit,
 ) {
-    val priceString = if (price > 0.0) cashFormatter.format(price) else ""
+    val priceString = if (price > 0.0) intFormatter.format(price) else ""
     val rate = (price - previousClose) / previousClose * 100
     val rateString = if (priceString == "") {
         ""
     } else {
         rateFormatter.format(rate, false)
     }
-    val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
+    val quantityString = if (quantity > 0.0) intFormatter.format(quantity) else ""
     val selected = price != 0.0 && price == currentPrice
     SellBuyItems(
         priceString,
@@ -117,14 +117,14 @@ private fun BuyItems(
     previousClose: Double,
     onClick: () -> Unit,
 ) {
-    val priceString = if (price > 0.0) cashFormatter.format(price) else ""
+    val priceString = if (price > 0.0) intFormatter.format(price) else ""
     val rate = (price - previousClose) / previousClose * 100
     val rateString = if (priceString == "") {
         ""
     } else {
         rateFormatter.format(rate, false)
     }
-    val quantityString = if (quantity > 0.0) cashFormatter.format(quantity) else ""
+    val quantityString = if (quantity > 0.0) intFormatter.format(quantity) else ""
     val selected = price != 0.0 && price == currentPrice
     SellBuyItems(
         priceString,

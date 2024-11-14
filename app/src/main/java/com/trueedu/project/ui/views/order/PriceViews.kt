@@ -11,7 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
 
 @Composable
@@ -26,8 +26,8 @@ fun PriceViews(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        val priceString = cashFormatter.format(price, false)
-        val changeString = cashFormatter.format(priceChange, true)
+        val priceString = intFormatter.format(price, false)
+        val changeString = intFormatter.format(priceChange, true)
         val rateString = rateFormatter.format(rate, true)
         val textColor = ChartColor.color(priceChange)
         TrueText(

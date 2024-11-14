@@ -35,7 +35,7 @@ import com.trueedu.project.ui.views.common.DesignatedBadge
 import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.EmptyHome
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
 
 class SpacScreen(
@@ -118,7 +118,7 @@ class SpacScreen(
 @Composable
 fun TotalAssetView(assets: List<UserAsset>, spacProfit: SpacProfit) {
     val total = assets.sumOf { it.price * it.quantity }
-    val totalString = cashFormatter.format(total)
+    val totalString = intFormatter.format(total)
 
     TrueText(
         s = totalString,
@@ -133,7 +133,7 @@ fun TotalAssetView(assets: List<UserAsset>, spacProfit: SpacProfit) {
     if (spacProfit.totalCost == 0.0) return
 
     val profit = spacProfit.totalValue - spacProfit.totalCost
-    val profitString = cashFormatter.format(profit)
+    val profitString = intFormatter.format(profit)
 
     val rate = profit / spacProfit.totalCost * 100
     val profitRateString = rateFormatter.format(rate, true)
@@ -181,8 +181,8 @@ fun SpacAssetItem(
                 }
             }
 
-            val priceString = cashFormatter.format(item.price)
-            val quantityString = cashFormatter.format(item.quantity) // 정수만
+            val priceString = intFormatter.format(item.price)
+            val quantityString = intFormatter.format(item.quantity) // 정수만
             val subText = "${priceString}원 • ${quantityString}주" // 수량
             TrueText(
                 s = subText,
@@ -195,13 +195,13 @@ fun SpacAssetItem(
             modifier = Modifier.clickable { onPriceClick(item.code) }
         ) {
             val totalValue = item.price * item.quantity
-            val totalValueString = cashFormatter.format(totalValue)
+            val totalValueString = intFormatter.format(totalValue)
             val profit = if (currentPrice == null) {
                 0.0
             } else {
                 (currentPrice - item.price) * item.quantity
             }
-            val profitString = cashFormatter.format(profit)
+            val profitString = intFormatter.format(profit)
             val profitRate = if (currentPrice == null || item.price == 0.0) {
                 0.0
             } else {

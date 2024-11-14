@@ -29,7 +29,7 @@ import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.widget.MyToggleButton
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 
 @Composable
 fun EmptyHome() {
@@ -190,7 +190,7 @@ fun HomeStockItem(
             val subText = if (marketPriceMode) {
                 "(${item.code})" // 종목 코드
             } else {
-                val priceString = cashFormatter.format(item.purchaseAveragePrice.toDouble())
+                val priceString = intFormatter.format(item.purchaseAveragePrice.toDouble())
                 "${priceString}원 • ${item.holdingQuantity}주" // 수량
             }
             TrueText(

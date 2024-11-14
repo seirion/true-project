@@ -24,7 +24,7 @@ import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.TrueText
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -92,7 +92,7 @@ private fun StockList(
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)
                 )
-                val volumeString = cashFormatter.format(item.volume.toDouble())
+                val volumeString = intFormatter.format(item.volume.toDouble())
                 TrueText(
                     s = volumeString,
                     fontSize = 13,

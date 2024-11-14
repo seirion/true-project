@@ -27,7 +27,7 @@ import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.theme.ChartColor
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 
 class ModifiableViewDrawer(
     private val vm: OrderModifyViewModel,
@@ -84,8 +84,8 @@ class ModifiableViewDrawer(
                 modifier = Modifier.weight(3f),
             )
             listOf(
-                cashFormatter.format(item.price.toDouble()) to 1.5f,
-                cashFormatter.format(item.quantity.toDouble()) to 1f,
+                intFormatter.format(item.price.toDouble()) to 1.5f,
+                intFormatter.format(item.quantity.toDouble()) to 1f,
                 item.orderTime.chunked(2).joinToString(":") to 1.5f,
             ).forEach { (s, w) ->
                 TrueText(

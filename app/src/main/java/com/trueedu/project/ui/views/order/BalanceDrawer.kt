@@ -35,7 +35,7 @@ import com.trueedu.project.ui.common.listBackgroundColor
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.CashFormatter
 import com.trueedu.project.utils.formatter.RateFormatter
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -107,7 +107,7 @@ class BalanceDrawer(
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                 )
-                val quantity = cashFormatter.format(item.holdingQuantity.toDouble())
+                val quantity = intFormatter.format(item.holdingQuantity.toDouble())
                 TrueText(
                     s = "${quantity}주",
                     fontSize = 12,

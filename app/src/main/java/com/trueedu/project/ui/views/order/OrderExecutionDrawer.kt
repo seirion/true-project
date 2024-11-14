@@ -26,7 +26,7 @@ import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.listBackgroundColor
 import com.trueedu.project.ui.theme.ChartColor
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 
 class OrderExecutionDrawer(
     private val vm: OrderExecutionViewModel,
@@ -79,8 +79,8 @@ class OrderExecutionDrawer(
                 TrueText(s = if (isBuy) "매수" else "매도", fontSize = 12, color = chartColor)
             }
 
-            val price = cashFormatter.format(item.orderUnitPrice.toDouble())
-            val quantity = cashFormatter.format(item.orderQuantity.toDouble())
+            val price = intFormatter.format(item.orderUnitPrice.toDouble())
+            val quantity = intFormatter.format(item.orderQuantity.toDouble())
             Column(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.End
@@ -89,8 +89,8 @@ class OrderExecutionDrawer(
                 TrueText(s = quantity, fontSize = 12, color = primary)
             }
 
-            val executionPrice = cashFormatter.format(item.averagePrice.toDouble())
-            val executionQuantity = cashFormatter.format(item.totalConcludedQuantity.toDouble())
+            val executionPrice = intFormatter.format(item.averagePrice.toDouble())
+            val executionQuantity = intFormatter.format(item.totalConcludedQuantity.toDouble())
             Column(
                 modifier = Modifier.weight(1f)
                     .padding(end = 4.dp),

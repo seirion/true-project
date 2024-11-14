@@ -33,7 +33,7 @@ import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
 import com.trueedu.project.ui.widget.SettingItem
-import com.trueedu.project.utils.formatter.cashFormatter
+import com.trueedu.project.utils.formatter.intFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -104,7 +104,7 @@ class StockDetailFragment: BaseFragment() {
                     }
                 BackStockTopBar(
                     stockInfo.nameKr,
-                    cashFormatter.format(price, false),
+                    intFormatter.format(price, false),
                     priceChangeStr,
                     textColor,
                     stockInfo.halt(),

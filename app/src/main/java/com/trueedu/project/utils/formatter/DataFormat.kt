@@ -21,7 +21,7 @@ fun numberFormat(s: String?): String {
     val digits = s.dropWhile { it == '0' }
     if (digits.isEmpty()) return "0"
     try {
-        return cashFormatter.format(digits.toDouble())
+        return intFormatter.format(digits.toDouble())
     } catch (e: NumberFormatException) {
         return "0"
     }
