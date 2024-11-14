@@ -1,6 +1,7 @@
 package com.trueedu.project.ui.views.stock
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
@@ -46,38 +48,41 @@ class DailyPriceFragment: BaseFragment() {
     @Composable
     override fun BodyScreen() {
         if (!::code.isInitialized) dismissAllowingStateLoss()
-
-        Scaffold(
-            topBar = {
-                val nameKr = vm.dailyPrices.value?.stockDetail?.nameKr ?: ""
-                BackTitleTopBar(nameKr, ::dismissAllowingStateLoss)
-            },
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background),
-        ) { innerPadding ->
-            val scrollState = rememberLazyListState()
-            LazyColumn (
-                state = scrollState,
+        CompositionLocalProvider(
+            LocalOverscrollConfiguration provides null
+        ) {
+            Scaffold(
+                topBar = {
+                    val nameKr = vm.dailyPrices.value?.stockDetail?.nameKr ?: ""
+                    BackTitleTopBar(nameKr, ::dismissAllowingStateLoss)
+                },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                if (vm.dailyPrices.value == null) {
-                    item { LoadingView() }
-                    return@LazyColumn
-                }
+                    .background(color = MaterialTheme.colorScheme.background),
+            ) { innerPadding ->
+                val scrollState = rememberLazyListState()
+                LazyColumn(
+                    state = scrollState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    if (vm.dailyPrices.value == null) {
+                        item { LoadingView() }
+                        return@LazyColumn
+                    }
 
-                item { TopStockInfoViewInternal(vm.dailyPrices.value!!.stockDetail!!) }
-                stickyHeader { DailyPriceSection() }
+                    item { TopStockInfoViewInternal(vm.dailyPrices.value!!.stockDetail!!) }
+                    stickyHeader { DailyPriceSection() }
 
-                val items = vm.dailyPrices.value!!.dailyPrices!!
-                itemsIndexed(items, key = { _, item -> item.date!! }) { index, item ->
-                    val bgColor = listBackgroundColor(index)
-                    DailyPriceCell(item, bgColor)
+                    val items = vm.dailyPrices.value!!.dailyPrices!!
+                    itemsIndexed(items, key = { _, item -> item.date!! }) { index, item ->
+                        val bgColor = listBackgroundColor(index)
+                        DailyPriceCell(item, bgColor)
 
-                    if (index == items.lastIndex) {
-                        vm.loadMore(code)
+                        if (index == items.lastIndex) {
+                            vm.loadMore(code)
+                        }
                     }
                 }
             }
