@@ -13,6 +13,7 @@ import com.trueedu.project.repository.local.Local
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
@@ -77,14 +78,18 @@ class RealPriceManager @Inject constructor(
             }
         }
 
-        beginRequests()
+        MainScope().launch(Dispatchers.IO) {
+            beginRequests()
+        }
     }
 
     fun stop() {
-        cancelRequests()
+        MainScope().launch(Dispatchers.IO) {
+            cancelRequests()
 
-        job?.cancel()
-        job = null
+            job?.cancel()
+            job = null
+        }
     }
 
     /**
@@ -92,34 +97,38 @@ class RealPriceManager @Inject constructor(
      */
     fun resumeRequests() {
         Log.d(TAG, "websocket connection recovered")
-        beginRequests()
+        MainScope().launch(Dispatchers.IO) {
+            beginRequests()
+        }
     }
 
     /**
      * 기존에 있떤 요청을 취소하고 새 요청을 추가함
      */
     fun pushRequest(name: String, codes: List<String>) {
-        Log.d("TAG", "pushRequest: $name ${codes.size}")
-        // 기존 처리 중단
-        if (requestStack.isNotEmpty()) {
-            cancelRequests()
+        MainScope().launch(Dispatchers.IO) {
+            Log.d(TAG, "pushRequest: $name ${codes.size}")
+            // 기존 처리 중단
+            if (requestStack.isNotEmpty()) {
+                cancelRequests()
+            }
+
+            // 최대 개수까지만
+            val codesRequested = codes.take(MAX_SIZE)
+
+            // 데이터 추가
+            requests.clear()
+            requests.addAll(codesRequested)
+
+            val topName = requestStack.lastOrNull()?.first
+            if (topName == name) {
+                // 이미 존재하는 name 이면 replace
+                requestStack.removeLast()
+            }
+            requestStack.add(name to codesRequested)
+
+            beginRequests()
         }
-
-        // 최대 개수까지만
-        val codesRequested = codes.take(MAX_SIZE)
-
-        // 데이터 추가
-        requests.clear()
-        requests.addAll(codesRequested)
-
-        val topName = requestStack.lastOrNull()?.first
-        if (topName == name) {
-            // 이미 존재하는 name 이면 replace
-            requestStack.removeLast()
-        }
-        requestStack.add(name to codesRequested)
-
-        beginRequests()
     }
 
     /**
@@ -131,25 +140,31 @@ class RealPriceManager @Inject constructor(
         if (requestStack.last().first != name) return
 
         // 현재 요청 취소
-        cancelRequests()
+        MainScope().launch(Dispatchers.IO) {
+            cancelRequests()
 
-        requestStack.removeLast()
+            requestStack.removeLast()
 
-        if (requestStack.isNotEmpty()) {
-            requests.addAll(requestStack.last().second)
-            beginRequests()
+            if (requestStack.isNotEmpty()) {
+                requests.addAll(requestStack.last().second)
+                beginRequests()
+            }
         }
     }
 
-    private fun beginRequests() {
+    private suspend fun beginRequests() {
+        val requests = requests.toList()
         requests.forEach {
             wsMessageHandler.send(makeRequest(it, true))
+            delay(10)
         }
     }
 
-    private fun cancelRequests() {
+    private suspend fun cancelRequests() {
+        val requests = requests.toList()
         requests.forEach {
             wsMessageHandler.send(makeRequest(it, false))
+            delay(10)
         }
     }
 
