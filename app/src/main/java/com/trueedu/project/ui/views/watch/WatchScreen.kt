@@ -336,7 +336,7 @@ private fun WatchingStockItem(
         }
 
         Row(
-            modifier = Modifier.width(140.dp)
+            modifier = Modifier.width(128.dp)
                 .height(40.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
