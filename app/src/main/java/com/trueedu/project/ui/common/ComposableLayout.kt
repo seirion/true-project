@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,6 +26,28 @@ fun RoundedColumn(
             color = bgColor,
             shape = RoundedCornerShape(radius.dp)
         ), content = content,
+        verticalArrangement = verticalArrangement,
+        horizontalAlignment = horizontalAlignment
+    )
+}
+
+@Composable
+fun RoundedTopColumn(
+    radius: Int,
+    bgColor: Color,
+    modifier: Modifier,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .background(
+                color = bgColor,
+                shape = RoundedCornerShape(radius.dp, radius.dp)
+            )
+            .padding(bottom = 16.dp),
+        content = content,
         verticalArrangement = verticalArrangement,
         horizontalAlignment = horizontalAlignment
     )

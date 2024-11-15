@@ -27,4 +27,17 @@ fun numberFormat(s: String?): String {
     }
 }
 
+fun String?.safeLong(): Long {
+    if (this.isNullOrEmpty()) return 0L
+    if (this.first() == '-') return -1 * this.substring(1).safeLong()
+
+    val digits = this.dropWhile { it == '0' }
+    if (digits.isEmpty()) return 0L
+    try {
+        return digits.toLong()
+    } catch (e: NumberFormatException) {
+        return 0L
+    }
+}
+
 fun Boolean.toYnString() = if (this) "Y" else "N"

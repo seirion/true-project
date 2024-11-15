@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ViewList
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -28,6 +30,7 @@ import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.BackTitleTopBar
+import com.trueedu.project.ui.common.BottomSelectionFragment
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.views.StockDetailFragment
@@ -72,7 +75,14 @@ class SpacListFragment: BaseFragment() {
     @Composable
     override fun BodyScreen() {
         Scaffold(
-            topBar = { BackTitleTopBar("스팩 종목", ::dismissAllowingStateLoss) },
+            topBar = {
+                BackTitleTopBar(
+                    title = "스팩 종목",
+                    onBack = ::dismissAllowingStateLoss,
+                    actionIcon = Icons.Outlined.ViewList,
+                    onAction = ::onSortOption,
+                )
+            },
             bottomBar = {
                 if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
                     NativeAdView(admobManager.nativeAd.value!!)
@@ -87,7 +97,6 @@ class SpacListFragment: BaseFragment() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                //SearchBar(searchText = "") {}
                 val state = rememberLazyListState()
                 LazyColumn(
                     state = state,
@@ -111,6 +120,25 @@ class SpacListFragment: BaseFragment() {
     override fun onStop() {
         super.onStop()
         vm.onStop()
+    }
+
+    // 정렬하기
+    private fun onSortOption() {
+        val selected = SpacSort.entries.indexOfFirst { it == vm.sort.value }
+        BottomSelectionFragment.show(
+            selected = selected,
+            title = "정렬 방법",
+            list = SpacSort.entries.map { it.title },
+            onSelected = {
+                val option = SpacSort.entries[it]
+                trueAnalytics.clickButton(
+                    "${screenName()}__sort__click",
+                    mapOf("sort_type" to option.title)
+                )
+                vm.setSort(option)
+            },
+            fragmentManager = parentFragmentManager,
+        )
     }
 }
 

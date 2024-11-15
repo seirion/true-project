@@ -11,6 +11,8 @@ import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.repository.remote.PriceRemote
+import com.trueedu.project.utils.formatter.numberFormat
+import com.trueedu.project.utils.formatter.safeLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -33,6 +35,15 @@ class SpacListViewModel @Inject constructor(
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
     val priceMap = mutableStateMapOf<String, Double>()
 
+    val sort = mutableStateOf(SpacSort.ISSUE_DATE)
+
+    private val sortFun = mapOf(
+        SpacSort.ISSUE_DATE to { it: StockInfo -> it.listingDate().safeLong() },
+        SpacSort.MARKET_CAP to { it: StockInfo -> it.marketCap().safeLong() },
+        SpacSort.GROWTH_RATE to { it: StockInfo -> it.prevPrice().safeLong() }, // FIXME
+        SpacSort.VOLUME to { it: StockInfo -> it.prevVolume().safeLong() },
+    )
+
     init {
         viewModelScope.launch {
             launch {
@@ -45,7 +56,7 @@ class SpacListViewModel @Inject constructor(
                             StockPool.Status.SUCCESS -> {
                                 loading.value = false
                                 stocks.value = stockPool.search(StockInfo::spac)
-                                    .sortedBy(StockInfo::listingDate) // 상장순으로
+                                    .sortedBy(sortFun[sort.value]!!)
                             }
 
                             StockPool.Status.UPDATING -> {
@@ -97,5 +108,11 @@ class SpacListViewModel @Inject constructor(
 
     fun hasStock(code: String): Boolean {
         return manualAssets.assets.value.any { it.code == code }
+    }
+
+    fun setSort(option: SpacSort) {
+        sort.value = option
+        stocks.value = stockPool.search(StockInfo::spac)
+            .sortedBy(sortFun[sort.value]!!)
     }
 }
