@@ -108,8 +108,9 @@ class BalanceDrawer(
                     maxLines = 1,
                 )
                 val quantity = intFormatter.format(item.holdingQuantity.toDouble())
+                val sellAvailable = intFormatter.format(item.orderPossibleQuantity.toDouble())
                 TrueText(
-                    s = "${quantity}주",
+                    s = "${quantity}주 / (${sellAvailable}주)",
                     fontSize = 12,
                     color = MaterialTheme.colorScheme.secondary,
                 )
@@ -147,7 +148,7 @@ private fun BalanceSection() {
     val borderColor = MaterialTheme.colorScheme.outlineVariant
     val bgColor = MaterialTheme.colorScheme.background
     val textList = listOf(
-        "종목/잔고수량" to 1f,
+        "종목/잔고 (주문가능)" to 1f,
         "수익/수익률" to 1f,
     )
     Row(
