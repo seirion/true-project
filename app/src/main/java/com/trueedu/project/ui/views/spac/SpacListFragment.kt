@@ -36,6 +36,7 @@ import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.common.HoldingBadge
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
+import com.trueedu.project.utils.formatter.dateFormat
 import com.trueedu.project.utils.formatter.intFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -154,7 +155,7 @@ private fun SpacItem(
                 }
             }
             TrueText(
-                s = item.listingDate() ?: "",
+                s = dateFormat(item.listingDate() ?: ""),
                 fontSize = 10,
                 color = MaterialTheme.colorScheme.secondary,
             )
