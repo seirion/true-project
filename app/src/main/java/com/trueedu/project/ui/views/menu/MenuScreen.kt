@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Construction
 import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
@@ -23,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import com.trueedu.project.BuildConfig
+import com.trueedu.project.admin.spac.SpacAdminFragment
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -71,6 +74,9 @@ class MenuScreen(
                     MenuItem(Icons.Outlined.Settings, "설정", ::onSettings)
                     MenuItem(Icons.Outlined.RocketLaunch, "스팩 종목 보기", ::onSpacStocks)
                     MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
+                    if (BuildConfig.DEBUG) {
+                        MenuItem(Icons.Outlined.Construction, "스팩 어드민", ::onSpacAdmin)
+                    }
                 }
             }
         }
@@ -89,6 +95,10 @@ class MenuScreen(
     private fun onVolumeRanking() {
         trueAnalytics.clickButton("${screenName()}__volume_ranking__click")
         VolumeRankingFragment.show(fragmentManager)
+    }
+
+    private fun onSpacAdmin() {
+        SpacAdminFragment.show(fragmentManager)
     }
 }
 
