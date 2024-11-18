@@ -23,7 +23,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import com.trueedu.project.admin.spac.spacRedemptionPrices
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.firebase.StockInfoKospi
@@ -34,6 +33,7 @@ import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BottomSelectionFragment
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.common.DesignatedBadge
 import com.trueedu.project.ui.views.common.HaltBadge
@@ -42,6 +42,7 @@ import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.utils.formatter.dateFormat
 import com.trueedu.project.utils.formatter.intFormatter
+import com.trueedu.project.utils.formatter.rateFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -106,7 +107,9 @@ class SpacListFragment: BaseFragment() {
                     itemsIndexed(vm.stocks.value, key = { _, item -> item.code }) { i, item ->
                         val spacStatus = vm.spacStatus.value[item.code]
                         SpacItem(i, item, vm.priceMap[item.code], spacStatus?.redemptionPrice,
-                            vm.hasStock(item.code), ::onPriceClick) {
+                            vm.hasStock(item.code),
+                            vm::rateOf,
+                            ::onPriceClick) {
                             StockDetailFragment.show(item, parentFragmentManager)
                         }
                     }
@@ -153,6 +156,7 @@ private fun SpacItem(
     currentPrice: Double? = null,
     redemptionPrice: Int? = null, // 청산 가격
     hasThisStock: Boolean = true,
+    rateFun: (String?, Double?, Int) -> Double? = { _, _, _ -> 0.0 },
     onPriceClick: (String) -> Unit = {},
     onClick: () -> Unit = {},
 ) {
@@ -209,15 +213,30 @@ private fun SpacItem(
                 color = MaterialTheme.colorScheme.primary,
             )
 
+            val rate = if (redemptionPrice != null) {
+                rateFun(
+                    item.listingDate(),
+                    currentPrice ?: item.prevPrice()?.toDouble(),
+                    redemptionPrice,
+                )
+            } else {
+                null
+            }
+            val rateString = if (rate == null) {
+                ""
+            } else {
+                rateFormatter.format(rate, true)
+            }
+
             val redemptionPriceString = if (redemptionPrice != null) {
-                intFormatter.format(redemptionPrice)
+                "${intFormatter.format(redemptionPrice)} (${rateString})"
             } else {
                 "-"
             }
             TrueText(
                 s = redemptionPriceString,
                 fontSize = 12,
-                color = MaterialTheme.colorScheme.primary,
+                color = ChartColor.color(rate ?: 0.0),
             )
         }
     }

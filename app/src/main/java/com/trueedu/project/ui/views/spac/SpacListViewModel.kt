@@ -15,11 +15,14 @@ import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.formatter.numberFormat
 import com.trueedu.project.utils.formatter.safeLong
+import com.trueedu.project.utils.stringToLocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -123,5 +126,21 @@ class SpacListViewModel @Inject constructor(
         sort.value = option
         stocks.value = stockPool.search(StockInfo::spac)
             .sortedBy(sortFun[sort.value]!!)
+    }
+
+    /**
+     * (청산 가격 - 현재 가격)의 1년 환산 수익률
+     */
+    fun rateOf(listingDateStr: String?, currentPrice: Double?, redemptionPrice: Int): Double? {
+        if (listingDateStr == null || currentPrice == null) return null
+        val now = LocalDate.now()
+        val targetDate = stringToLocalDate(listingDateStr)
+            .plusYears(3)
+            //.plusMonths(-2)
+        val daysBetween = ChronoUnit.DAYS.between(now, targetDate)
+        if (daysBetween <= 0) return null
+
+        // 1년 환산 수익률로 변환하기
+        return (redemptionPrice - currentPrice) / currentPrice * 365 / daysBetween * 100
     }
 }
