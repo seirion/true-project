@@ -40,4 +40,17 @@ fun String?.safeLong(): Long {
     }
 }
 
+fun String?.safeDouble(): Double {
+    if (this.isNullOrEmpty()) return 0.0
+    if (this.first() == '-') return -1 * this.substring(1).safeDouble()
+
+    val digits = this.dropWhile { it == '0' }
+    if (digits.isEmpty()) return 0.0
+    try {
+        return digits.toDouble()
+    } catch (e: NumberFormatException) {
+        return 0.0
+    }
+}
+
 fun Boolean.toYnString() = if (this) "Y" else "N"

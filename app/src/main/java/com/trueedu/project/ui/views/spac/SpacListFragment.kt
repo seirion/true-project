@@ -105,10 +105,10 @@ class SpacListFragment: BaseFragment() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     itemsIndexed(vm.stocks.value, key = { _, item -> item.code }) { i, item ->
-                        val spacStatus = vm.spacStatus.value[item.code]
-                        SpacItem(i, item, vm.priceMap[item.code], spacStatus?.redemptionPrice,
+                        SpacItem(i, item, vm.priceMap[item.code],
+                            vm.redemptionValueMap[item.code]?.first,
+                            vm.redemptionValueMap[item.code]?.second,
                             vm.hasStock(item.code),
-                            vm::rateOf,
                             ::onPriceClick) {
                             StockDetailFragment.show(item, parentFragmentManager)
                         }
@@ -154,9 +154,9 @@ private fun SpacItem(
     index: Int = 1,
     item: StockInfo = StockInfoKospi("003456", "삼성전자", ""),
     currentPrice: Double? = null,
-    redemptionPrice: Int? = null, // 청산 가격
+    expectedProfit: Int? = null, // 청산 시 기대 수익
+    expectedProfitRate: Double? = null, // 청산 시 기대 수익률(%)
     hasThisStock: Boolean = true,
-    rateFun: (String?, Double?, Int) -> Double? = { _, _, _ -> 0.0 },
     onPriceClick: (String) -> Unit = {},
     onClick: () -> Unit = {},
 ) {
@@ -213,30 +213,16 @@ private fun SpacItem(
                 color = MaterialTheme.colorScheme.primary,
             )
 
-            val rate = if (redemptionPrice != null) {
-                rateFun(
-                    item.listingDate(),
-                    currentPrice ?: item.prevPrice()?.toDouble(),
-                    redemptionPrice,
-                )
-            } else {
-                null
-            }
-            val rateString = if (rate == null) {
-                ""
-            } else {
-                rateFormatter.format(rate, true)
-            }
-
-            val redemptionPriceString = if (redemptionPrice != null) {
-                "${intFormatter.format(redemptionPrice)} (${rateString})"
+            val redemptionPriceString = if (expectedProfit != null && expectedProfitRate != null) {
+                val rateString = rateFormatter.format(expectedProfitRate, true)
+                "${intFormatter.format(expectedProfit)} (${rateString})"
             } else {
                 "-"
             }
             TrueText(
                 s = redemptionPriceString,
                 fontSize = 12,
-                color = ChartColor.color(rate ?: 0.0),
+                color = ChartColor.color(expectedProfitRate ?: 0.0),
             )
         }
     }
