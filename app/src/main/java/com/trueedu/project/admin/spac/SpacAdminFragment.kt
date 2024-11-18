@@ -1,5 +1,6 @@
 package com.trueedu.project.admin.spac
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,13 +21,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.firebase.SpacStatusManager
+import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
+import com.trueedu.project.ui.common.BottomBar
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.intFormatter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,6 +50,8 @@ class SpacAdminFragment: BaseFragment() {
 
     @Inject
     lateinit var stockPool: StockPool
+    @Inject
+    lateinit var spacStatusManager: SpacStatusManager
 
     private val namePrices = mutableStateOf<List<Pair<String, Int>>>(emptyList())
 
@@ -60,6 +69,9 @@ class SpacAdminFragment: BaseFragment() {
                     title = "스팩 청산 가격",
                     onBack = ::dismissAllowingStateLoss,
                 )
+            },
+            bottomBar = {
+                BottomBar("저장", true, ::onSave)
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -90,6 +102,32 @@ class SpacAdminFragment: BaseFragment() {
     private fun beforeTax(p: Int): Int {
         val base = if (p > 8_000) 10_000 else 2_000
         return ((p - base) / 0.845).toInt() + base
+    }
+
+    private fun onSave() {
+        val list = namePrices.value.mapNotNull { item ->
+            val nameKr = item.first
+            val stock = stockPool.search { it.nameKr == nameKr }.firstOrNull() ?: return@mapNotNull null
+            val code = stock.code
+            val beforeTax = beforeTax(item.second) // 세전으로 표시
+            SpacStatus(code, nameKr, beforeTax, null)
+        }
+        MainScope().launch {
+            spacStatusManager.write(
+                list,
+                {
+                    MainScope().launch(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "저장 완료", Toast.LENGTH_SHORT).show()
+                    }
+                },
+
+                {
+                    MainScope().launch(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "저장 실패", Toast.LENGTH_SHORT).show()
+                    }
+                },
+            )
+        }
     }
 }
 
