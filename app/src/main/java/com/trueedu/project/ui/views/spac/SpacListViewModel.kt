@@ -13,7 +13,7 @@ import com.trueedu.project.data.firebase.SpacStatusManager
 import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.repository.remote.PriceRemote
-import com.trueedu.project.utils.formatter.numberFormat
+import com.trueedu.project.utils.formatter.safeDouble
 import com.trueedu.project.utils.formatter.safeLong
 import com.trueedu.project.utils.stringToLocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,15 +40,19 @@ class SpacListViewModel @Inject constructor(
     val loading = mutableStateOf(true)
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
     val priceMap = mutableStateMapOf<String, Double>()
-    val spacStatus = mutableStateOf<Map<String, SpacStatus>>(emptyMap())
+    val spacStatusMap = mutableStateOf<Map<String, SpacStatus>>(emptyMap())
+
+    // 청산 가격과 수익률을 미리 구해 둔다
+    val redemptionValueMap = mutableStateMapOf<String, Pair<Int, Double>>() // value, rate
 
     val sort = mutableStateOf(SpacSort.ISSUE_DATE)
 
     private val sortFun = mapOf(
-        SpacSort.ISSUE_DATE to { it: StockInfo -> it.listingDate().safeLong() },
-        SpacSort.MARKET_CAP to { it: StockInfo -> it.marketCap().safeLong() },
-        SpacSort.GROWTH_RATE to { it: StockInfo -> it.prevPrice().safeLong() }, // FIXME
-        SpacSort.VOLUME to { it: StockInfo -> it.prevVolume().safeLong() },
+        SpacSort.ISSUE_DATE to { it: StockInfo -> it.listingDate().safeLong().toDouble() },
+        SpacSort.MARKET_CAP to { it: StockInfo -> it.marketCap().safeLong().toDouble() },
+        SpacSort.GROWTH_RATE to { it: StockInfo -> growthRate(it.prevPrice().safeLong()) },
+        SpacSort.REDEMPTION_VALUE to { redemptionValueMap[it.code]?.second ?: Double.MIN_VALUE },
+        SpacSort.VOLUME to { it: StockInfo -> it.prevVolume().safeLong().toDouble() },
     )
 
     init {
@@ -64,6 +68,11 @@ class SpacListViewModel @Inject constructor(
                                 loading.value = false
                                 stocks.value = stockPool.search(StockInfo::spac)
                                     .sortedBy(sortFun[sort.value]!!)
+
+                                // 초기 값으로 전일 종가를 줌
+                                stocks.value.forEach {
+                                    priceMap[it.code] = it.prevPrice().safeDouble()
+                                }
                             }
 
                             StockPool.Status.UPDATING -> {
@@ -75,11 +84,10 @@ class SpacListViewModel @Inject constructor(
                     }
             }
             launch {
-                spacStatus.value = spacStatusManager.load()
+                spacStatusMap.value = spacStatusManager.load()
                     .associateBy { it.code }
             }
         }
-
     }
 
     private var job: Job? = null
@@ -102,6 +110,8 @@ class SpacListViewModel @Inject constructor(
                     .collect {
                         try {
                             priceMap[s.code] = it.output.price.toDouble()
+                            updateRedemptionValue(s.code)
+                            updateOrder() // 순서 갱신
                         } catch (e: NumberFormatException) {
                             Log.d(TAG, "prcie format error: ${it.output.price}\n$e")
                         }
@@ -126,6 +136,39 @@ class SpacListViewModel @Inject constructor(
         sort.value = option
         stocks.value = stockPool.search(StockInfo::spac)
             .sortedBy(sortFun[sort.value]!!)
+    }
+
+    private fun growthRate(price: Long): Double {
+        val base = if (price > 8_000) 10_000 else 2_000
+        return (price - base) * 100.0 / base
+    }
+
+    private fun updateRedemptionValue(code: String) {
+        val price = priceMap[code] ?: return
+        val redemptionPrice = spacStatusMap.value[code]?.redemptionPrice ?: return
+        val listingDateStr = stockPool.get(code)?.listingDate() ?: return
+
+        val now = LocalDate.now()
+        val targetDate = stringToLocalDate(listingDateStr)
+            .plusYears(3)
+        //.plusMonths(-2)
+        val daysBetween = ChronoUnit.DAYS.between(now, targetDate)
+        if (daysBetween <= 0) return
+
+        // 1년 환산 수익률로 변환하기
+        val valueRate = (redemptionPrice - price) / price * 365 / daysBetween * 100
+        redemptionValueMap[code] = redemptionPrice to valueRate
+    }
+
+    private fun updateOrder() {
+        when (sort.value) {
+            SpacSort.GROWTH_RATE,
+            SpacSort.REDEMPTION_VALUE -> {
+                stocks.value = stockPool.search(StockInfo::spac)
+                    .sortedBy(sortFun[sort.value]!!)
+            }
+            else -> {} // nothing to do
+        }
     }
 
     /**
