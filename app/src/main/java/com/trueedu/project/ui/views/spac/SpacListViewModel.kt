@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.firebase.SpacStatusManager
+import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.formatter.numberFormat
@@ -25,6 +27,7 @@ class SpacListViewModel @Inject constructor(
     private val manualAssets: ManualAssets,
     private val stockPool: StockPool,
     private val tokenKeyManager: TokenKeyManager,
+    private val spacStatusManager: SpacStatusManager,
     private val priceRemote: PriceRemote,
 ): ViewModel() {
     companion object {
@@ -34,6 +37,7 @@ class SpacListViewModel @Inject constructor(
     val loading = mutableStateOf(true)
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
     val priceMap = mutableStateMapOf<String, Double>()
+    val spacStatus = mutableStateOf<Map<String, SpacStatus>>(emptyMap())
 
     val sort = mutableStateOf(SpacSort.ISSUE_DATE)
 
@@ -67,7 +71,12 @@ class SpacListViewModel @Inject constructor(
                         }
                     }
             }
+            launch {
+                spacStatus.value = spacStatusManager.load()
+                    .associateBy { it.code }
+            }
         }
+
     }
 
     private var job: Job? = null

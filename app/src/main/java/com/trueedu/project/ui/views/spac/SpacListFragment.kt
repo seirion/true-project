@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import com.trueedu.project.admin.spac.spacRedemptionPrices
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.firebase.StockInfoKospi
@@ -103,7 +104,9 @@ class SpacListFragment: BaseFragment() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     itemsIndexed(vm.stocks.value, key = { _, item -> item.code }) { i, item ->
-                        SpacItem(i, item, vm.priceMap[item.code], vm.hasStock(item.code), ::onPriceClick) {
+                        val spacStatus = vm.spacStatus.value[item.code]
+                        SpacItem(i, item, vm.priceMap[item.code], spacStatus?.redemptionPrice,
+                            vm.hasStock(item.code), ::onPriceClick) {
                             StockDetailFragment.show(item, parentFragmentManager)
                         }
                     }
@@ -148,6 +151,7 @@ private fun SpacItem(
     index: Int = 1,
     item: StockInfo = StockInfoKospi("003456", "삼성전자", ""),
     currentPrice: Double? = null,
+    redemptionPrice: Int? = null, // 청산 가격
     hasThisStock: Boolean = true,
     onPriceClick: (String) -> Unit = {},
     onClick: () -> Unit = {},
@@ -182,8 +186,10 @@ private fun SpacItem(
                     DesignatedBadge()
                 }
             }
+            val listingDateStr = dateFormat(item.listingDate() ?: "")
+            val marketCapStr = "${item.marketCap()}억"
             TrueText(
-                s = dateFormat(item.listingDate() ?: ""),
+                s = dateFormat("$listingDateStr • $marketCapStr"),
                 fontSize = 10,
                 color = MaterialTheme.colorScheme.secondary,
             )
@@ -202,9 +208,15 @@ private fun SpacItem(
                 fontSize = 14,
                 color = MaterialTheme.colorScheme.primary,
             )
+
+            val redemptionPriceString = if (redemptionPrice != null) {
+                intFormatter.format(redemptionPrice)
+            } else {
+                "-"
+            }
             TrueText(
-                s = "${item.marketCap()}억",
-                fontSize = 10,
+                s = redemptionPriceString,
+                fontSize = 12,
                 color = MaterialTheme.colorScheme.primary,
             )
         }
