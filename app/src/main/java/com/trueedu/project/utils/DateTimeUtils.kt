@@ -25,3 +25,8 @@ private val yyyyMMddFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
 fun LocalDate.yyyyMMdd(): String {
     return this.format(yyyyMMddFormatter)
 }
+
+fun stringToLocalDate(yyyyMMdd: String): LocalDate {
+    val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+    return LocalDate.parse(yyyyMMdd, formatter)
+}
