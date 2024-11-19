@@ -19,4 +19,7 @@ interface StockInfoLocalDao {
 
     @Query("SELECT * FROM stocks")
     suspend fun getAllStocks(): List<StockInfoLocal>
+
+    @Query("DELETE FROM stocks")
+    suspend fun deleteAllStocks()
 }
