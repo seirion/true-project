@@ -11,7 +11,7 @@ import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.formatter.dateFormat
-import com.trueedu.project.utils.formatter.numberFormat
+import com.trueedu.project.utils.formatter.numberFormatString
 import com.trueedu.project.utils.formatter.toYnString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
@@ -61,13 +61,13 @@ class StockDetailViewModel @Inject constructor(
 
     private fun initInfoList() {
         infoList.value = listOf(
+            "전일가격" to numberFormatString(stockInfo.prevPrice()) + "원",
+            "전일거래량" to numberFormatString(stockInfo.prevVolume()),
+            "시가총액" to numberFormatString(stockInfo.marketCap()) + "억",
             "상장일자" to dateFormat(stockInfo.listingDate()),
-            "상장주수" to numberFormat(stockInfo.listingShares()) + "K",
-            "매출액" to numberFormat(stockInfo.sales()) + "억",
-            "영업이익" to numberFormat(stockInfo.operatingProfit()) + "억",
-            "시가총액" to numberFormat(stockInfo.marketCap()) + "억",
-            "기준가" to numberFormat(stockInfo.prevPrice()) + "원",
-            "전일거래량" to numberFormat(stockInfo.prevVolume()),
+            "상장주수" to numberFormatString(stockInfo.listingShares()) + "K",
+            "매출액" to numberFormatString(stockInfo.sales()) + "억",
+            "영업이익" to numberFormatString(stockInfo.operatingProfit()) + "억",
             "공매도과열" to stockInfo.shortSellingOverheating().toYnString(),
             "이상급등" to stockInfo.unusualPriceSurge().toYnString(),
         )

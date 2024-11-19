@@ -14,9 +14,9 @@ fun dateFormat(s: String?): String {
 /**
  * api 를 통해서 받은 숫자 형식의 스트링 값을 숫자 포맷으로 변경한 스트링 반환
  */
-fun numberFormat(s: String?): String {
+fun numberFormatString(s: String?): String {
     if (s.isNullOrEmpty()) return "0"
-    if (s.first() == '-') return "-" + numberFormat(s.substring(1))
+    if (s.first() == '-') return "-" + numberFormatString(s.substring(1))
 
     val digits = s.dropWhile { it == '0' }
     if (digits.isEmpty()) return "0"
