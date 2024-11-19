@@ -28,7 +28,7 @@ data class PriceDetail(
     @SerialName("new_hgpr_lwpr_cls_code")
     val newHighLow: String?, // 신 고가 저가 구분 코드 조회하는 종목이 신고/신저에 도달했을 경우에만 조회됨
     @SerialName("bstp_kor_isnm")
-    val sectorNameKr: String, // 업종 한글 종목명
+    val sectorNameKr: String?, // 업종 한글 종목명
     @SerialName("temp_stop_yn")
     val tempStop: String, // 임시 정지 여부
 
