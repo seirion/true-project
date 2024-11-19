@@ -14,4 +14,8 @@ class StockLocal @Inject constructor(
     suspend fun setAllStocks(stocks: List<StockInfoLocal>)  {
         return stockInfoLocalDao.insertAll(stocks)
     }
+
+    suspend fun deleteAllStocks()  {
+        return stockInfoLocalDao.deleteAllStocks()
+    }
 }

@@ -96,6 +96,7 @@ class StockPool @Inject constructor(
         val localStockInfoList = stocks.map {
             StockInfoLocal(it.code, it.nameKr, it.attributes, it.kospi())
         }
+        stockLocal.deleteAllStocks()
         stockLocal.setAllStocks(localStockInfoList)
     }
 
@@ -149,12 +150,6 @@ class StockPool @Inject constructor(
 
     fun search(predicate: (StockInfo) -> Boolean): List<StockInfo> {
         return stocks.values.filter(predicate)
-    }
-
-    private fun currentTimeToyyyyMMdd(): Long {
-        val currentDate = Date()
-        val formatter = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
-        return formatter.format(currentDate).toLong()
     }
 
     /**
