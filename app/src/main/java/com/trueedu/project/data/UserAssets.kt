@@ -9,10 +9,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -57,16 +57,13 @@ class UserAssets @Inject constructor(
         val accountNum = tokenKeyManager.userKey.value?.accountNum
         if (accountNum.isNullOrEmpty()) return
         accountRemote.getUserStocks(accountNum)
+            .flowOn(Dispatchers.Main)
             .catch {
-                withContext(Dispatchers.Main) {
-                    onFail(it)
-                }
+                onFail(it)
             }
             .onEach {
                 assets.emit(it)
-                withContext(Dispatchers.Main) {
-                    onSuccess()
-                }
+                onSuccess()
             }
             .launchIn(MainScope())
     }
