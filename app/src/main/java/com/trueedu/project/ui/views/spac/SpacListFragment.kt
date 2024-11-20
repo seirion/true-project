@@ -105,9 +105,10 @@ class SpacListFragment: BaseFragment() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     itemsIndexed(vm.stocks.value, key = { _, item -> item.code }) { i, item ->
+                        val redemptionValue = vm.redemptionValueMap[item.code]
                         SpacItem(i, item, vm.priceMap[item.code],
-                            vm.redemptionValueMap[item.code]?.first,
-                            vm.redemptionValueMap[item.code]?.second,
+                            redemptionValue?.first,
+                            redemptionValue?.second,
                             vm.hasStock(item.code),
                             ::onPriceClick) {
                             StockDetailFragment.show(item, parentFragmentManager)
