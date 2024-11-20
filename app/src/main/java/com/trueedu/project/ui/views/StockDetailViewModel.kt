@@ -7,21 +7,30 @@ import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.firebase.SpacStatusManager
+import com.trueedu.project.extensions.priceChangeStr
+import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
+import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.dateFormat
 import com.trueedu.project.utils.formatter.numberFormatString
+import com.trueedu.project.utils.formatter.safeDouble
 import com.trueedu.project.utils.formatter.toYnString
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class StockDetailViewModel @Inject constructor(
     private val stockPool: StockPool,
+    private val spacStatusManager: SpacStatusManager,
     private val priceRemote: PriceRemote,
     val priceManager: RealPriceManager,
     private val tokenKeyManager: TokenKeyManager,
@@ -37,6 +46,8 @@ class StockDetailViewModel @Inject constructor(
     // 가격 정보 (api)
     val basePrice = mutableStateOf<PriceResponse?>(null)
 
+    val spacStatus = mutableStateOf<SpacStatus?>(null)
+
     fun init(stockInfo: StockInfo) {
         this.stockInfo = stockInfo
         initInfoList()
@@ -44,6 +55,16 @@ class StockDetailViewModel @Inject constructor(
             stockInfo.code,
             listOf(stockInfo.code)
         )
+
+        if (stockInfo.spac()) {
+            viewModelScope.launch {
+                val list = spacStatusManager.load()
+                val spacStatus = list.firstOrNull { it.code == stockInfo.code }
+                withContext(Dispatchers.Main) {
+                    this@StockDetailViewModel.spacStatus.value = spacStatus
+                }
+            }
+        }
 
         priceRemote.currentPrice(stockInfo.code)
             .onEach {
@@ -75,5 +96,12 @@ class StockDetailViewModel @Inject constructor(
 
     fun hasAppKey(): Boolean {
         return tokenKeyManager.userKey.value != null
+    }
+
+    fun currentPrice(): Double {
+        val realTimeTrade = priceManager.dataMap[stockInfo.code]
+        return realTimeTrade?.price
+            ?: basePrice.value?.output?.price?.toDouble()
+            ?: stockInfo.prevPrice().safeDouble()
     }
 }
