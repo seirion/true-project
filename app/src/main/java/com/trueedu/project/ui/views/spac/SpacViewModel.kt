@@ -70,7 +70,7 @@ class SpacViewModel @Inject constructor(
         job = viewModelScope.launch {
             flow {
                 while (true) {
-                    delay(100)
+                    delay(60)
                     emit(requestIndex++)
                 }
             }.collect {
