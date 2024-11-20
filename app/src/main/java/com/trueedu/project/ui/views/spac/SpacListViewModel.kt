@@ -73,6 +73,7 @@ class SpacListViewModel @Inject constructor(
                                 // 초기 값으로 전일 종가를 줌
                                 stocks.value.forEach {
                                     priceMap[it.code] = it.prevPrice().safeDouble()
+                                    updateRedemptionValue(it.code)
                                 }
                             }
 
@@ -87,6 +88,9 @@ class SpacListViewModel @Inject constructor(
             launch {
                 spacStatusMap.value = spacStatusManager.load()
                     .associateBy { it.code }
+                spacStatusMap.value.keys.forEach {
+                    updateRedemptionValue(it)
+                }
             }
         }
     }
