@@ -22,6 +22,9 @@ class SpacStatusManager @Inject constructor(
         private const val SNAPSHOT_KEY = "spac"
     }
 
+    // caching
+    private var spacList: List<SpacStatus> = emptyList()
+
     /**
      * @return yyyyMMdd 포맷의 스트링
      */
@@ -41,6 +44,10 @@ class SpacStatusManager @Inject constructor(
 
     suspend fun load(): List<SpacStatus> {
         Log.d(TAG, "load()")
+        if (spacList.isNotEmpty()) {
+            return spacList
+        }
+
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
             Log.d(TAG, "load() failed: currentUser null")
@@ -49,6 +56,7 @@ class SpacStatusManager @Inject constructor(
         val snapshot = ref.child("status")
         val list = snapshot.get().await()
             .getValue(object : GenericTypeIndicator<List<SpacStatus>>() {})
+        if (list != null) spacList = list
         return list ?: emptyList()
     }
 
