@@ -15,6 +15,7 @@ import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.formatter.safeDouble
 import com.trueedu.project.utils.formatter.safeLong
+import com.trueedu.project.utils.redemptionProfitRate
 import com.trueedu.project.utils.stringToLocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -144,20 +145,17 @@ class SpacListViewModel @Inject constructor(
     }
 
     private fun updateRedemptionValue(code: String) {
-        val price = priceMap[code] ?: return
+        val stock = stockPool.get(code) ?: return
+        val price = priceMap[code] ?: stock.prevPrice().safeDouble()
         val redemptionPrice = spacStatusMap.value[code]?.redemptionPrice ?: return
         val listingDateStr = stockPool.get(code)?.listingDate() ?: return
-
-        val now = LocalDate.now()
         val targetDate = stringToLocalDate(listingDateStr)
             .plusYears(3)
-        //.plusMonths(-2)
-        val daysBetween = ChronoUnit.DAYS.between(now, targetDate)
-        if (daysBetween <= 0) return
+        val (_, valueRate) = redemptionProfitRate(price, redemptionPrice, targetDate)
 
-        // 1년 환산 수익률로 변환하기
-        val valueRate = (redemptionPrice - price) / price * 365 / daysBetween * 100
-        redemptionValueMap[code] = redemptionPrice to valueRate
+        if (valueRate != null) {
+            redemptionValueMap[code] = redemptionPrice to valueRate
+        }
     }
 
     private fun updateOrder() {

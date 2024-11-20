@@ -1,39 +1,55 @@
 package com.trueedu.project.ui.views
 
+import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import com.trueedu.project.R
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.extensions.priceChangeStr
+import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.assets.EditAssetFragment
 import com.trueedu.project.ui.common.BackStockTopBar
+import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
+import com.trueedu.project.ui.views.spac.SpacDataView
+import com.trueedu.project.ui.views.spac.SpacValueSection
+import com.trueedu.project.ui.views.spac.SpacValueView
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
 import com.trueedu.project.ui.widget.SettingItem
 import com.trueedu.project.utils.formatter.intFormatter
+import com.trueedu.project.utils.formatter.rateFormatter
+import com.trueedu.project.utils.redemptionProfitRate
+import com.trueedu.project.utils.stringToLocalDate
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -61,6 +77,11 @@ class StockDetailFragment: BaseFragment() {
     lateinit var admobManager: AdmobManager
     @Inject
     lateinit var googleAccount: GoogleAccount
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.FullScreenSheetKeyboardDialogTheme)
+    }
 
     override fun onStart() {
         super.onStart()
@@ -122,10 +143,12 @@ class StockDetailFragment: BaseFragment() {
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background),
         ) { innerPadding ->
+            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    .verticalScroll(scrollState)
             ) {
                 SettingItem("일별 가격", true, ::gotoDailyPrice)
 
@@ -140,6 +163,10 @@ class StockDetailFragment: BaseFragment() {
                         TrueText(s = it.first, fontSize = 16, color = MaterialTheme.colorScheme.primary)
                         TrueText(s = it.second ?: "", fontSize = 16, color = MaterialTheme.colorScheme.primary)
                     }
+                }
+
+                vm.spacStatus.value?.let {
+                    SpacDetailView(vm.currentPrice(), stockInfo, it)
                 }
             }
         }
@@ -164,5 +191,48 @@ class StockDetailFragment: BaseFragment() {
                 EditAssetFragment.show(stockInfo.code, childFragmentManager)
             }
         }
+    }
+}
+
+@Composable
+fun ColumnScope.SpacDetailView(
+    currentPrice: Double,
+    stock: StockInfo,
+    spac: SpacStatus
+) {
+    DividerHorizontal()
+    val redemptionPrice = spac.redemptionPrice?.toString() ?: "0"
+    val inputString = remember { mutableStateOf(TextFieldValue(redemptionPrice)) }
+
+    SpacValueSection()
+    SpacValueView(
+        basePrice = currentPrice,
+        input = inputString,
+    )
+
+    val listingDateStr = stock.listingDate() ?: return
+    val targetDate = stringToLocalDate(listingDateStr)
+        .plusYears(3)
+
+    val targetPrice = inputString.value.text.let {
+        if (it.isEmpty()) 0
+        else it.toInt()
+    }
+    val (profitRate, annualizedProfit) = redemptionProfitRate(
+        currentPrice, targetPrice, targetDate
+    )
+    if (profitRate == null || annualizedProfit == null) {
+
+    } else {
+        SpacDataView(
+            "$targetDate 청산 시",
+            rateFormatter.format(profitRate, true),
+            ChartColor.color(profitRate)
+        )
+        SpacDataView(
+            "1년 환산 수익률",
+            rateFormatter.format(annualizedProfit, true),
+            ChartColor.color(annualizedProfit)
+        )
     }
 }
