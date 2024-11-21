@@ -89,8 +89,8 @@ class StockDetailViewModel @Inject constructor(
             "상장주수" to numberFormatString(stockInfo.listingShares()) + "K",
             "매출액" to numberFormatString(stockInfo.sales()) + "억",
             "영업이익" to numberFormatString(stockInfo.operatingProfit()) + "억",
-            "공매도과열" to stockInfo.shortSellingOverheating().toYnString(),
-            "이상급등" to stockInfo.unusualPriceSurge().toYnString(),
+            //"공매도과열" to stockInfo.shortSellingOverheating().toYnString(),
+            //"이상급등" to stockInfo.unusualPriceSurge().toYnString(),
         )
     }
 
