@@ -73,4 +73,8 @@ class ManualAssets @Inject constructor(
             }
         }
     }
+
+    fun get(code: String): UserAsset? {
+        return assets.value.firstOrNull { it.code == code }
+    }
 }

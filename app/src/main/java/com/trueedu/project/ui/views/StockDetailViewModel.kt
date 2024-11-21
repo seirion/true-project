@@ -4,20 +4,19 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.firebase.SpacStatusManager
-import com.trueedu.project.extensions.priceChangeStr
 import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
-import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.dateFormat
+import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.numberFormatString
 import com.trueedu.project.utils.formatter.safeDouble
-import com.trueedu.project.utils.formatter.toYnString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -34,6 +33,7 @@ class StockDetailViewModel @Inject constructor(
     private val priceRemote: PriceRemote,
     val priceManager: RealPriceManager,
     private val tokenKeyManager: TokenKeyManager,
+    private val assets: ManualAssets,
 ): ViewModel() {
 
     companion object {
@@ -87,11 +87,18 @@ class StockDetailViewModel @Inject constructor(
             "시가총액" to numberFormatString(stockInfo.marketCap()) + "억",
             "상장일자" to dateFormat(stockInfo.listingDate()),
             "상장주수" to numberFormatString(stockInfo.listingShares()) + "K",
-            "매출액" to numberFormatString(stockInfo.sales()) + "억",
-            "영업이익" to numberFormatString(stockInfo.operatingProfit()) + "억",
             //"공매도과열" to stockInfo.shortSellingOverheating().toYnString(),
             //"이상급등" to stockInfo.unusualPriceSurge().toYnString(),
-        )
+        ) + if (stockInfo.spac()) {
+            assets.get(stockInfo.code)?.let {
+                listOf("보유 정보" to "${intFormatter.format(it.price)}\n${intFormatter.format(it.quantity)}주")
+            } ?: emptyList()
+        } else {
+            listOf(
+                "매출액" to numberFormatString(stockInfo.sales()) + "억",
+                "영업이익" to numberFormatString(stockInfo.operatingProfit()) + "억",
+            )
+        }
     }
 
     fun hasAppKey(): Boolean {
