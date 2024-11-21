@@ -57,7 +57,7 @@ class UserAssets @Inject constructor(
         val accountNum = tokenKeyManager.userKey.value?.accountNum
         if (accountNum.isNullOrEmpty()) return
         accountRemote.getUserStocks(accountNum)
-            .flowOn(Dispatchers.Main)
+            .flowOn(Dispatchers.IO)
             .catch {
                 onFail(it)
             }
@@ -65,6 +65,7 @@ class UserAssets @Inject constructor(
                 assets.emit(it)
                 onSuccess()
             }
+            .flowOn(Dispatchers.Main)
             .launchIn(MainScope())
     }
 }

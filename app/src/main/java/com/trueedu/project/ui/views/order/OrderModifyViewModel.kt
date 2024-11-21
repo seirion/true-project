@@ -59,7 +59,7 @@ class OrderModifyViewModel @Inject constructor(
         val accountNum = tokenKeyManager.userKey.value?.accountNum ?: return
 
         orderRemote.cancel(accountNum, orderNo)
-            .flowOn(Dispatchers.Main)
+            .flowOn(Dispatchers.IO)
             .onEach {
                 if (it.rtCd == "0") {
                     onSuccess()
@@ -75,6 +75,7 @@ class OrderModifyViewModel @Inject constructor(
             .onCompletion {
                 update()
             }
+            .flowOn(Dispatchers.Main)
             .launchIn(viewModelScope)
     }
 }

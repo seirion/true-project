@@ -142,7 +142,7 @@ class OrderViewModel @Inject constructor(
                 quantity = quantityInput.value.text,
             )
         }
-            .flowOn(Dispatchers.Main)
+            .flowOn(Dispatchers.IO)
             .onEach {
                 if (it.rtCd == "0") {
                     onSuccess()
@@ -155,6 +155,7 @@ class OrderViewModel @Inject constructor(
                 Log.d(TAG, "주문 실패(예외): $it")
                 onFail("주문 실패")
             }
+            .flowOn(Dispatchers.Main)
             .launchIn(MainScope())
     }
 
