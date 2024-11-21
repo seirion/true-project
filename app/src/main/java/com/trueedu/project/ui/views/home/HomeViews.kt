@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.model.dto.firebase.StockInfo
-import com.trueedu.project.model.dto.account.AccountOutput1
-import com.trueedu.project.model.dto.account.AccountOutput2
+import com.trueedu.project.model.dto.account.AccountAsset
+import com.trueedu.project.model.dto.account.AccountDetail
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIconWithSizeRotating
 import com.trueedu.project.ui.common.TrueText
@@ -48,7 +48,7 @@ fun EmptyHome() {
 
 @Composable
 fun AccountInfo(
-    accountInfo: AccountOutput2,
+    accountInfo: AccountDetail,
     dailyProfitMode: Boolean,
     onRefresh: () -> Unit,
     onChangeDailyMode: (Int) -> Unit,
@@ -153,7 +153,7 @@ private fun RowScope.BodyTitle(s: String) {
 
 @Composable
 fun HomeStockItem(
-    item: AccountOutput1,
+    item: AccountAsset,
     stock: StockInfo?,
     marketPriceMode: Boolean,
     onPriceClick: (String) -> Unit,

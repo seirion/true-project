@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.base.ComposableDrawer
-import com.trueedu.project.model.dto.account.AccountOutput1
+import com.trueedu.project.model.dto.account.AccountAsset
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.widget.InputSet
@@ -73,7 +73,7 @@ class OrderViewDrawer(
 }
 
 @Composable
-fun StockHoldingView(item: AccountOutput1) {
+fun StockHoldingView(item: AccountAsset) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,

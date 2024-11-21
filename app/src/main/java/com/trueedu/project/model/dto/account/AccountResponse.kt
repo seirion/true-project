@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AccountResponse(
-    val output1: List<AccountOutput1>,
-    val output2: List<AccountOutput2>,
+    val output1: List<AccountAsset>,
+    val output2: List<AccountDetail>,
     @SerialName("rt_cd")
     val rtCd: String, // 성공 실패 여부 "0" 성공
     @SerialName("msg_cd")
@@ -21,7 +21,7 @@ data class AccountResponse(
 )
 
 @Serializable
-data class AccountOutput1(
+data class AccountAsset(
     @SerialName("pdno")
     val code: String, // 상품번호 (종목코드)
     @SerialName("prdt_name")
@@ -77,7 +77,7 @@ data class AccountOutput1(
 )
 
 @Serializable
-data class AccountOutput2(
+data class AccountDetail(
     @SerialName("dnca_tot_amt")
     val depositAccountTotalAmount: String, // 예수금총금액
     @SerialName("nxdy_excc_amt")

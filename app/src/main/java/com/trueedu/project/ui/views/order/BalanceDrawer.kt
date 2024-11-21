@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.base.ComposableDrawer
 import com.trueedu.project.data.UserAssets
-import com.trueedu.project.model.dto.account.AccountOutput1
+import com.trueedu.project.model.dto.account.AccountAsset
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
@@ -85,7 +85,7 @@ class BalanceDrawer(
     @Composable
     private fun ItemView(
         index: Int,
-        item: AccountOutput1,
+        item: AccountAsset,
         onClick: (String) -> Unit,
     ) {
         val formatter = CashFormatter()
