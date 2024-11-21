@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
@@ -161,7 +162,13 @@ class StockDetailFragment: BaseFragment() {
                             .padding(8.dp)
                     ) {
                         TrueText(s = it.first, fontSize = 16, color = MaterialTheme.colorScheme.primary)
-                        TrueText(s = it.second ?: "", fontSize = 16, color = MaterialTheme.colorScheme.primary)
+                        TrueText(
+                            s = it.second ?: "",
+                            fontSize = 16,
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 2,
+                            textAlign = TextAlign.End,
+                        )
                     }
                 }
 
