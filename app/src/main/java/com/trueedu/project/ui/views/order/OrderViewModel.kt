@@ -165,6 +165,12 @@ class OrderViewModel @Inject constructor(
         )
     }
 
+    fun setQuantity(v: Double) {
+        quantityInput.value = quantityInput.value.copy(
+            text = v.toLong().toString() // 일단 정수만 처리
+        )
+    }
+
     fun increasePrice() {
         // TODO: 상하한가 체크 필요
         priceInput.value = priceInput.value.copy(
