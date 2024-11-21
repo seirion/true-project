@@ -10,6 +10,7 @@ import com.trueedu.project.data.RealOrderManager
 import com.trueedu.project.data.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.UserAssets
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
@@ -43,6 +44,7 @@ class OrderViewModel @Inject constructor(
     private val orderRemote: OrderRemote,
     private val priceManager: RealPriceManager,
     private val orderManager: RealOrderManager,
+    val userAssets: UserAssets,
 ): ViewModel() {
 
     companion object {
@@ -51,7 +53,8 @@ class OrderViewModel @Inject constructor(
         private val empty = List(10) { 0.0 to 0.0 }
     }
 
-    private var code: String = ""
+    var code: String = ""
+        private set
     val nameKr = mutableStateOf("")
 
     // api 응답
