@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.views.order
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ class OrderViewDrawer(
     private val vm: OrderViewModel,
     private val buy: () -> Unit,
     private val sell: () -> Unit,
+    private val setOrderQuantity: (Double) -> Unit,
 ): ComposableDrawer {
     @Composable
     override fun Draw() {
@@ -62,8 +64,7 @@ class OrderViewDrawer(
                             thickness = 1.dp,
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
-                        Margin(24)
-                        StockHoldingView(asset)
+                        StockHoldingView(asset, setOrderQuantity)
                     }
                 }
             }
@@ -73,13 +74,19 @@ class OrderViewDrawer(
 }
 
 @Composable
-fun StockHoldingView(item: AccountAsset) {
+fun StockHoldingView(
+    item: AccountAsset,
+    onClick: (Double) -> Unit,
+) {
+    val orderPossibleQuantity = item.orderPossibleQuantity.toDouble()
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
+            .clickable { onClick(orderPossibleQuantity) }
+            .padding(vertical = 12.dp)
     ) {
         TrueText(
             s = "보유/주문가능",
@@ -88,7 +95,7 @@ fun StockHoldingView(item: AccountAsset) {
         )
         TrueText(
             s = intFormatter.format(item.holdingQuantity.toDouble()) +
-                    "/${intFormatter.format(item.orderPossibleQuantity.toDouble())}",
+                    "/${intFormatter.format(orderPossibleQuantity)}",
             fontSize = 12,
             color = MaterialTheme.colorScheme.primary
         )
