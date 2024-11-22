@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.firebase.SpacStatusManager
 import com.trueedu.project.model.dto.firebase.SpacStatus
@@ -56,9 +57,17 @@ class SpacAdminFragment: BaseFragment() {
     private val namePrices = mutableStateOf<List<Pair<String, Int>>>(emptyList())
 
     override fun init() {
-        namePrices.value = spacRedemptionPrices
-            .map { it.split(" ") }
-            .map { it.first().trim() to it.last().toInt() }
+        lifecycleScope.launch {
+            val oldValues = spacStatusManager.load()
+                .filter { it.redemptionPrice != null }
+                .associate { it.code to it.redemptionPrice!! }
+
+            val newValues = spacRedemptionPrices
+                .map { it.split(" ") }
+                .associate { it.first().trim() to it.last().toInt() }
+
+            namePrices.value = (oldValues + newValues).map { it.key to it.value }
+        }
     }
 
     @Composable
