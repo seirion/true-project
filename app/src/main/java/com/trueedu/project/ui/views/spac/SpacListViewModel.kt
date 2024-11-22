@@ -53,8 +53,8 @@ class SpacListViewModel @Inject constructor(
     private val sortFun = mapOf(
         SpacSort.ISSUE_DATE to { it: StockInfo -> it.listingDate().safeLong().toDouble() },
         SpacSort.MARKET_CAP to { it: StockInfo -> it.marketCap().safeLong().toDouble() },
-        SpacSort.GROWTH_RATE to { it: StockInfo -> growthRate(it.prevPrice().safeLong()) },
-        SpacSort.REDEMPTION_VALUE to { redemptionValueMap[it.code]?.second ?: Double.MIN_VALUE },
+        SpacSort.GROWTH_RATE to { it: StockInfo -> -1 * growthRate(it.prevPrice().safeLong()) },
+        SpacSort.REDEMPTION_VALUE to { -1 * (redemptionValueMap[it.code]?.second ?: Double.MIN_VALUE) },
         SpacSort.VOLUME to { it: StockInfo -> it.prevVolume().safeLong().toDouble() },
     )
 
