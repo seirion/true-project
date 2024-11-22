@@ -12,6 +12,7 @@ import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.firebase.SpacStatusManager
 import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.model.dto.firebase.StockInfo
+import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.formatter.safeDouble
 import com.trueedu.project.utils.formatter.safeLong
@@ -28,6 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SpacListViewModel @Inject constructor(
+    private val local: Local,
     private val manualAssets: ManualAssets,
     private val stockPool: StockPool,
     private val tokenKeyManager: TokenKeyManager,
@@ -155,10 +157,12 @@ class SpacListViewModel @Inject constructor(
         val listingDateStr = stockPool.get(code)?.listingDate() ?: return
         val targetDate = stringToLocalDate(listingDateStr)
             .plusYears(3)
-        val (_, valueRate) = redemptionProfitRate(price, redemptionPrice, targetDate)
+        val isAnnualized = local.spacAnnualProfit
+        val (valueRate, valueRateAnnualized) = redemptionProfitRate(price, redemptionPrice, targetDate)
+        val rate = if (isAnnualized) valueRateAnnualized else valueRate
 
-        if (valueRate != null) {
-            redemptionValueMap[code] = redemptionPrice to valueRate
+        if (rate != null) {
+            redemptionValueMap[code] = redemptionPrice to rate
         }
     }
 
