@@ -56,17 +56,21 @@ class SettingFragment: BaseFragment() {
                     .padding(innerPadding)
             ) {
                 SettingItem("appkey 설정", true) {
-                    trueAnalytics.enterView("setting__appkey_setting__click")
+                    trueAnalytics.enterView("${screenName()}__appkey_setting__click")
                     AppKeyInputFragment.show(false, parentFragmentManager)
                 }
                 SettingItem("Screen 설정", true) {
-                    trueAnalytics.enterView("setting__screen_setting__click")
+                    trueAnalytics.enterView("${screenName()}__screen_setting__click")
                     ScreenSettingFragment.show(parentFragmentManager)
+                }
+                SettingItem("스팩 설정", true) {
+                    trueAnalytics.enterView("${screenName()}__spac_setting__click")
+                    SpacSettingFragment.show(parentFragmentManager)
                 }
 
                 val label = "종목 정보 업데이트" + vm.stockUpdateLabel.value
                 SettingItem(label, vm.updateAvailable.value) {
-                    trueAnalytics.enterView("setting__update_stock_info__click")
+                    trueAnalytics.enterView("${screenName()}__update_stock_info__click")
                     vm.updateStocks()
                 }
 
@@ -79,7 +83,7 @@ class SettingFragment: BaseFragment() {
                 SettingLabel("버전", BuildConfig.VERSION_NAME, true, ::gotoPlayStore)
 
                 SettingItem("탈퇴 및 데이터 삭제", googleAccount.loggedIn()) {
-                    trueAnalytics.enterView("setting__withdraw__click")
+                    trueAnalytics.enterView("${screenName()}__withdraw__click")
                     showWithdrawPopup()
                 }
             }
@@ -112,7 +116,7 @@ class SettingFragment: BaseFragment() {
     }
 
     private fun gotoPlayStore() {
-        trueAnalytics.enterView("setting__version__click")
+        trueAnalytics.enterView("${screenName()}__version__click")
         startActivity(
             Intent(Intent.ACTION_VIEW).apply {
                 addCategory(Intent.CATEGORY_DEFAULT)
