@@ -9,9 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ViewList
 import androidx.compose.material3.MaterialTheme
@@ -99,12 +98,12 @@ class SpacListFragment: BaseFragment() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                val state = rememberLazyListState()
-                LazyColumn(
-                    state = state,
+                val scrollState = rememberScrollState()
+                Column(
                     modifier = Modifier.fillMaxSize()
+                        .verticalScroll(scrollState)
                 ) {
-                    itemsIndexed(vm.stocks.value, key = { _, item -> item.code }) { i, item ->
+                    vm.stocks.value.forEachIndexed { i, item ->
                         val redemptionValue = vm.redemptionValueMap[item.code]
                         SpacItem(i, item, vm.priceMap[item.code],
                             redemptionValue?.first,
