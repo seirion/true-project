@@ -105,7 +105,13 @@ class WatchScreen(
                 )
             },
             bottomBar = {
-                if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
+                if (
+                    !vm.loading.value &&
+                    vm.currentPage.value != null &&
+                    vm.getItems(vm.currentPage.value!!).isNotEmpty() &&
+                    remoteConfig.adVisible.value &&
+                    admobManager.nativeAd.value != null
+                ) {
                     Box(modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = HomeBottomNavHeight)) {

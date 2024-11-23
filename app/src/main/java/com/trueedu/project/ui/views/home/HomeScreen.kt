@@ -90,10 +90,7 @@ class HomeScreen(
                         )
                     }
                 } ?: item {
-                    if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
-                        NativeAdView(admobManager.nativeAd.value!!)
-                        Margin(32)
-                    }
+                    Margin(32)
                     EmptyHome()
                 }
 
