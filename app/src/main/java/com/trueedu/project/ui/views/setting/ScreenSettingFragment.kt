@@ -57,7 +57,7 @@ class ScreenSettingFragment: BaseFragment() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                OnOffSetting("강제 다크모드", screen.forceDark.value, ::setForceDarkMode)
+                OnOffSetting("다크모드", screen.forceDark.value, ::setForceDarkMode)
                 OnOffSetting("항상 화면 켜두기", screen.keepScreenOn.value, ::setKeepScreenOn)
                 if (BuildConfig.DEBUG) {
                     OnOffSetting("광고", remoteConfig.adVisible.value, ::setAdVisible)
