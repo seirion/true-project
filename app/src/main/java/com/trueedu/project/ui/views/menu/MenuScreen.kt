@@ -28,6 +28,7 @@ import com.trueedu.project.BuildConfig
 import com.trueedu.project.admin.spac.SpacAdminFragment
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.ScreenControl
+import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
@@ -41,6 +42,7 @@ import com.trueedu.project.ui.views.spac.SpacListFragment
 class MenuScreen(
     private val screen: ScreenControl,
     private val trueAnalytics: TrueAnalytics,
+    private val tokenKeyManager: TokenKeyManager,
     private val fragmentManager: FragmentManager,
 ): BottomNavScreen {
     companion object {
@@ -73,7 +75,9 @@ class MenuScreen(
                 ) {
                     MenuItem(Icons.Outlined.Settings, "설정", ::onSettings)
                     MenuItem(Icons.Outlined.RocketLaunch, "스팩 종목 보기", ::onSpacStocks)
-                    MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
+                    if (tokenKeyManager.userKey.value != null) {
+                        MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
+                    }
                     if (BuildConfig.DEBUG) {
                         MenuItem(Icons.Outlined.Construction, "스팩 어드민", ::onSpacAdmin)
                     }

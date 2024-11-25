@@ -40,6 +40,7 @@ import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.WsMessageHandler
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
@@ -81,6 +82,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var authRemote: AuthRemote
     @Inject
     lateinit var googleAccount: GoogleAccount
+    @Inject
+    lateinit var tokenKeyManager: TokenKeyManager
     @Inject
     lateinit var trueAnalytics: TrueAnalytics
     @Inject
@@ -186,6 +189,7 @@ class MainActivity : AppCompatActivity() {
         menuScreen = MenuScreen(
             screen = screen,
             trueAnalytics = trueAnalytics,
+            tokenKeyManager = tokenKeyManager,
             fragmentManager = supportFragmentManager,
         )
 
