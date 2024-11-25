@@ -3,8 +3,12 @@ package com.trueedu.project.ui.views.setting
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +18,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -22,9 +29,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.R
@@ -37,10 +49,10 @@ import com.trueedu.project.model.local.UserKey
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
-import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.BottomBar
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
+import com.trueedu.project.ui.common.TrueText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.onEach
@@ -72,6 +84,7 @@ class AppKeyInputFragment: BaseFragment() {
     private val appSecret = mutableStateOf("")
     private val accountNumber = mutableStateOf("")
     private val buttonEnabled = mutableStateOf(false)
+    private val dialogShowing = mutableStateOf(false)
 
     private lateinit var appKeyOrg: String
     private lateinit var appSecretOrg: String
@@ -115,6 +128,11 @@ class AppKeyInputFragment: BaseFragment() {
                     .verticalScroll(state)
             ) {
                 AppKeySecretInput()
+            }
+            if (dialogShowing.value) {
+                Dialog(onDismissRequest = { dialogShowing.value = false }) {
+                    FullScreenImage(image = R.drawable.kis, onClose = { dialogShowing.value = false })
+                }
             }
         }
     }
@@ -213,10 +231,27 @@ class AppKeyInputFragment: BaseFragment() {
                 fontSize = 10,
                 color = MaterialTheme.colorScheme.tertiary,
                 maxLines = Int.MAX_VALUE,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(top = 56.dp)
             )
+
+            TrueText(
+                s = "한투 appkey 발급방법",
+                fontSize = 12,
+                color = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onClickIssueAppkeyHelp() }
+                    .padding(top = 32.dp),
+                style = TextStyle(textDecoration = TextDecoration.Underline),
+            )
         }
+    }
+
+    private fun onClickIssueAppkeyHelp() {
+        trueAnalytics.clickButton("${screenName()}__issue_appkey_help__click")
+        dialogShowing.value = true
     }
 }
 
@@ -262,5 +297,33 @@ private fun TextInputItem(
         )
         Margin(8)
         TouchIcon24(icon = Icons.Filled.ContentPaste, onClick = onPaste)
+    }
+}
+
+@Composable
+fun FullScreenImage(
+    image: Int, // Image resource ID
+    onClose: () -> Unit // Callback for closing the image
+) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .padding(top = 32.dp)
+    ) {
+        Image(
+            painter = painterResource(id = image),
+            contentDescription = "Appkey Issuance Guide",
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()), // Enable horizontal scrolling
+            contentScale = ContentScale.FillWidth // Fit width
+        )
+        IconButton(
+            onClick = onClose,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+        ) {
+            Icon(Icons.Filled.Close, contentDescription = "close")
+        }
     }
 }
