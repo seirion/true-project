@@ -35,6 +35,7 @@ import com.trueedu.project.ui.views.common.DesignatedBadge
 import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.EmptyHome
+import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
 
@@ -97,9 +98,7 @@ class SpacScreen(
                             trueAnalytics.clickButton("${screenName()}__item__click")
                             StockDetailFragment.show(stock, fragmentManager)
                         },
-                        onPriceClick = {
-
-                        }
+                        onPriceClick = { onPriceClick(item.code) }
                     )
                 }
             }
@@ -112,6 +111,11 @@ class SpacScreen(
 
     override fun onStop() {
         vm.onStop()
+    }
+
+    private fun onPriceClick(code: String) {
+        trueAnalytics.clickButton("${screenName()}__price__click")
+        OrderFragment.show(code, fragmentManager)
     }
 }
 
