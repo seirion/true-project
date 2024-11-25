@@ -21,7 +21,7 @@ import javax.inject.Inject
 class SpacViewModel @Inject constructor(
     val manualAssets: ManualAssets,
     val stockPool: StockPool,
-    private val tokenKeyManager: TokenKeyManager,
+    val tokenKeyManager: TokenKeyManager,
     private val priceRemote: PriceRemote,
 ): ViewModel() {
 

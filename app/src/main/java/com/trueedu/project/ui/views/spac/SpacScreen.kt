@@ -115,7 +115,9 @@ class SpacScreen(
 
     private fun onPriceClick(code: String) {
         trueAnalytics.clickButton("${screenName()}__price__click")
-        OrderFragment.show(code, fragmentManager)
+        if (vm.tokenKeyManager.userKey.value != null) {
+            OrderFragment.show(code, fragmentManager)
+        }
     }
 }
 
