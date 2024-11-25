@@ -51,6 +51,7 @@ class SpacStatusManager @Inject constructor(
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
             Log.d(TAG, "load() failed: currentUser null")
+            return emptyList()
         }
         val ref = database.getReference(SNAPSHOT_KEY) // spac 데이터
         val snapshot = ref.child("status")
@@ -67,6 +68,8 @@ class SpacStatusManager @Inject constructor(
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
             Log.d(TAG, "write() failed: currentUser null")
+            onFail()
+            return
         }
         val ref = database.getReference(SNAPSHOT_KEY) // 종목 데이터
         ref.child("last_updated").setValue(LocalDate.now().yyyyMMdd())

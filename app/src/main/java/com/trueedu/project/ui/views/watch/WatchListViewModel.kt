@@ -53,6 +53,10 @@ class WatchListViewModel @Inject constructor(
     var job: Job? = null
 
     fun init() {
+        if (!googleAccount.loggedIn()) {
+            loading.value = false
+        }
+
         job = viewModelScope.launch {
             launch {
                 combine(

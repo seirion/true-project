@@ -43,7 +43,7 @@ class WatchList @Inject constructor(
     }
 
     fun get(index: Int): List<String> {
-        return list.value[index]
+        return list.value.getOrElse(index) { emptyList() }
     }
 
     fun add(index: Int, code: String) {
