@@ -30,10 +30,10 @@ class StockPool @Inject constructor(
 ) {
     companion object {
         private val TAG = StockPool::class.java.simpleName
-
     }
 
     private var stocks: Map<String, StockInfo> = emptyMap()
+    private var delisted: Set<String> = emptySet() // 상장 폐지 종목들
 
     enum class Status {
         LOADING,
@@ -54,6 +54,7 @@ class StockPool @Inject constructor(
         }
 
         CoroutineScope(Dispatchers.IO).launch {
+            delisted = loadDelistedStocks()
             val localStocks = loadLocalStocks()
 
             // 리모트 데이터가 필요한 지 체크
@@ -98,6 +99,11 @@ class StockPool @Inject constructor(
         }
         stockLocal.deleteAllStocks()
         stockLocal.setAllStocks(localStockInfoList)
+    }
+
+    private suspend fun loadDelistedStocks(): Set<String> {
+        return firebaseRealtimeDatabase.loadDelistedStocks()
+            .toSet()
     }
 
     /**
@@ -163,5 +169,9 @@ class StockPool @Inject constructor(
 
     fun get(code: String): StockInfo? {
         return stocks[code]
+    }
+
+    fun delisted(code: String): Boolean {
+        return delisted.contains(code)
     }
 }
