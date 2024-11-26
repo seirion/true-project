@@ -60,7 +60,7 @@ class SpacAdminFragment: BaseFragment() {
         lifecycleScope.launch {
             val oldValues = spacStatusManager.load()
                 .filter { it.redemptionPrice != null }
-                .associate { it.code to it.redemptionPrice!! }
+                .associate { it.nameKr to it.redemptionPrice!! }
 
             val newValues = spacRedemptionPrices
                 .map { it.split(" ") }
