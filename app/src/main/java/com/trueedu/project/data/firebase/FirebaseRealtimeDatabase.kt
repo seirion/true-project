@@ -14,7 +14,6 @@ import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.firebase.StockInfoKosdaq
 import com.trueedu.project.model.dto.firebase.StockInfoKospi
-import com.trueedu.project.repository.local.Local
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -25,7 +24,6 @@ import javax.inject.Singleton
 
 @Singleton
 class FirebaseRealtimeDatabase @Inject constructor(
-    private val local: Local,
     private val googleAccount: GoogleAccount,
 ) {
     companion object {
@@ -131,6 +129,18 @@ class FirebaseRealtimeDatabase @Inject constructor(
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential).await()
         return auth.currentUser
+    }
+
+    suspend fun loadDelistedStocks(): List<String> {
+        Log.d(TAG, "loadDelistedStocks()")
+        try {
+            val snapshot = stocksRef.get().await()
+            return snapshot.child("delisted").getValue(object : GenericTypeIndicator<List<String>>() {}) ?: emptyList()
+        } catch (e: Exception) {
+            // 오류 처리
+            Log.e(TAG, "Failed to get delisted stocks", e)
+            return emptyList()
+        }
     }
 
     /**
