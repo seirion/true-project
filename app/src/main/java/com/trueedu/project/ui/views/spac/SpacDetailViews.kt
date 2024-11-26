@@ -2,6 +2,7 @@ package com.trueedu.project.ui.views.spac
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -43,49 +44,45 @@ fun SpacValueSection() {
 }
 
 @Composable
-fun SpacValueView(
+fun ColumnScope.SpacValueView(
     basePrice: Double,
     input: MutableState<TextFieldValue>,
 ) {
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            val valueString = intFormatter.format(basePrice)
-            TrueText(
-                s = valueString,
-                fontSize = 16,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            DigitInput(input, Modifier.width(120.dp))
-        }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        val valueString = intFormatter.format(basePrice)
+        TrueText(
+            s = valueString,
+            fontSize = 16,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        DigitInput(input, Modifier.width(120.dp))
     }
 }
 
 @Composable
-fun SpacDataView(title: String, value: String, valueColor: Color) {
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            TrueText(
-                s = title,
-                fontSize = 16,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            TrueText(
-                s = value,
-                fontSize = 16,
-                color = valueColor,
-            )
-        }
+fun ColumnScope.SpacDataView(title: String, value: String, valueColor: Color) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        TrueText(
+            s = title,
+            fontSize = 16,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        TrueText(
+            s = value,
+            fontSize = 16,
+            color = valueColor,
+        )
     }
 }
