@@ -70,6 +70,7 @@ class SpacListViewModel @Inject constructor(
                             StockPool.Status.SUCCESS -> {
                                 loading.value = false
                                 stocks.value = stockPool.search(StockInfo::spac)
+                                    .filterNot { stockPool.delisted(it.code) }
                                     .sortedBy(sortFun[sort.value]!!)
 
                                 // 초기 값으로 전일 종가를 줌
@@ -142,6 +143,7 @@ class SpacListViewModel @Inject constructor(
     fun setSort(option: SpacSort) {
         sort.value = option
         stocks.value = stockPool.search(StockInfo::spac)
+            .filterNot { stockPool.delisted(it.code) }
             .sortedBy(sortFun[sort.value]!!)
     }
 
@@ -171,6 +173,7 @@ class SpacListViewModel @Inject constructor(
             SpacSort.GROWTH_RATE,
             SpacSort.REDEMPTION_VALUE -> {
                 stocks.value = stockPool.search(StockInfo::spac)
+                    .filterNot { stockPool.delisted(it.code) }
                     .sortedBy(sortFun[sort.value]!!)
             }
             else -> {} // nothing to do
