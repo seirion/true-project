@@ -5,7 +5,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.StockPool
-import com.trueedu.project.repository.FirebaseRealtimeDatabase
+import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

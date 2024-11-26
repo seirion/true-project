@@ -11,7 +11,7 @@ import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.UserAssets
 import com.trueedu.project.model.dto.account.AccountResponse
-import com.trueedu.project.repository.FirebaseRealtimeDatabase
+import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.utils.toAccountNumFormat
 import dagger.hilt.android.lifecycle.HiltViewModel

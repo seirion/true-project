@@ -2,7 +2,7 @@ package com.trueedu.project.data
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.trueedu.project.repository.FirebaseRealtimeDatabase
+import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

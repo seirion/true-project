@@ -1,7 +1,7 @@
 package com.trueedu.project.data
 
 import androidx.compose.runtime.mutableStateOf
-import com.trueedu.project.repository.FirebaseRealtimeDatabase
+import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject

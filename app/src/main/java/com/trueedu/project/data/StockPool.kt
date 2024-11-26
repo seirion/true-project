@@ -6,7 +6,7 @@ import com.trueedu.project.model.dao.StockInfoLocal
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.firebase.StockInfoKosdaq
 import com.trueedu.project.model.dto.firebase.StockInfoKospi
-import com.trueedu.project.repository.FirebaseRealtimeDatabase
+import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.local.StockLocal
 import com.trueedu.project.utils.StockInfoDownloader

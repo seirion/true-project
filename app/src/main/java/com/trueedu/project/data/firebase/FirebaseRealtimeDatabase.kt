@@ -1,4 +1,4 @@
-package com.trueedu.project.repository
+package com.trueedu.project.data.firebase
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
