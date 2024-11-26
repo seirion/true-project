@@ -35,6 +35,9 @@ class TrueNativeAdView(context: Context) : ConstraintLayout(context) {
         findViewById<CardView>(R.id.layout_ad_call_to_action).also {
             it.setCardBackgroundColor(colorScheme.outlineVariant.toArgb())
         }
+        findViewById<TextView>(R.id.layout_ad_text).also {
+            it.setTextColor(colorScheme.secondary.toArgb())
+        }
 
         nativeAdView.iconView = icon
         val url = nativeAd.icon?.uri ?: nativeAd.images.firstOrNull()?.uri ?: "" //icon이 없는 경우가 있다
