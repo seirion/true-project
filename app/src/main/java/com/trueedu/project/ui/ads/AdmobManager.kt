@@ -161,12 +161,13 @@ fun BannerAd(adUnitId: String) {
 
 @Composable
 fun NativeAdView(nativeAd: NativeAd) {
+    val bgColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp, vertical = 8.dp)
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = bgColor,
                 shape = RoundedCornerShape(8.dp)
             )
             .height(56.dp)
