@@ -43,6 +43,7 @@ class SpacListViewModel @Inject constructor(
     val loading = mutableStateOf(true)
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
     val priceMap = mutableStateMapOf<String, Double>()
+    val priceChangeMap = mutableStateMapOf<String, Double>()
     val volumeMap = mutableStateMapOf<String, Long>()
     val spacStatusMap = mutableStateOf<Map<String, SpacStatus>>(emptyMap())
 
@@ -120,6 +121,7 @@ class SpacListViewModel @Inject constructor(
                     .collect {
                         try {
                             priceMap[s.code] = it.output.price.toDouble()
+                            priceChangeMap[s.code] = it.output.priceChange.toDouble()
                             volumeMap[s.code] = it.output.volume.safeLong()
                             updateRedemptionValue(s.code)
                             updateOrder() // 순서 갱신
