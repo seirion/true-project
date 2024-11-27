@@ -106,11 +106,14 @@ class SpacListFragment: BaseFragment() {
                 ) {
                     vm.stocks.value.forEachIndexed { i, item ->
                         val redemptionValue = vm.redemptionValueMap[item.code]
+                        val expectedProfit = redemptionValue?.first
+                        val expectedProfitRate = redemptionValue?.second
                         SpacItem(i, item,
-                            vm.priceMap[item.code],
-                            vm.volumeMap[item.code],
-                            redemptionValue?.first,
-                            redemptionValue?.second,
+                            vm.priceMap[item.code] ?: 0.0,
+                            vm.priceChangeMap[item.code],
+                            vm.volumeMap[item.code] ?: 0L,
+                            expectedProfit,
+                            expectedProfitRate,
                             vm.hasStock(item.code),
                             ::onPriceClick
                         ) {
@@ -157,8 +160,9 @@ class SpacListFragment: BaseFragment() {
 private fun SpacItem(
     index: Int = 1,
     item: StockInfo = StockInfoKospi("003456", "삼성전자", ""),
-    currentPrice: Double? = null,
-    currentVolume: Long? = null,
+    price: Double = 2000.0,
+    priceChange: Double? = 10.0,
+    volume: Long = 1234L,
     expectedProfit: Int? = null, // 청산 시 기대 수익
     expectedProfitRate: Double? = null, // 청산 시 기대 수익률(%)
     hasThisStock: Boolean = true,
@@ -212,7 +216,6 @@ private fun SpacItem(
                 horizontalAlignment = Alignment.End,
                 modifier = Modifier.weight(1f)
             ) {
-                val volume = currentVolume ?: 0L
                 val volumeString = intFormatter.format(volume)
 
                 TrueText(
@@ -240,14 +243,21 @@ private fun SpacItem(
                     .width(60.dp)
                     .clickable { onPriceClick(item.code) }
             ) {
-                val price = currentPrice
-                    ?: item.prevPrice()?.toDouble() // 전일 종가
-                    ?: 0.0
                 val priceString = intFormatter.format(price)
                 TrueText(
                     s = priceString,
                     fontSize = 14,
                     color = MaterialTheme.colorScheme.primary,
+                )
+                val priceChangeString = if (priceChange == null) {
+                    "-"
+                } else {
+                    intFormatter.format(priceChange, true)
+                }
+                TrueText(
+                    s = priceChangeString,
+                    fontSize = 12,
+                    color = ChartColor.color(priceChange ?: 0.0)
                 )
             }
         }
