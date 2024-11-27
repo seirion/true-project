@@ -23,7 +23,7 @@ fun priceChangeStr(priceInfo: RealTimeTrade?): Pair<String, Color> {
 
 @Composable
 fun priceChangeStr(priceResponse: PriceResponse): Pair<String, Color> {
-    val priceChange = priceResponse.output.priceChange.toDouble()
+    val priceChange = priceResponse.output!!.priceChange.toDouble()
     val rate = priceResponse.output.priceChangeRate.toDouble()
     return priceChangeStr(priceChange, rate)
 }

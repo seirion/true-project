@@ -90,7 +90,7 @@ class OrderViewModel @Inject constructor(
                 basePrice.value = it
                 if (priceInput.value.text == "") {
                     priceInput.value = priceInput.value.copy(
-                        text = it.output.price
+                        text = it.output!!.price
                     )
                 }
             }

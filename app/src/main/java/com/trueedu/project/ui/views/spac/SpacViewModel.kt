@@ -79,13 +79,16 @@ class SpacViewModel @Inject constructor(
                 val s = manualAssets.assets.value.getOrNull(it % size) ?: return@collect
                 priceRemote.currentPrice(s.code)
                     .collect {
-                        try {
-                            priceMap[s.code] = it.output.price.toDouble()
-                            updateTotalValues()
-                        } catch (e: NumberFormatException) {
-                            Log.d(TAG, "prcie format error: ${it.output.price}\n$e")
+                        if (it.output != null) {
+                            try {
+                                priceMap[s.code] = it.output.price.toDouble()
+                                updateTotalValues()
+                            } catch (e: NumberFormatException) {
+                                Log.d(TAG, "price format error: ${it.output.price}\n$e")
+                            }
                         }
                     }
+
             }
         }
     }

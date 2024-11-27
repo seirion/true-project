@@ -12,6 +12,7 @@ import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.firebase.SpacStatusManager
 import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.model.dto.firebase.StockInfo
+import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.formatter.safeDouble
@@ -21,6 +22,7 @@ import com.trueedu.project.utils.stringToLocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -118,15 +120,21 @@ class SpacListViewModel @Inject constructor(
                 if (size == 0) return@collect
                 val s = stocks.value.getOrNull(it % size) ?: return@collect
                 priceRemote.currentPrice(s.code)
+                    .catch {
+                        Log.e(TAG, "price error: $it")
+                        emit(PriceResponse(null, "", "", ""))
+                    }
                     .collect {
-                        try {
-                            priceMap[s.code] = it.output.price.toDouble()
-                            priceChangeMap[s.code] = it.output.priceChange.toDouble()
-                            volumeMap[s.code] = it.output.volume.safeLong()
-                            updateRedemptionValue(s.code)
-                            updateOrder() // 순서 갱신
-                        } catch (e: NumberFormatException) {
-                            Log.d(TAG, "prcie format error: ${it.output.price}\n$e")
+                        if (it.output != null) {
+                            try {
+                                priceMap[s.code] = it.output.price.toDouble()
+                                priceChangeMap[s.code] = it.output.priceChange.toDouble()
+                                volumeMap[s.code] = it.output.volume.safeLong()
+                                updateRedemptionValue(s.code)
+                                updateOrder() // 순서 갱신
+                            } catch (e: NumberFormatException) {
+                                Log.d(TAG, "prcie format error: ${it.output.price}\n$e")
+                            }
                         }
                     }
             }

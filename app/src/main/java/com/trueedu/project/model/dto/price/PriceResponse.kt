@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PriceResponse(
-    val output: PriceDetail,
+    val output: PriceDetail?,
     @SerialName("rt_cd")
     val rtCd: String, // 성공 실패 여부 "0" 성공
     @SerialName("msg_cd")
