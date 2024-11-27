@@ -50,12 +50,12 @@ class SpacListViewModel @Inject constructor(
 
     val sort = mutableStateOf(SpacSort.ISSUE_DATE)
 
-    private val sortFun = mapOf(
-        SpacSort.ISSUE_DATE to { it: StockInfo -> it.listingDate().safeLong().toDouble() },
-        SpacSort.MARKET_CAP to { it: StockInfo -> it.marketCap().safeLong().toDouble() },
-        SpacSort.GROWTH_RATE to { it: StockInfo -> -1 * growthRate(it.prevPrice().safeLong()) },
+    private val sortFun = mapOf<SpacSort, (StockInfo) -> Double>(
+        SpacSort.ISSUE_DATE to { it.listingDate().safeLong().toDouble() },
+        SpacSort.MARKET_CAP to {  it.marketCap().safeLong().toDouble() },
+        SpacSort.GROWTH_RATE to { -1 * growthRate(it.prevPrice().safeLong()) },
         SpacSort.REDEMPTION_VALUE to { -1 * (redemptionValueMap[it.code]?.second ?: Double.MIN_VALUE) },
-        SpacSort.VOLUME to { it: StockInfo -> it.prevVolume().safeLong().toDouble() },
+        SpacSort.VOLUME to { -1 * it.prevVolume().safeLong().toDouble() },
     )
 
     init {
