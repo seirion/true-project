@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -105,11 +106,14 @@ class SpacListFragment: BaseFragment() {
                 ) {
                     vm.stocks.value.forEachIndexed { i, item ->
                         val redemptionValue = vm.redemptionValueMap[item.code]
-                        SpacItem(i, item, vm.priceMap[item.code],
+                        SpacItem(i, item,
+                            vm.priceMap[item.code],
+                            vm.volumeMap[item.code],
                             redemptionValue?.first,
                             redemptionValue?.second,
                             vm.hasStock(item.code),
-                            ::onPriceClick) {
+                            ::onPriceClick
+                        ) {
                             StockDetailFragment.show(item, parentFragmentManager)
                         }
                     }
@@ -154,6 +158,7 @@ private fun SpacItem(
     index: Int = 1,
     item: StockInfo = StockInfoKospi("003456", "삼성전자", ""),
     currentPrice: Double? = null,
+    currentVolume: Long? = null,
     expectedProfit: Int? = null, // 청산 시 기대 수익
     expectedProfitRate: Double? = null, // 청산 시 기대 수익률(%)
     hasThisStock: Boolean = true,
@@ -199,31 +204,52 @@ private fun SpacItem(
             )
         }
 
-        Column(
-            horizontalAlignment = Alignment.End,
-            modifier = Modifier.clickable { onPriceClick(item.code) }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            val price = currentPrice
-                ?: item.prevPrice()?.toDouble() // 전일 종가
-                ?: 0.0
-            val priceString = intFormatter.format(price)
-            TrueText(
-                s = priceString,
-                fontSize = 14,
-                color = MaterialTheme.colorScheme.primary,
-            )
 
-            val redemptionPriceString = if (expectedProfit != null && expectedProfitRate != null) {
-                val rateString = rateFormatter.format(expectedProfitRate, true)
-                "${intFormatter.format(expectedProfit)} (${rateString})"
-            } else {
-                "-"
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier.weight(1f)
+            ) {
+                val volume = currentVolume ?: 0L
+                val volumeString = intFormatter.format(volume)
+
+                TrueText(
+                    s = volumeString,
+                    fontSize = 13,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+                val redemptionPriceString =
+                    if (expectedProfit != null && expectedProfitRate != null) {
+                        val rateString = rateFormatter.format(expectedProfitRate, true)
+                        "${intFormatter.format(expectedProfit)} (${rateString})"
+                    } else {
+                        "-"
+                    }
+                TrueText(
+                    s = redemptionPriceString,
+                    fontSize = 12,
+                    color = ChartColor.color(expectedProfitRate ?: 0.0),
+                )
             }
-            TrueText(
-                s = redemptionPriceString,
-                fontSize = 12,
-                color = ChartColor.color(expectedProfitRate ?: 0.0),
-            )
+
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier
+                    .width(60.dp)
+                    .clickable { onPriceClick(item.code) }
+            ) {
+                val price = currentPrice
+                    ?: item.prevPrice()?.toDouble() // 전일 종가
+                    ?: 0.0
+                val priceString = intFormatter.format(price)
+                TrueText(
+                    s = priceString,
+                    fontSize = 14,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
     }
 }

@@ -43,6 +43,7 @@ class SpacListViewModel @Inject constructor(
     val loading = mutableStateOf(true)
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
     val priceMap = mutableStateMapOf<String, Double>()
+    val volumeMap = mutableStateMapOf<String, Long>()
     val spacStatusMap = mutableStateOf<Map<String, SpacStatus>>(emptyMap())
 
     // 청산 가격과 수익률을 미리 구해 둔다
@@ -76,6 +77,7 @@ class SpacListViewModel @Inject constructor(
                                 // 초기 값으로 전일 종가를 줌
                                 stocks.value.forEach {
                                     priceMap[it.code] = it.prevPrice().safeDouble()
+                                    volumeMap[it.code] = it.prevVolume().safeLong()
                                     updateRedemptionValue(it.code)
                                 }
                             }
@@ -118,6 +120,7 @@ class SpacListViewModel @Inject constructor(
                     .collect {
                         try {
                             priceMap[s.code] = it.output.price.toDouble()
+                            volumeMap[s.code] = it.output.volume.safeLong()
                             updateRedemptionValue(s.code)
                             updateOrder() // 순서 갱신
                         } catch (e: NumberFormatException) {
