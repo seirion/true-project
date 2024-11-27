@@ -345,7 +345,7 @@ private fun WatchingStockItem(
             modifier = Modifier.width(128.dp)
                 .height(40.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.End,
         ) {
             // ohlc 데이터가 있으면 캔들 표시
             if (prevClose != null && open != null && high != null && low != null) {
