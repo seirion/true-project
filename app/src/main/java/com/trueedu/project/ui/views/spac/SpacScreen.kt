@@ -85,7 +85,7 @@ class SpacScreen(
                     .padding(innerPadding)
             ) {
                 item { TotalAssetView(vm.manualAssets.assets.value, vm.totalValues.value) }
-                itemsIndexed(vm.manualAssets.assets.value, { _, item -> item.code}) { index, item ->
+                itemsIndexed(vm.manualAssets.assets.value, { _, item -> item.code}) { _, item ->
                     val stock = vm.stockPool.get(item.code)!!
 
                     // 현재 가격이 없으면 전일 가격으로 표시함

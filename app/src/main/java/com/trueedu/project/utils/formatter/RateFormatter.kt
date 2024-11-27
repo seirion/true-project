@@ -13,6 +13,11 @@ class RateFormatter(
         return sign + numberInstance.format(value) + "%"
     }
 
+    override fun format(value: Long, withSign: Boolean): String {
+        val sign = if (withSign) sign(value) else ""
+        return sign + numberInstance.format(value) + "%"
+    }
+
     override fun format(value: Double, withSign: Boolean): String {
         val sign = if (withSign) sign(value) else ""
         return sign + numberInstance.format(value) + "%"
