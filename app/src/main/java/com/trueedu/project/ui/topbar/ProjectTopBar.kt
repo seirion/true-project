@@ -58,7 +58,7 @@ fun MainTopBar(
             TouchIcon24(icon = Icons.Outlined.Search, onClick = onSearchClick)
         },
         title = { TopBarTitle(title, onAccountInfoClick) },
-        colors = TopAppBarDefaults.smallTopAppBarColors(
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             titleContentColor = MaterialTheme.colorScheme.primary,
         ),
