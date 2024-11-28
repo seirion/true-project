@@ -59,7 +59,7 @@ class SpacListViewModel @Inject constructor(
         SpacSort.MARKET_CAP to {  it.marketCap().safeLong().toDouble() },
         SpacSort.GROWTH_RATE to { -1 * growthRate(it.prevPrice().safeLong()) },
         SpacSort.REDEMPTION_VALUE to { -1 * (redemptionValueMap[it.code]?.second ?: Double.MIN_VALUE) },
-        SpacSort.VOLUME to { -1 * it.prevVolume().safeLong().toDouble() },
+        SpacSort.VOLUME to { -1 * (volumeMap[it.code]?.toDouble() ?: 0.0) },
     )
 
     init {
