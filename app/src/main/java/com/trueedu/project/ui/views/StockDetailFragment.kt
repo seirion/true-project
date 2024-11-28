@@ -153,6 +153,10 @@ class StockDetailFragment: BaseFragment() {
             ) {
                 SettingItem("일별 가격", true, ::gotoDailyPrice)
 
+                vm.spacStatus.value?.let {
+                    SpacDetailView(vm.currentPrice(), stockInfo, it)
+                }
+
                 vm.infoList.value.forEach {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -172,9 +176,6 @@ class StockDetailFragment: BaseFragment() {
                     }
                 }
 
-                vm.spacStatus.value?.let {
-                    SpacDetailView(vm.currentPrice(), stockInfo, it)
-                }
             }
         }
     }
@@ -207,7 +208,6 @@ fun ColumnScope.SpacDetailView(
     stock: StockInfo,
     spac: SpacStatus
 ) {
-    DividerHorizontal()
     val redemptionPrice = spac.redemptionPrice?.toString() ?: "0"
     val inputString = remember { mutableStateOf(TextFieldValue(redemptionPrice)) }
 
@@ -242,4 +242,5 @@ fun ColumnScope.SpacDetailView(
             ChartColor.color(annualizedProfit)
         )
     }
+    DividerHorizontal()
 }
