@@ -17,6 +17,8 @@ import androidx.compose.material.icons.outlined.ViewList
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.trueedu.project.data.RemoteConfig
+import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.firebase.StockInfoKospi
 import com.trueedu.project.ui.BaseFragment
@@ -31,6 +34,7 @@ import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BottomSelectionFragment
+import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
@@ -64,6 +68,8 @@ class SpacListFragment: BaseFragment() {
     lateinit var remoteConfig: RemoteConfig
     @Inject
     lateinit var admobManager: AdmobManager
+    @Inject
+    lateinit var spacManager: SpacManager
 
     private fun onPriceClick(code: String) {
         trueAnalytics.clickButton("${screenName()}__price__click")
@@ -94,31 +100,32 @@ class SpacListFragment: BaseFragment() {
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background),
         ) { innerPadding ->
+            val loading by spacManager.loading.collectAsState()
+            if (loading) {
+                LoadingView()
+                return@Scaffold
+            }
+            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    .verticalScroll(scrollState)
             ) {
-                val scrollState = rememberScrollState()
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                        .verticalScroll(scrollState)
-                ) {
-                    vm.stocks.value.forEachIndexed { i, item ->
-                        val redemptionValue = vm.redemptionValueMap[item.code]
-                        val expectedProfit = redemptionValue?.first
-                        val expectedProfitRate = redemptionValue?.second
-                        SpacItem(i, item,
-                            vm.priceMap[item.code] ?: 0.0,
-                            vm.priceChangeMap[item.code],
-                            vm.volumeMap[item.code] ?: 0L,
-                            expectedProfit,
-                            expectedProfitRate,
-                            vm.hasStock(item.code),
-                            ::onPriceClick
-                        ) {
-                            StockDetailFragment.show(item, parentFragmentManager)
-                        }
+                spacManager.spacList.value.forEachIndexed { i, item ->
+                    val redemptionValue = spacManager.redemptionValueMap[item.code]
+                    val expectedProfit = redemptionValue?.first
+                    val expectedProfitRate = redemptionValue?.second
+                    SpacItem(i, item,
+                        spacManager.priceMap[item.code] ?: 0.0,
+                        spacManager.priceChangeMap[item.code],
+                        spacManager.volumeMap[item.code] ?: 0L,
+                        expectedProfit,
+                        expectedProfitRate,
+                        vm.hasStock(item.code),
+                        ::onPriceClick
+                    ) {
+                        StockDetailFragment.show(item, parentFragmentManager)
                     }
                 }
             }
@@ -127,12 +134,12 @@ class SpacListFragment: BaseFragment() {
 
     override fun onStart() {
         super.onStart()
-        vm.onStart()
+        spacManager.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        vm.onStop()
+        spacManager.onStop()
     }
 
     // 정렬하기
