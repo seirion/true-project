@@ -25,7 +25,7 @@ class SettingViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            snapshotFlow { stockPool.status.value }
+            stockPool.status
                 .collect { status ->
                     when (status) {
                         StockPool.Status.LOADING -> {

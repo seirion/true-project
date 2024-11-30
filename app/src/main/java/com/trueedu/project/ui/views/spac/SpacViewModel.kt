@@ -43,7 +43,7 @@ class SpacViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             launch {
-                snapshotFlow { stockPool.status.value }
+                stockPool.status
                     .collect { status ->
                         when (status) {
                             StockPool.Status.LOADING -> {

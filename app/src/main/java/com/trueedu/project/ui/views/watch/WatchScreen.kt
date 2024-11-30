@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -132,11 +133,9 @@ class WatchScreen(
                 )
             }
 
+            val status by vm.stockPool.status.collectAsState()
             // 주식 정보와 관심 종목 정보를 모두 받아야 데이터 표시 가능
-            if (
-                vm.loading.value ||
-                vm.stockPool.status.value != StockPool.Status.SUCCESS
-            ) {
+            if (vm.loading.value || status != StockPool.Status.SUCCESS) {
                 LoadingView()
                 return@Scaffold
             }

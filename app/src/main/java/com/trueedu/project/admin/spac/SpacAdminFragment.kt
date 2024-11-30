@@ -54,10 +54,20 @@ class SpacAdminFragment: BaseFragment() {
     @Inject
     lateinit var spacStatusManager: SpacStatusManager
 
+    private val loading = mutableStateOf(false)
     private val namePrices = mutableStateOf<List<Pair<String, Int>>>(emptyList())
 
     override fun init() {
         lifecycleScope.launch {
+            launch {
+                stockPool.status
+                    .collect {
+                        if (it == StockPool.Status.SUCCESS) {
+                            loading.value = false
+                        }
+                    }
+            }
+
             val oldValues = spacStatusManager.load()
                 .filter { it.redemptionPrice != null }
                 .associate { it.nameKr to it.redemptionPrice!! }
@@ -92,7 +102,7 @@ class SpacAdminFragment: BaseFragment() {
                 modifier = Modifier.fillMaxSize()
                     .padding(innerPadding)
             ) {
-                if (stockPool.status.value != StockPool.Status.SUCCESS) {
+                if (loading.value) {
                     item { LoadingView() }
                     return@LazyColumn
                 }
