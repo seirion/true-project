@@ -1,18 +1,18 @@
 package com.trueedu.project.data
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
+import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
 import com.trueedu.project.model.dao.StockInfoLocal
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.firebase.StockInfoKosdaq
 import com.trueedu.project.model.dto.firebase.StockInfoKospi
-import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.local.StockLocal
 import com.trueedu.project.utils.StockInfoDownloader
 import com.trueedu.project.utils.needUpdateRemoteData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -41,7 +41,7 @@ class StockPool @Inject constructor(
         FAIL,
         UPDATING,
     }
-    val status = mutableStateOf(Status.LOADING)
+    val status = MutableStateFlow(Status.LOADING)
 
     /**
      * 1. local database 에서 우선 종목 정보를 먼저 로딩한다
@@ -67,8 +67,6 @@ class StockPool @Inject constructor(
             if (needUpdateMasterFile) {
                 Log.d(TAG, "마스터 파일 업데이트 $remoteUpdatedTime < ${currentTimeToyyyyMMddHHmm()}")
                 downloadMasterFiles()
-
-
             } else if(needUpdateRemote) {
                 Log.d(TAG, "종목 업데이트 ${local.stockUpdatedAt} < $remoteUpdatedTime")
                 val (_, stocks) = firebaseRealtimeDatabase.loadStocks()
