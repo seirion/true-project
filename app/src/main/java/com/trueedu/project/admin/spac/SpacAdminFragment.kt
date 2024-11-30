@@ -70,7 +70,10 @@ class SpacAdminFragment: BaseFragment() {
 
             val oldValues = spacStatusManager.load()
                 .filter { it.redemptionPrice != null }
-                .associate { it.nameKr to it.redemptionPrice!! }
+                .associate {
+                    val afterTax = afterTax(it.redemptionPrice!!)
+                    it.nameKr to afterTax
+                }
 
             val newValues = spacRedemptionPrices
                 .map { it.split(" ") }
@@ -121,6 +124,11 @@ class SpacAdminFragment: BaseFragment() {
     private fun beforeTax(p: Int): Int {
         val base = if (p > 8_000) 10_000 else 2_000
         return ((p - base) / 0.845).toInt() + base
+    }
+
+    private fun afterTax(p: Int): Int {
+        val base = if (p > 8_000) 10_000 else 2_000
+        return ((p - base) * 0.845).toInt() + base
     }
 
     private fun onSave() {
