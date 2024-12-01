@@ -41,6 +41,7 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.ui.views.spac.SpacDataView
 import com.trueedu.project.ui.views.spac.SpacValueSection
@@ -151,7 +152,10 @@ class StockDetailFragment: BaseFragment() {
                     .padding(innerPadding)
                     .verticalScroll(scrollState)
             ) {
-                SettingItem("일별 가격", true, ::gotoDailyPrice)
+                if (vm.hasAppKey()) {
+                    SettingItem("주문 하기", true, ::gotoOrder)
+                    SettingItem("일별 가격", true, ::gotoDailyPrice)
+                }
 
                 vm.spacStatus.value?.let {
                     SpacDetailView(vm.currentPrice(), stockInfo, it)
@@ -177,6 +181,15 @@ class StockDetailFragment: BaseFragment() {
                 }
 
             }
+        }
+    }
+
+    private fun gotoOrder() {
+        trueAnalytics.clickButton("stock_detail__order__click")
+        if (vm.hasAppKey()) {
+            OrderFragment.show(stockInfo.code, childFragmentManager)
+        } else {
+            AppKeyInputFragment.show(false, childFragmentManager)
         }
     }
 
