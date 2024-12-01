@@ -112,7 +112,7 @@ class SpacListFragment: BaseFragment() {
                     .padding(innerPadding)
                     .verticalScroll(scrollState)
             ) {
-                spacManager.spacList.value.forEachIndexed { i, item ->
+                vm.stocks.value.forEachIndexed { i, item ->
                     val redemptionValue = spacManager.redemptionValueMap[item.code]
                     val expectedProfit = redemptionValue?.first
                     val expectedProfitRate = redemptionValue?.second

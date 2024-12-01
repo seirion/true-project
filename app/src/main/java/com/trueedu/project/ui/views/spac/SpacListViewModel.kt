@@ -2,19 +2,19 @@ package com.trueedu.project.ui.views.spac
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.StockInfo
-import com.trueedu.project.repository.local.Local
 import com.trueedu.project.utils.formatter.safeLong
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SpacListViewModel @Inject constructor(
-    private val local: Local,
     private val manualAssets: ManualAssets,
     private val stockPool: StockPool,
     private val tokenKeyManager: TokenKeyManager,
@@ -24,6 +24,7 @@ class SpacListViewModel @Inject constructor(
         private val TAG = SpacListViewModel::class.java.simpleName
     }
 
+    val stocks = mutableStateOf<List<StockInfo>>(emptyList())
     val sort = mutableStateOf(SpacSort.ISSUE_DATE)
 
     private val sortFun = mapOf<SpacSort, (StockInfo) -> Double>(
@@ -33,6 +34,20 @@ class SpacListViewModel @Inject constructor(
         SpacSort.REDEMPTION_VALUE to { -1 * (spacManager.redemptionValueMap[it.code]?.second ?: Double.MIN_VALUE) },
         SpacSort.VOLUME to { -1 * (spacManager.volumeMap[it.code]?.toDouble() ?: 0.0) },
     )
+
+    init {
+        viewModelScope.launch {
+            spacManager.loading
+                .collect {
+                    if (!it) {
+                        // 초기값
+                        stocks.value = spacManager.spacList.value
+                            .filterNot { stockPool.delisted(it.code) }
+                            .sortedBy(sortFun[sort.value]!!)
+                    }
+                }
+        }
+    }
 
     fun hasAppKey(): Boolean {
         return tokenKeyManager.userKey.value != null
@@ -44,7 +59,7 @@ class SpacListViewModel @Inject constructor(
 
     fun setSort(option: SpacSort) {
         sort.value = option
-        spacManager.spacList.value = stockPool.search(StockInfo::spac)
+        stocks.value = spacManager.spacList.value
             .filterNot { stockPool.delisted(it.code) }
             .sortedBy(sortFun[sort.value]!!)
     }
