@@ -15,6 +15,7 @@ import com.trueedu.project.data.WatchList
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
+import com.trueedu.project.utils.formatter.safeDouble
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -146,5 +147,9 @@ class WatchListViewModel @Inject constructor(
 
     fun hasAppKey(): Boolean {
         return tokenKeyManager.userKey.value != null
+    }
+
+    fun prevPrice(code: String): Double {
+        return getStock(code)?.prevPrice().safeDouble() ?: 0.0
     }
 }
