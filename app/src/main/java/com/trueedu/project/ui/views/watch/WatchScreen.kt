@@ -355,6 +355,9 @@ private fun WatchingStockItem(
                     low = low,
                     close = price,
                 )
+            } else {
+                // 정렬을 위해
+                Margin(1)
             }
 
             Column(
