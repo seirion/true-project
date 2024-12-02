@@ -11,6 +11,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.realtime.RealOrderManager
 import com.trueedu.project.data.realtime.RealPriceManager
+import com.trueedu.project.data.realtime.RealNotificationManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.UserAssets
 import com.trueedu.project.data.realtime.WsMessageHandler
@@ -37,6 +38,7 @@ class App : Application(), LifecycleEventObserver {
         fun getWsMessage(): WsMessageHandler
         fun getRealPriceManager(): RealPriceManager
         fun getRealOrderManager(): RealOrderManager
+        fun getRealNotificationManager(): RealNotificationManager
         fun getStockPool(): StockPool
         fun getTrueAnalytics(): TrueAnalytics
         fun getAdmobManager(): AdmobManager
@@ -61,6 +63,7 @@ class App : Application(), LifecycleEventObserver {
         val wsMessage = entryPointInjector(InjectModule::class.java).getWsMessage()
         val realPriceManager = entryPointInjector(InjectModule::class.java).getRealPriceManager()
         val realOrderManager = entryPointInjector(InjectModule::class.java).getRealOrderManager()
+        val realNotificationManager = entryPointInjector(InjectModule::class.java).getRealNotificationManager()
         val stockPool = entryPointInjector(InjectModule::class.java).getStockPool()
         val trueAnalytics = entryPointInjector(InjectModule::class.java).getTrueAnalytics()
         val admobManager = entryPointInjector(InjectModule::class.java).getAdmobManager()
@@ -75,6 +78,7 @@ class App : Application(), LifecycleEventObserver {
                 wsMessage.start()
                 realPriceManager.start()
                 realOrderManager.start()
+                realNotificationManager.start()
                 stockPool.loadStockInfo()
                 admobManager.start()
             }
@@ -85,6 +89,7 @@ class App : Application(), LifecycleEventObserver {
                 wsMessage.stop()
                 realPriceManager.stop()
                 realOrderManager.stop()
+                realNotificationManager.stop()
                 admobManager.stop()
             }
 

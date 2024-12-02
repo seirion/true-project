@@ -7,6 +7,7 @@ import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.model.event.WebSocketKeyIssued
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
+import com.trueedu.project.model.ws.RealTimeNotification
 import com.trueedu.project.model.ws.TransactionId
 import com.trueedu.project.model.ws.WsResponse
 import com.trueedu.project.repository.local.Local
@@ -47,6 +48,8 @@ class WsMessageHandler @Inject constructor(
     val tradeSignal = MutableSharedFlow<RealTimeTrade>()
     // 호가 데이터
     val quotesSignal = MutableSharedFlow<RealTimeOrder>()
+    // 체결 데이터
+    val tradeNotificationSignal = MutableSharedFlow<RealTimeNotification>()
 
     init {
         MainScope().launch {
@@ -110,8 +113,15 @@ class WsMessageHandler @Inject constructor(
             override fun onMessage(webSocket: WebSocket, text: String) {
                 super.onMessage(webSocket, text)
                 Log.d(TAG, "onMessage: $text")
-                if (text[0] == '0' || text[0] == '1') { // 실시간체결 or 실시간호가
+                if (text[0] == '0') { // 실시간체결 or 실시간호가
                     handleRealTimeResponse(text)
+                } else if (text[0] == '1') { // 실시간 체결 통보
+                    val res = WsResponse.from(text)
+                    Log.d(TAG, "transactionId ${res.header.transactionId}")
+                    // 체결 통보 등록
+                    if (res.header.transactionId == TransactionId.TradeNotification) {
+                        // TODO
+                    }
                 } else { // system message or PINGPONG
                     val res = WsResponse.from(text)
                     Log.d(TAG, "transactionId ${res.header.transactionId}")
@@ -124,9 +134,7 @@ class WsMessageHandler @Inject constructor(
                                 event.emit(res)
                             }
                         }
-                        TransactionId.TradeNotification -> {
-                            // TODO
-                        }
+                        else -> {}
                     }
                 }
             }
