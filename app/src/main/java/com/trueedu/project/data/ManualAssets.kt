@@ -49,9 +49,15 @@ class ManualAssets @Inject constructor(
     }
 
     fun addAsset(asset: UserAsset, onSuccess: () -> Unit) {
-        val assetList = assets.value
-            .filterNot { it.code == asset.code }
-        assets.value = assetList + asset
+        val hasAsset = assets.value.any { asset.code == it.code }
+
+        assets.value = if (hasAsset) {
+            assets.value.map {
+                if (it.code == asset.code) asset else it
+            }
+        } else {
+            assets.value.toList() + asset
+        }
 
         CoroutineScope(Dispatchers.IO).launch {
             firebaseAssets.writeAssets(assets.value)
