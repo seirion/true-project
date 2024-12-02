@@ -89,12 +89,14 @@ class AppKeyInputFragment: BaseFragment() {
     private val appKey = mutableStateOf("")
     private val appSecret = mutableStateOf("")
     private val accountNumber = mutableStateOf("")
+    private val htsId = mutableStateOf("")
     private val buttonEnabled = mutableStateOf(false)
     private val dialogShowing = mutableStateOf(false)
 
     private lateinit var appKeyOrg: String
     private lateinit var appSecretOrg: String
     private lateinit var accountNumberOrg: String
+    private lateinit var htsIdOrg: String
 
     @Inject
     lateinit var local: Local
@@ -107,9 +109,11 @@ class AppKeyInputFragment: BaseFragment() {
         appKeyOrg = userKey?.appKey ?: ""
         appSecretOrg = userKey?.appSecret ?: ""
         accountNumberOrg = userKey?.accountNum ?: ""
+        htsIdOrg = userKey?.htsId ?: ""
         appKey.value = userKey?.appKey ?: ""
         appSecret.value = userKey?.appSecret ?: ""
         accountNumber.value = userKey?.accountNum ?: ""
+        htsId.value = userKey?.htsId ?: ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -158,6 +162,11 @@ class AppKeyInputFragment: BaseFragment() {
         checkUpdate()
     }
 
+    private fun onHtsIdChanged(text: String) {
+        htsId.value = text
+        checkUpdate()
+    }
+
     private fun pasteAppKey() {
         trueAnalytics.clickButton("${screenName()}__paste_app_key__click")
         val text = getClipboardText(requireContext()) ?: return
@@ -176,11 +185,22 @@ class AppKeyInputFragment: BaseFragment() {
         onAccountNumberChanged(text)
     }
 
+    private fun pasteHtsId() {
+        trueAnalytics.clickButton("${screenName()}__paste_hts_id__click")
+        val text = getClipboardText(requireContext()) ?: return
+        onHtsIdChanged(text)
+    }
+
     private fun checkUpdate() {
         buttonEnabled.value = appKey.value.isNotBlank() &&
                 appSecret.value.isNotBlank() &&
                 accountNumber.value.isNotBlank() &&
-                (appKey.value != appKeyOrg || appSecret.value != appSecretOrg || accountNumber.value != accountNumberOrg)
+                htsId.value.isNotBlank() &&
+                (appKey.value != appKeyOrg ||
+                        appSecret.value != appSecretOrg ||
+                        accountNumber.value != accountNumberOrg ||
+                        htsId.value != htsIdOrg
+                        )
     }
 
     private fun onSave() {
@@ -212,7 +232,7 @@ class AppKeyInputFragment: BaseFragment() {
             appKey = appKey.value,
             appSecret = appSecret.value,
             accountNum = accountNumber.value,
-            htsId = null, // TODO
+            htsId = htsId.value,
         )
 
         tokenKeyManager.addUserKey(userKey)
@@ -231,6 +251,7 @@ class AppKeyInputFragment: BaseFragment() {
             TextInputItem("appkey", appKey.value, ::pasteAppKey, ::onAppKeyChanged)
             TextInputItem("appsecret", appSecret.value, ::pasteAppSecret, ::onAppSecretChanged)
             TextInputItem("계좌번호(숫자)", accountNumber.value, ::pasteAccountNumber, ::onAccountNumberChanged, true)
+            TextInputItem("HTS ID", htsId.value, ::pasteHtsId, ::onHtsIdChanged)
 
             TrueText(
                 s = notice,
