@@ -157,10 +157,12 @@ class WatchScreen(
                         val stock = vm.getStock(code) ?: return@itemsIndexed
                         val tradeData = vm.priceManager.dataMap[code]
                         val basePrice = vm.basePrices[code]?.output
-                        val price: Double = tradeData?.price ?: basePrice?.price?.toDouble() ?: 0.0
-                        val delta: Double = tradeData?.delta ?: basePrice?.priceChange?.toDouble() ?: 0.0
-                        val rate: Double = tradeData?.rate ?: basePrice?.priceChangeRate?.toDouble() ?: 0.0
-                        val volume: Double = tradeData?.volume ?: basePrice?.volume?.toDouble() ?: 0.0
+
+                        // appkey 가 없으면 그냥 전일 가격을 표시함
+                        val price = tradeData?.price ?: basePrice?.price?.toDouble() ?: vm.prevPrice(code)
+                        val delta = tradeData?.delta ?: basePrice?.priceChange?.toDouble()
+                        val rate = tradeData?.rate ?: basePrice?.priceChangeRate?.toDouble()
+                        val volume = tradeData?.volume ?: basePrice?.volume?.toDouble() ?: 0.0
 
                         WatchingStockItem(
                             nameKr = stock.nameKr,
@@ -294,8 +296,8 @@ private fun WatchingStockItem(
     open: Double?,
     high: Double?,
     low: Double?,
-    delta: Double,
-    rate: Double,
+    delta: Double?,
+    rate: Double?,
     volume: Double,
     halt: Boolean,
     designated: Boolean,
@@ -360,6 +362,7 @@ private fun WatchingStockItem(
                 Margin(1)
             }
 
+            val priceColor = ChartColor.color(delta ?: 0.0)
             Column(
                 horizontalAlignment = Alignment.End,
                 modifier = Modifier
@@ -370,16 +373,17 @@ private fun WatchingStockItem(
                     s = totalValueString,
                     fontSize = 14,
                     fontWeight = FontWeight.W600,
-                    color = ChartColor.color(delta),
+                    color = priceColor,
                 )
 
-                val profitString = formatter.format(delta, true)
-                val profitRateString = rateFormatter.format(rate, true)
-                TrueText(
-                    s = "$profitString ($profitRateString)",
-                    fontSize = 12,
-                    color = ChartColor.color(delta),
-                )
+                val deltaString = if (delta != null && rate != null) {
+                    val profitString = formatter.format(delta, true)
+                    val profitRateString = rateFormatter.format(rate, true)
+                    "$profitString ($profitRateString)"
+                } else {
+                    "-"
+                }
+                TrueText(s = deltaString, fontSize = 12, color = priceColor)
             }
         }
     }
