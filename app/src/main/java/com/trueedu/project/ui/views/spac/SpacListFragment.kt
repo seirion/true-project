@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -105,11 +106,14 @@ class SpacListFragment: BaseFragment() {
                 LoadingView()
                 return@Scaffold
             }
+            SpacSectionView(innerPadding)
+
             val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
                     .padding(innerPadding)
+                    .padding(top = 48.dp) // section height
+                    .fillMaxSize()
                     .verticalScroll(scrollState)
             ) {
                 vm.stocks.value.forEachIndexed { i, item ->
@@ -266,6 +270,50 @@ private fun SpacItem(
                     fontSize = 12,
                     color = ChartColor.color(priceChange ?: 0.0)
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SpacSectionView(innerPadding: PaddingValues) {
+    val textColor = MaterialTheme.colorScheme.secondary
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxWidth()
+            .height(48.dp)
+            .background(
+                color = MaterialTheme.colorScheme.surfaceDim
+            )
+    ) {
+        Column(
+            modifier = Modifier.padding(start = 12.dp)
+        ) {
+            TrueText(s = "종목", fontSize = 12, color = textColor)
+            TrueText(s = "상장일 • 시가총액", fontSize = 12, color = textColor)
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(end = 4.dp)
+                    .weight(1f)
+            ) {
+                TrueText(s = "거래량", fontSize = 12, color = textColor)
+                TrueText(s = "청산가(수익)", fontSize = 12, color = textColor)
+            }
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.width(60.dp)
+                    .padding(end = 8.dp)
+            ) {
+                TrueText(s = "가격", fontSize = 12, color = textColor)
             }
         }
     }
