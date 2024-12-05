@@ -104,10 +104,10 @@ class WatchListViewModel @Inject constructor(
         return stockPool.get(code)
     }
 
-    fun removeStock(code: String) {
-        trueAnalytics.clickButton("watch_list__remove__click", mapOf("code" to code))
+    fun removeStock(index: Int) {
+        trueAnalytics.clickButton("watch_list__remove__click")
         if (currentPage.value != null) {
-            watchList.remove(currentPage.value!!, code)
+            watchList.removeAt(currentPage.value!!, index)
         }
     }
 

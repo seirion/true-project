@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -145,6 +146,7 @@ class WatchScreen(
                 modifier = Modifier.fillMaxSize()
             ) { position ->
                 var selectedStock by remember { mutableStateOf<StockInfo?>(null) }
+                var selectedStockIndex by remember { mutableIntStateOf(-1) }
                 val state = rememberLazyListState()
                 LazyColumn(
                     state = state,
@@ -153,7 +155,7 @@ class WatchScreen(
                         .padding(innerPadding)
                 ) {
                     val items = vm.getItems(position % vm.pageCount())
-                    itemsIndexed(items, key = { _, item -> item }) { _, code ->
+                    itemsIndexed(items, key = { _, item -> item }) { index, code ->
                         val stock = vm.getStock(code) ?: return@itemsIndexed
                         val tradeData = vm.priceManager.dataMap[code]
                         val basePrice = vm.basePrices[code]?.output
@@ -182,6 +184,7 @@ class WatchScreen(
                         ) {
                             Log.d(TAG, "long click: ${stock.nameKr}")
                             selectedStock = stock
+                            selectedStockIndex = index
                         }
                     }
                 } // end of LazyColumn
@@ -192,9 +195,8 @@ class WatchScreen(
                         properties = DialogProperties(usePlatformDefaultWidth = false) // Important for custom positioning
                     ) {
                         PopupBody(selectedStock!!) {
-                            val code = selectedStock!!.code
                             selectedStock = null
-                            vm.removeStock(code)
+                            vm.removeStock(selectedStockIndex)
                         }
                     }
                 }
