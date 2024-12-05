@@ -123,12 +123,12 @@ class SpacAdminFragment: BaseFragment() {
 
     private fun beforeTax(p: Int): Int {
         val base = if (p > 8_000) 10_000 else 2_000
-        return ((p - base) / 0.845).toInt() + base
+        return ((p - base) / 0.846).toInt() + base
     }
 
     private fun afterTax(p: Int): Int {
         val base = if (p > 8_000) 10_000 else 2_000
-        return ((p - base) * 0.845).toInt() + base
+        return ((p - base) * 0.846).toInt() + base
     }
 
     private fun onSave() {
