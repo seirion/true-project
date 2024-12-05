@@ -1,8 +1,9 @@
-package com.trueedu.project.data
+package com.trueedu.project.data.realtime
 
 import android.os.SystemClock
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.model.event.WebSocketKeyIssued
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade

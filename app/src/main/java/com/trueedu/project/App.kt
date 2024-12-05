@@ -9,11 +9,11 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.trueedu.project.analytics.TrueAnalytics
-import com.trueedu.project.data.RealOrderManager
-import com.trueedu.project.data.RealPriceManager
+import com.trueedu.project.data.realtime.RealOrderManager
+import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.UserAssets
-import com.trueedu.project.data.WsMessageHandler
+import com.trueedu.project.data.realtime.WsMessageHandler
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.ads.AdmobManager
 import dagger.hilt.EntryPoint

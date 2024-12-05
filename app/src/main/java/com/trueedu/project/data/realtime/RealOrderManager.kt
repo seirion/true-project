@@ -1,4 +1,4 @@
-package com.trueedu.project.data
+package com.trueedu.project.data.realtime
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf

@@ -41,7 +41,7 @@ import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
-import com.trueedu.project.data.WsMessageHandler
+import com.trueedu.project.data.realtime.WsMessageHandler
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.ads.AdmobManager

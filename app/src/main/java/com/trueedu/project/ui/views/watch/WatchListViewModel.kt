@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.GoogleAccount
-import com.trueedu.project.data.RealPriceManager
+import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.WatchList
