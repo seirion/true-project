@@ -5,17 +5,21 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.R
@@ -29,6 +33,7 @@ import com.trueedu.project.ui.common.ButtonAction
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.PopupFragment
 import com.trueedu.project.ui.common.PopupType
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.widget.InputSet
 import com.trueedu.project.utils.decreasePrice
 import com.trueedu.project.utils.decreaseQuantity
@@ -65,8 +70,9 @@ class EditAssetFragment: BaseFragment() {
 
     private val editMode = mutableStateOf(false)
     // 주문 입력 (숫자만)
-    val priceInput = mutableStateOf(TextFieldValue(""))
-    val quantityInput = mutableStateOf(TextFieldValue("0"))
+    private val priceInput = mutableStateOf(TextFieldValue(""))
+    private val quantityInput = mutableStateOf(TextFieldValue("0"))
+    private val memoInput = mutableStateOf("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +84,7 @@ class EditAssetFragment: BaseFragment() {
             // 이 종목을 이미 보유한 경우 원래 값을 입력 해 줌
             priceInput.value = myAsset.price.toInt().toString().let { TextFieldValue(it) }
             quantityInput.value = myAsset.quantity.toInt().toString().let { TextFieldValue(it) }
+            memoInput.value = myAsset.memo
             editMode.value = true // 편집 모드임
         }
 
@@ -121,6 +128,8 @@ class EditAssetFragment: BaseFragment() {
                 InputSet("평단가", priceInput, ::increasePrice, ::decreasePrice)
                 Margin(24)
                 InputSet("수량", quantityInput, ::increaseQuantity, ::decreaseQuantity)
+                Margin(24)
+                MemoInput(memoInput)
             }
         }
     }
@@ -134,6 +143,7 @@ class EditAssetFragment: BaseFragment() {
                 nameKr = stock?.nameKr?: "",
                 price = priceInput.value.text.toDouble(),
                 quantity = quantityInput.value.text.toDouble(),
+                memo = memoInput.value,
             )
         ) {
             dismissAllowingStateLoss()
@@ -194,4 +204,24 @@ class EditAssetFragment: BaseFragment() {
             text = decreaseQuantity(quantityInput.value.text)
         )
     }
+}
+
+@Composable
+private fun MemoInput(s: MutableState<String>) {
+    OutlinedTextField(
+        value = s.value,
+        onValueChange = {
+            s.value = it.take(128)
+        },
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 40.dp),
+        label = {
+            TrueText(
+                s = "메모(최대 128자)",
+                fontSize = 14,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        },
+        maxLines = 8,
+    )
 }
