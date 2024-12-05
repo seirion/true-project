@@ -68,17 +68,35 @@ class WatchList @Inject constructor(
         firebaseRealtimeDatabase.writeWatchList(temp)
     }
 
-    fun remove(index: Int, code: String) {
-        require(index in list.value.indices)
+    fun removeAt(targetPage: Int, index: Int) {
+        require(targetPage in list.value.indices)
+        require(index in list.value[targetPage].indices)
 
-        if (!list.value[index].contains(code)) {
+        val temp = list.value
+            .mapIndexed { p, items ->
+                if (p == targetPage) {
+                    items.toMutableList().also {
+                        it.removeAt(index)
+                    }
+                } else {
+                    items
+                }
+            }
+        list.value = temp
+        firebaseRealtimeDatabase.writeWatchList(temp)
+    }
+
+    fun remove(targetPage: Int, code: String) {
+        require(targetPage in list.value.indices)
+
+        if (!list.value[targetPage].contains(code)) {
             Log.d(TAG, "trying to remove not existing code: $code")
             return
         }
 
         val temp = list.value
             .mapIndexed { i, list ->
-                if (i == index) {
+                if (i == targetPage) {
                     list.filter { it != code }
                 } else {
                     list
