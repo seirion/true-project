@@ -4,8 +4,8 @@ data class SpacStatus(
     val code: String,
     val nameKr: String,
     val redemptionPrice: Int?,
-    val status: String?,
+    val status: String,
 ) {
     // No-argument constructor required for Firebase
-    constructor() : this("000000", "", null, null)
+    constructor() : this("000000", "", null, "")
 }
