@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastDistinctBy
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.data.StockPool
@@ -78,9 +79,10 @@ class SpacAdminFragment: BaseFragment() {
             }
 
             val oldValues = spacStatusManager.load()
-                .filter { it.redemptionPrice != null }
-                .associateBy { it.code }
-
+                .filter { s ->
+                    // 상폐 되어 검색되지 않는 종목은 제외
+                    stockPool.search { it.nameKr == s.nameKr }.firstOrNull() != null
+                }
             val newValues = spacRedemptionPrices
                 .map { it.split("\t") }
                 .mapNotNull {
@@ -95,9 +97,13 @@ class SpacAdminFragment: BaseFragment() {
                         status = "",
                     )
                 }
-                .associateBy { it.code }
 
-            namePrices.value = (oldValues + newValues).values.toList()
+            // fastDistinctBy 알고리즘에 따라 newValues 를 우선하여 사용함
+            namePrices.value = (newValues + oldValues).fastDistinctBy { it.code }
+                .sortedBy {
+                    val s = stockPool.get(it.code)
+                    s!!.listingDate() ?: ""
+                }
         }
     }
 
