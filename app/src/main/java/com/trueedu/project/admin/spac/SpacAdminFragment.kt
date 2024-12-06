@@ -54,7 +54,7 @@ class SpacAdminFragment: BaseFragment() {
         }
 
         private val statusList = listOf(
-            "", "합병심사", "합병승인", "반대의사", "매수청구"
+            "", "합병심사", "합병승인", "반대의사", "매수청구", "상장폐지"
         )
     }
 
