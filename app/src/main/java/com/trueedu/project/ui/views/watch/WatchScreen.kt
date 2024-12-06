@@ -194,10 +194,16 @@ class WatchScreen(
                         onDismissRequest = { selectedStock = null },
                         properties = DialogProperties(usePlatformDefaultWidth = false) // Important for custom positioning
                     ) {
-                        PopupBody(selectedStock!!) {
-                            selectedStock = null
-                            vm.removeStock(selectedStockIndex)
-                        }
+                        PopupBody(selectedStock!!, position, selectedStockIndex,
+                            moveTo = { index, toPage ->
+                                selectedStock = null
+                                vm.moveTo(index, toPage)
+                            },
+                            onRemove = {
+                                selectedStock = null
+                                vm.removeStock(selectedStockIndex)
+                            },
+                        )
                     }
                 }
             }
@@ -249,7 +255,13 @@ class WatchScreen(
     }
 
     @Composable
-    fun PopupBody(item: StockInfo, onClick: () -> Unit) {
+    fun PopupBody(
+        item: StockInfo,
+        page: Int,
+        index: Int,
+        moveTo: (Int, Int) -> Unit,
+        onRemove: () -> Unit,
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -269,21 +281,42 @@ class WatchScreen(
             )
             Margin(8)
             DividerHorizontal()
-            Margin(16)
+            Column(modifier = Modifier.fillMaxWidth()) {
+                repeat(vm.pageCount()) {
+                    val t = if (it in listOf(0, 3, 6)) "으" else ""
+                    TrueText(
+                        s = "관심 그룹 ${it}${t}로 이동",
+                        fontSize = 16,
+                        color = MaterialTheme.colorScheme.primary
+                            .copy(alpha = if (it == page) 0.1f else 1f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                if (it != page) {
+                                    moveTo(index, it)
+                                }
+                            }
+                            .padding(vertical = 8.dp),
+                    )
+                    DividerHorizontal()
+                }
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onClick() },
+                    .clickable { onRemove() }
+                    .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.End,
             ) {
                 TrueText(
                     s = "관심종목에서 삭제",
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 16,
-                    style = TextStyle(textDecoration = TextDecoration.Underline)
+                    style = TextStyle(textDecoration = TextDecoration.Underline),
+                    modifier = Modifier.padding(vertical = 8.dp),
                 )
             }
-            Margin(16)
+            Margin(8)
         }
     }
 }
