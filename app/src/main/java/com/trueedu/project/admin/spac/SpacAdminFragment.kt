@@ -2,6 +2,7 @@ package com.trueedu.project.admin.spac
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -18,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -28,6 +32,7 @@ import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BottomBar
 import com.trueedu.project.ui.common.LoadingView
+import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.intFormatter
@@ -47,6 +52,10 @@ class SpacAdminFragment: BaseFragment() {
                 it.show(fragmentManager, "spac_admin")
             }
         }
+
+        private val statusList = listOf(
+            "", "합병심사", "합병승인", "반대의사", "매수청구"
+        )
     }
 
     @Inject
@@ -55,7 +64,7 @@ class SpacAdminFragment: BaseFragment() {
     lateinit var spacStatusManager: SpacStatusManager
 
     private val loading = mutableStateOf(false)
-    private val namePrices = mutableStateOf<List<Pair<String, Int>>>(emptyList())
+    private val namePrices = mutableStateOf<List<SpacStatus>>(emptyList())
 
     override fun init() {
         lifecycleScope.launch {
@@ -70,16 +79,25 @@ class SpacAdminFragment: BaseFragment() {
 
             val oldValues = spacStatusManager.load()
                 .filter { it.redemptionPrice != null }
-                .associate {
-                    val afterTax = afterTax(it.redemptionPrice!!)
-                    it.nameKr to afterTax
-                }
+                .associateBy { it.code }
 
             val newValues = spacRedemptionPrices
                 .map { it.split(" ") }
-                .associate { it.first().trim() to it.last().toInt() }
+                .mapNotNull {
+                    val nameKr = it.first()
+                    val price = beforeTax(it.last().toInt()) // 세전으로 표시
+                    val stock = stockPool.search { it.nameKr == nameKr }.firstOrNull()
+                        ?: return@mapNotNull null
+                    SpacStatus(
+                        code = stock.code,
+                        nameKr = nameKr,
+                        redemptionPrice = price,
+                        status = "",
+                    )
+                }
+                .associateBy { it.code }
 
-            namePrices.value = (oldValues + newValues).map { it.key to it.value }
+            namePrices.value = (oldValues + newValues).values.toList()
         }
     }
 
@@ -109,13 +127,22 @@ class SpacAdminFragment: BaseFragment() {
                     item { LoadingView() }
                     return@LazyColumn
                 }
-                itemsIndexed(namePrices.value, key = { _, item -> item.first }) { i, item ->
-                    val nameKr = item.first
-                    val stock = stockPool.search { it.nameKr == nameKr }.firstOrNull()
-                    val code = stock?.code ?: ""
+                itemsIndexed(namePrices.value, key = { _, item -> item.code }) { i, item ->
+                    val nameKr = item.nameKr
+                    val code = item.code
+                    val stock = stockPool.get(code)
                     val currentPrice = stock?.prevPrice()?.toDouble() ?: 0.0
-                    val beforeTax = beforeTax(item.second) // 세전으로 표시
-                    SpacItemInternal(nameKr, code, currentPrice, beforeTax)
+                    SpacItemInternal(nameKr, code, currentPrice, item.redemptionPrice!!, item.status) {
+                        val index = statusList.indexOf(item.status)
+                        val currentStatus = statusList[(index + 1) % statusList.size]
+                        namePrices.value = namePrices.value.map {
+                            if (it.code == code) {
+                                it.copy(status = currentStatus)
+                            } else {
+                                it
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -126,19 +153,8 @@ class SpacAdminFragment: BaseFragment() {
         return ((p - base) / 0.846).toInt() + base
     }
 
-    private fun afterTax(p: Int): Int {
-        val base = if (p > 8_000) 10_000 else 2_000
-        return ((p - base) * 0.846).toInt() + base
-    }
-
     private fun onSave() {
-        val list = namePrices.value.mapNotNull { item ->
-            val nameKr = item.first
-            val stock = stockPool.search { it.nameKr == nameKr }.firstOrNull() ?: return@mapNotNull null
-            val code = stock.code
-            val beforeTax = beforeTax(item.second) // 세전으로 표시
-            SpacStatus(code, nameKr, beforeTax, null)
-        }
+        val list = namePrices.value
         MainScope().launch {
             spacStatusManager.write(
                 list,
@@ -164,6 +180,8 @@ private fun SpacItemInternal(
     code: String,
     currentPrice: Double,
     spacRedemptionPrices: Int,
+    status: String,
+    onClick: () -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -186,18 +204,36 @@ private fun SpacItemInternal(
             )
         }
 
-        val color = ChartColor.color(spacRedemptionPrices - currentPrice)
-        Column(horizontalAlignment = Alignment.End) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             TrueText(
-                s = intFormatter.format(currentPrice),
-                fontSize = 13,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            TrueText(
-                s = intFormatter.format(spacRedemptionPrices),
+                s = status,
                 fontSize = 14,
-                color = color,
+                textAlign = TextAlign.End,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.widthIn(min = 120.dp)
+                    .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                    .clickable { onClick() }
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
             )
+            Margin(12)
+            val color = ChartColor.color(spacRedemptionPrices - currentPrice)
+            Column(
+                modifier = Modifier.width(60.dp),
+                horizontalAlignment = Alignment.End,
+            ) {
+                TrueText(
+                    s = intFormatter.format(currentPrice),
+                    fontSize = 13,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                TrueText(
+                    s = intFormatter.format(spacRedemptionPrices),
+                    fontSize = 14,
+                    color = color,
+                )
+            }
         }
     }
 }
