@@ -82,9 +82,9 @@ class SpacAdminFragment: BaseFragment() {
                 .associateBy { it.code }
 
             val newValues = spacRedemptionPrices
-                .map { it.split(" ") }
+                .map { it.split("\t") }
                 .mapNotNull {
-                    val nameKr = it.first()
+                    val nameKr = it.first().takeWhile { !it.isWhitespace() }
                     val price = beforeTax(it.last().toInt()) // 세전으로 표시
                     val stock = stockPool.search { it.nameKr == nameKr }.firstOrNull()
                         ?: return@mapNotNull null
