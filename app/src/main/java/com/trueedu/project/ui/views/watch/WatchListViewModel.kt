@@ -104,6 +104,18 @@ class WatchListViewModel @Inject constructor(
         return stockPool.get(code)
     }
 
+    /**
+     * 관심 종목을 다른 그룹으로 이동하기
+     */
+    fun moveTo(index: Int, to: Int) {
+        trueAnalytics.clickButton("watch_list__move__click")
+        if (currentPage.value != null) {
+            val code = watchList.get(currentPage.value!!).getOrNull(index) ?: return
+            watchList.removeAt(currentPage.value!!, index)
+            watchList.add(to, code)
+        }
+    }
+
     fun removeStock(index: Int) {
         trueAnalytics.clickButton("watch_list__remove__click")
         if (currentPage.value != null) {
