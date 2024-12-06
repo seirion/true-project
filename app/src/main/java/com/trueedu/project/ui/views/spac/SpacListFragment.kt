@@ -1,18 +1,19 @@
 package com.trueedu.project.ui.views.spac
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ViewList
 import androidx.compose.material3.MaterialTheme
@@ -81,6 +82,7 @@ class SpacListFragment: BaseFragment() {
         }
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun BodyScreen() {
         Scaffold(
@@ -106,17 +108,17 @@ class SpacListFragment: BaseFragment() {
                 LoadingView()
                 return@Scaffold
             }
-            SpacSectionView(innerPadding)
 
-            val scrollState = rememberScrollState()
-            Column(
+            val state = rememberLazyListState()
+            LazyColumn(
+                state = state,
                 modifier = Modifier
                     .padding(innerPadding)
-                    .padding(top = 48.dp) // section height
                     .fillMaxSize()
-                    .verticalScroll(scrollState)
             ) {
-                vm.stocks.value.forEachIndexed { i, item ->
+                stickyHeader { SpacSectionView() }
+
+                itemsIndexed(vm.stocks.value, key = { i, _ -> i }) { i, item ->
                     val redemptionValue = spacManager.redemptionValueMap[item.code]
                     val expectedProfit = redemptionValue?.first
                     val expectedProfitRate = redemptionValue?.second
@@ -276,14 +278,13 @@ private fun SpacItem(
 }
 
 @Composable
-private fun SpacSectionView(innerPadding: PaddingValues) {
+private fun SpacSectionView() {
     val textColor = MaterialTheme.colorScheme.secondary
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(innerPadding)
             .fillMaxWidth()
             .height(48.dp)
             .background(
