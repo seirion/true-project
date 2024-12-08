@@ -37,6 +37,7 @@ import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.intFormatter
+import com.trueedu.project.utils.formatter.safeLong
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -87,9 +88,9 @@ class SpacAdminFragment: BaseFragment() {
                 .map { it.split("\t") }
                 .mapNotNull {
                     val nameKr = it.first().takeWhile { !it.isWhitespace() }
-                    val price = beforeTax(it.last().toInt()) // 세전으로 표시
                     val stock = stockPool.search { it.nameKr == nameKr }.firstOrNull()
                         ?: return@mapNotNull null
+                    val price = beforeTax(it.last().toInt(), stock.parValue().safeLong()) // 세전으로 표시
                     SpacStatus(
                         code = stock.code,
                         nameKr = nameKr,
@@ -134,9 +135,9 @@ class SpacAdminFragment: BaseFragment() {
                     return@LazyColumn
                 }
                 itemsIndexed(namePrices.value, key = { _, item -> item.code }) { i, item ->
+                    val stock = stockPool.get(item.code)
                     val nameKr = item.nameKr
                     val code = item.code
-                    val stock = stockPool.get(code)
                     val currentPrice = stock?.prevPrice()?.toDouble() ?: 0.0
                     SpacItemInternal(nameKr, code, currentPrice, item.redemptionPrice!!, item.status) {
                         val index = statusList.indexOf(item.status)
@@ -154,8 +155,8 @@ class SpacAdminFragment: BaseFragment() {
         }
     }
 
-    private fun beforeTax(p: Int): Int {
-        val base = if (p > 8_000) 10_000 else 2_000
+    private fun beforeTax(p: Int, parValue: Long): Int {
+        val base = if (parValue != 100L) 10_000 else 2_000
         return ((p - base) / 0.846).toInt() + base
     }
 
