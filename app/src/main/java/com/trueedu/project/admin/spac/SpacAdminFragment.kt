@@ -86,11 +86,11 @@ class SpacAdminFragment: BaseFragment() {
                 }
             val newValues = spacRedemptionPrices
                 .map { it.split("\t") }
-                .mapNotNull {
-                    val nameKr = it.first().takeWhile { !it.isWhitespace() }
+                .mapNotNull { spac ->
+                    val nameKr = spac.first().takeWhile { !it.isWhitespace() }
                     val stock = stockPool.search { it.nameKr == nameKr }.firstOrNull()
                         ?: return@mapNotNull null
-                    val price = beforeTax(it.last().toInt(), stock.parValue().safeLong()) // 세전으로 표시
+                    val price = beforeTax(spac.last().toInt(), stock.parValue().safeLong()) // 세전으로 표시
                     SpacStatus(
                         code = stock.code,
                         nameKr = nameKr,
