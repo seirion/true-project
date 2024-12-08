@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,7 +65,15 @@ fun SearchBar(
         },
          */
         trailingIcon = {
-            if (searchText.value.isNotEmpty()) {
+            if (searchText.value.isEmpty()) {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "Search"
+                    )
+                }
+            } else {
                 IconButton(onClick = { searchText.value = "" }) {
                     Icon(
                         imageVector = Icons.Default.Close,
