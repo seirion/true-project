@@ -1,6 +1,7 @@
 package com.trueedu.project.ui.views.spac
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.ManualAssets
@@ -10,9 +11,13 @@ import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.utils.formatter.safeLong
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class SpacListViewModel @Inject constructor(
     private val manualAssets: ManualAssets,
@@ -24,6 +29,7 @@ class SpacListViewModel @Inject constructor(
         private val TAG = SpacListViewModel::class.java.simpleName
     }
 
+    val searchInput = mutableStateOf("")
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
     val sort = mutableStateOf(SpacSort.ISSUE_DATE)
 
@@ -37,15 +43,24 @@ class SpacListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            spacManager.loading
-                .collect {
-                    if (!it) {
-                        // 초기값
-                        stocks.value = spacManager.spacList.value
-                            .filterNot { stockPool.delisted(it.code) }
-                            .sortedBy(sortFun[sort.value]!!)
+            launch {
+                spacManager.loading
+                    .collect {
+                        if (!it) {
+                            // 초기값
+                            stocks.value = spacManager.spacList.value
+                                .filterNot { stockPool.delisted(it.code) }
+                                .sortedBy(sortFun[sort.value]!!)
+                        }
                     }
-                }
+            }
+            launch {
+                snapshotFlow { searchInput.value }
+                    .debounce(200)
+                    .collectLatest {
+                        filterStocks()
+                    }
+            }
         }
     }
 
@@ -59,8 +74,16 @@ class SpacListViewModel @Inject constructor(
 
     fun setSort(option: SpacSort) {
         sort.value = option
+        filterStocks()
+    }
+
+    private fun filterStocks() {
         stocks.value = spacManager.spacList.value
             .filterNot { stockPool.delisted(it.code) }
+            .filter {
+                val searchKey = searchInput.value.trim().lowercase()
+                searchKey.isEmpty() || it.nameKr.lowercase().contains(searchKey)
+            }
             .sortedBy(sortFun[sort.value]!!)
     }
 

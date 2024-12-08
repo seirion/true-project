@@ -45,6 +45,7 @@ import com.trueedu.project.ui.views.common.DesignatedBadge
 import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.common.HoldingBadge
 import com.trueedu.project.ui.views.order.OrderFragment
+import com.trueedu.project.ui.views.search.SearchBar
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.utils.formatter.dateFormat
 import com.trueedu.project.utils.formatter.intFormatter
@@ -116,6 +117,7 @@ class SpacListFragment: BaseFragment() {
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
+                item { SearchBar(searchText = vm.searchInput) {} }
                 stickyHeader { SpacSectionView() }
 
                 itemsIndexed(vm.stocks.value, key = { i, _ -> i }) { i, item ->
