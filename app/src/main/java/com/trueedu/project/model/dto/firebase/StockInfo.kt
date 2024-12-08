@@ -12,6 +12,7 @@ abstract class StockInfo(
     abstract fun spac(): Boolean
     abstract fun halt(): Boolean
     abstract fun designated(): Boolean
+    abstract fun parValue(): String?
     abstract fun listingDate(): String?
     abstract fun listingShares(): String?
 
@@ -91,6 +92,7 @@ class StockInfoKospi(
     override fun spac() = getAttribute("SPAC") == "Y"
     override fun halt() = getAttribute("거래정지") == "Y"
     override fun designated() = getAttribute("관리종목") == "Y"
+    override fun parValue() = getAttribute("액면가")
     override fun listingDate() = getAttribute("상장일자")
     override fun listingShares() = getAttribute("상장주수")
 
@@ -194,6 +196,7 @@ class StockInfoKosdaq(
     override fun spac() = nameKr.contains("스팩")
     override fun halt() = getAttribute("거래정지 여부") == "Y"
     override fun designated() = getAttribute("관리 종목 여부") == "Y"
+    override fun parValue() = getAttribute("주식 액면가")
     override fun listingDate() = getAttribute("주식 상장 일자")
     override fun listingShares() = getAttribute("상장 주수(천)")
 
