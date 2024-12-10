@@ -89,7 +89,7 @@ class SpacListFragment: BaseFragment() {
         Scaffold(
             topBar = {
                 BackTitleTopBar(
-                    title = "스팩 종목",
+                    title = "스팩 검색",
                     onBack = ::dismissAllowingStateLoss,
                     actionIcon = Icons.Outlined.ViewList,
                     onAction = ::onSortOption,
