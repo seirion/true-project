@@ -19,6 +19,7 @@ material = "1.12.0"
 lifecycleProcess = "2.8.7"
 firebaseAuthKtx = "23.1.0"
 symbolProcessingApi = "2.0.21-1.0.26"
+billing_version = "7.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -77,6 +78,7 @@ google-play-services-ads = { module = "com.google.android.gms:play-services-ads"
 accompanist-navigation-material = { group = "com.google.accompanist", name = "accompanist-navigation-material", version = "0.32.0" }
 coil-compose = { module = "io.coil-kt:coil-compose", version = "2.3.0" }
 symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "symbolProcessingApi" }
+billing = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing_version" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
