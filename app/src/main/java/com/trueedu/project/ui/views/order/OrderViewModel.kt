@@ -6,21 +6,21 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.trueedu.project.data.realtime.RealOrderManager
-import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.UserAssets
+import com.trueedu.project.data.realtime.RealOrderManager
+import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
-import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.OrderRemote
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.decreasePrice
 import com.trueedu.project.utils.decreaseQuantity
+import com.trueedu.project.utils.formatter.safeLong
 import com.trueedu.project.utils.increasePrice
 import com.trueedu.project.utils.increaseQuantity
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +37,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrderViewModel @Inject constructor(
-    private val local: Local,
     val stockPool: StockPool,
     private val keyTokenKeyManager: TokenKeyManager,
     private val priceRemote: PriceRemote,
@@ -65,17 +64,22 @@ class OrderViewModel @Inject constructor(
 
     // 주문 입력 (숫자만)
     val priceInput = mutableStateOf(TextFieldValue(""))
+
     val quantityInput = mutableStateOf(TextFieldValue("1"))
 
     fun init(code: String) {
         this.code = code
-        nameKr.value = stockPool.get(code)?.nameKr ?: ""
+        val stock = stockPool.get(code)
+        nameKr.value = stock?.nameKr ?: ""
         priceManager.pushRequest(
             code,
             listOf(code)
         )
         orderManager.beginRequests(code)
 
+        if (stock?.spac() == true && stock.parValue().safeLong() == 100L) {
+            quantityInput.value = TextFieldValue("10")
+        }
         // 호가 기본값
         priceRemote.currentTrade(code)
             .onEach {
