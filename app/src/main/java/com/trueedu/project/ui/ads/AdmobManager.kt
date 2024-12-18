@@ -55,7 +55,11 @@ class AdmobManager @Inject constructor(
         job = CoroutineScope(Dispatchers.Main).launch {
             flow {
                 while (true) {
-                    delay(5 * 60_000) // 5분
+                    if (nativeAd.value == null) {
+                        delay(1 * 60_000) // 1분
+                    } else {
+                        delay(5 * 60_000) // 5분
+                    }
                     emit(Unit)
                 }
             }
