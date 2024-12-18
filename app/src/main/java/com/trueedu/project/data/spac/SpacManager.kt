@@ -8,7 +8,6 @@ import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.firebase.SpacStatusManager
 import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.model.dto.firebase.StockInfo
-import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.formatter.safeDouble
@@ -19,7 +18,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
@@ -99,17 +97,17 @@ class SpacManager @Inject constructor(
             val size = spacList.value.size
             if (size == 0) return@collect
             val s = spacList.value.getOrNull(i % size) ?: return@collect
-            priceRemote.currentPrice(s.code)
-                .catch {
-                    Log.e(TAG, "price error: $it")
-                    emit(PriceResponse(null, "", "", ""))
-                }
-                .filterNot { it.output == null }
-                .collect {
-                    priceMap[s.code] = it.output!!.price.toDouble()
-                    priceChangeMap[s.code] = it.output.priceChange.toDouble()
-                    volumeMap[s.code] = it.output.volume.safeLong()
-                }
+            try {
+                priceRemote.currentPrice(s.code)
+                    .filterNot { it.output == null }
+                    .collect {
+                        priceMap[s.code] = it.output!!.price.toDouble()
+                        priceChangeMap[s.code] = it.output.priceChange.toDouble()
+                        volumeMap[s.code] = it.output.volume.safeLong()
+                    }
+            } catch(it: Exception) {
+                Log.e(TAG, "price error: $it")
+            }
         }
     }
 
