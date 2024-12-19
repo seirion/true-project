@@ -149,6 +149,11 @@ class HomeScreen(
 
     private fun onPriceClick(code: String) {
         trueAnalytics.clickButton("${screenName()}__price__click")
+        if (stockPool.get(code) == null) {
+            // 상장 폐지 종목이라서 주문으로 이동 안 함
+            Toast.makeText(activity.applicationContext, "상장 폐지 종목입니다", Toast.LENGTH_SHORT).show()
+            return
+        }
         OrderFragment.show(code, fragmentManager)
     }
 
