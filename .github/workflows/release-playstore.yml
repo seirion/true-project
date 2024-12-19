@@ -43,16 +43,16 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Build Release APK
+    - name: Build Release AAB
       id: buildRelease
-      run: ./gradlew assembleRelease
+      run: ./gradlew bundleRelease
 
     - name: Upload APK
       id: uploadArtifact
       uses: actions/upload-artifact@v4
       with:
         name: app
-        path: app/build/outputs/apk/release/app-release.apk
+        path: app/build/outputs/bundle/release/app-release.aab
 
     - name: Create service_account.json
       id: createServiceAccount
@@ -64,6 +64,6 @@ jobs:
       with:
         serviceAccountJson: service_account.json
         packageName: com.trueedu.project
-        releaseFiles: app/build/outputs/apk/release/app-release.apk
+        releaseFiles: app/build/outputs/bundle/release/app-release.aab
         track: internal
         status: completed
