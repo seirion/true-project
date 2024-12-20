@@ -39,13 +39,13 @@ import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
 
-class SpacScreen(
-    private val vm: SpacViewModel,
+class SpacScreenOld(
+    private val vm: SpacViewModelOld,
     private val trueAnalytics: TrueAnalytics,
     private val fragmentManager: FragmentManager,
 ): BottomNavScreen {
     companion object {
-        private val TAG = SpacScreen::class.java.simpleName
+        private val TAG = SpacScreenOld::class.java.simpleName
     }
 
     @Composable

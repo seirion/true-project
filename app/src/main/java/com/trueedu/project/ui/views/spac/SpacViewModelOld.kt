@@ -3,7 +3,6 @@ package com.trueedu.project.ui.views.spac
 import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.ManualAssets
@@ -18,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SpacViewModel @Inject constructor(
+class SpacViewModelOld @Inject constructor(
     val manualAssets: ManualAssets,
     val stockPool: StockPool,
     val tokenKeyManager: TokenKeyManager,
@@ -26,7 +25,7 @@ class SpacViewModel @Inject constructor(
 ): ViewModel() {
 
     companion object {
-        private val TAG = SpacViewModel::class.java.simpleName
+        private val TAG = SpacViewModelOld::class.java.simpleName
     }
 
     val loading = mutableStateOf(false)
