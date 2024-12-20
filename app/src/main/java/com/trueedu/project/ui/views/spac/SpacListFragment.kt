@@ -130,7 +130,7 @@ class SpacListFragment: BaseFragment() {
                         spacManager.volumeMap[item.code] ?: 0L,
                         expectedProfit,
                         expectedProfitRate,
-                        vm.hasStock(item.code),
+                        vm.holdingNum(item.code),
                         ::onPriceClick
                     ) {
                         StockDetailFragment.show(item, parentFragmentManager)
@@ -180,7 +180,7 @@ fun SpacItem(
     volume: Long = 1234L,
     expectedProfit: Int? = null, // 청산 시 기대 수익
     expectedProfitRate: Double? = null, // 청산 시 기대 수익률(%)
-    hasThisStock: Boolean = true,
+    holdingNum: Double = 1.0,
     onPriceClick: (String) -> Unit = {},
     onClick: () -> Unit = {},
 ) {
@@ -201,9 +201,10 @@ fun SpacItem(
                     color = MaterialTheme.colorScheme.primary,
                 )
 
-                if (hasThisStock) {
+                if (holdingNum > 0) {
                     Margin(2)
-                    HoldingBadge()
+                    val s = intFormatter.format(holdingNum)
+                    HoldingBadge(s)
                 }
                 if (item.halt()) {
                     Margin(2)
