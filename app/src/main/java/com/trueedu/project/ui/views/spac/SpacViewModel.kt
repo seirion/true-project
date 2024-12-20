@@ -69,8 +69,9 @@ class SpacViewModel @Inject constructor(
         return tokenKeyManager.userKey.value != null
     }
 
-    fun hasStock(code: String): Boolean {
-        return manualAssets.assets.value.any { it.code == code }
+    fun holdingNum(code: String): Double {
+        return manualAssets.assets.value
+            .firstOrNull { it.code == code }?.quantity ?: 0.0
     }
 
     fun setSort(option: SpacSort) {

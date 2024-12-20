@@ -95,7 +95,7 @@ class SpacScreen(
                         spacManager.volumeMap[item.code] ?: 0L,
                         expectedProfit,
                         expectedProfitRate,
-                        vm.hasStock(item.code),
+                        vm.holdingNum(item.code),
                         ::onPriceClick
                     ) {
                         StockDetailFragment.show(item, fragmentManager)

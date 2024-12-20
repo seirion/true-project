@@ -73,6 +73,6 @@ fun DesignatedBadge() {
 
 @Preview(showBackground = true)
 @Composable
-fun HoldingBadge() {
-    RoundedBadge("보유", Color(0xFF448A33))
+fun HoldingBadge(s: String = "123") {
+    RoundedBadge(s, Color(0xFF448A33))
 }
