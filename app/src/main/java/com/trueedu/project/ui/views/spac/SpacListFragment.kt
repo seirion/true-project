@@ -172,7 +172,7 @@ class SpacListFragment: BaseFragment() {
 
 @Preview(showBackground = true)
 @Composable
-private fun SpacItem(
+fun SpacItem(
     index: Int = 1,
     item: StockInfo = StockInfoKospi("003456", "삼성전자", ""),
     price: Double = 2000.0,
@@ -280,7 +280,7 @@ private fun SpacItem(
 }
 
 @Composable
-private fun SpacSectionView() {
+fun SpacSectionView() {
     val textColor = MaterialTheme.colorScheme.secondary
 
     Row(

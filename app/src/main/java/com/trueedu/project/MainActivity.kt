@@ -42,6 +42,7 @@ import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.realtime.WsMessageHandler
+import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.ads.AdmobManager
@@ -57,8 +58,8 @@ import com.trueedu.project.ui.views.home.HomeBottomNavigation
 import com.trueedu.project.ui.views.home.HomeDrawer
 import com.trueedu.project.ui.views.home.HomeScreen
 import com.trueedu.project.ui.views.menu.MenuScreen
-import com.trueedu.project.ui.views.spac.SpacScreenOld
-import com.trueedu.project.ui.views.spac.SpacViewModelOld
+import com.trueedu.project.ui.views.spac.SpacScreen
+import com.trueedu.project.ui.views.spac.SpacViewModel
 import com.trueedu.project.ui.views.watch.WatchListViewModel
 import com.trueedu.project.ui.views.watch.WatchScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -89,6 +90,8 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var downloadCompleteReceiver: DownloadCompleteReceiver
     @Inject
+    lateinit var spacManager: SpacManager
+    @Inject
     lateinit var remoteConfig: RemoteConfig
     @Inject
     lateinit var admobManager: AdmobManager
@@ -98,12 +101,12 @@ class MainActivity : AppCompatActivity() {
 
     private val vm by viewModels<MainViewModel>()
     private val watchVm by viewModels<WatchListViewModel>()
-    private val spacVm by viewModels<SpacViewModelOld>()
+    private val spacVm by viewModels<SpacViewModel>()
     private val homeDrawerVm by viewModels<UserInfoViewModel>()
 
     private lateinit var homeScreen: HomeScreen
     private lateinit var watchScreen: WatchScreen
-    private lateinit var spacScreen: SpacScreenOld
+    private lateinit var spacScreen: SpacScreen
     private lateinit var menuScreen: MenuScreen
 
     private var openDrawer: (() -> Unit)? = null
@@ -181,9 +184,12 @@ class MainActivity : AppCompatActivity() {
             trueAnalytics = trueAnalytics,
             fragmentManager = supportFragmentManager,
         )
-        spacScreen = SpacScreenOld(
+        spacScreen = SpacScreen(
             vm = spacVm,
+            spacManager = spacManager,
             trueAnalytics = trueAnalytics,
+            remoteConfig = remoteConfig,
+            admobManager = admobManager,
             fragmentManager = supportFragmentManager,
         )
         menuScreen = MenuScreen(
