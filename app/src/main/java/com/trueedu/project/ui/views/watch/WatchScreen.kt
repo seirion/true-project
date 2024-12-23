@@ -63,7 +63,6 @@ import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.common.DesignatedBadge
 import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.home.BottomNavScreen
-import com.trueedu.project.ui.views.home.HomeBottomNavHeight
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
@@ -114,16 +113,12 @@ class WatchScreen(
                     remoteConfig.adVisible.value &&
                     admobManager.nativeAd.value != null
                 ) {
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = HomeBottomNavHeight)) {
+                    Box(modifier = Modifier.fillMaxWidth()) {
                         NativeAdView(admobManager.nativeAd.value!!)
                     }
                 }
             },
-            modifier = Modifier
-                .fillMaxSize()
-                .navigationBarsPadding(),
+            modifier = Modifier.fillMaxSize()
         ) { innerPadding ->
 
             if (pagerState == null) {

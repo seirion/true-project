@@ -64,7 +64,6 @@ class HomeScreen(
                 )
             },
             modifier = Modifier.fillMaxSize()
-                .navigationBarsPadding(),
         ) { innerPadding ->
 
             if (vm.loading.value) {
@@ -75,7 +74,7 @@ class HomeScreen(
             val state = rememberLazyListState()
             LazyColumn(
                 state = state,
-                contentPadding = PaddingValues(top = 8.dp, bottom = 56.dp),
+                contentPadding = PaddingValues(top = 8.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
