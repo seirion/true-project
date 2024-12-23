@@ -104,6 +104,9 @@ class SpacManager @Inject constructor(
                         priceMap[s.code] = it.output!!.price.toDouble()
                         priceChangeMap[s.code] = it.output.priceChange.toDouble()
                         volumeMap[s.code] = it.output.volume.safeLong()
+
+                        // 가격 변경 시 청산 시 수익률도 업데이트 필요
+                        updateRedemptionValue(s.code)
                     }
             } catch(it: Exception) {
                 Log.e(TAG, "price error: $it")
