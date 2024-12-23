@@ -17,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentManager
+import com.trueedu.project.MainViewModel
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.spac.SpacManager
@@ -30,8 +31,10 @@ import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.search.SearchBar
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
+import com.trueedu.project.utils.formatter.safeDouble
 
 class SpacScreen(
+    private val mainVm: MainViewModel,
     private val vm: SpacViewModel,
     private val spacManager: SpacManager,
     private val trueAnalytics: TrueAnalytics,
@@ -89,13 +92,21 @@ class SpacScreen(
                     val redemptionValue = spacManager.redemptionValueMap[item.code]
                     val expectedProfit = redemptionValue?.first
                     val expectedProfitRate = redemptionValue?.second
+                    val userStock = mainVm.userStocks.value?.output1?.firstOrNull {
+                        it.code == item.code
+                    }
+
+                    // 한투 계좌 보유가 있으면 표시하고, 없으면 수동 보유를 표시함
+                    val holdingNum = userStock?.holdingQuantity.safeDouble()
+                        .coerceAtLeast(vm.holdingNum(item.code))
+
                     SpacItem(i, item,
                         spacManager.priceMap[item.code] ?: 0.0,
                         spacManager.priceChangeMap[item.code],
                         spacManager.volumeMap[item.code] ?: 0L,
                         expectedProfit,
                         expectedProfitRate,
-                        vm.holdingNum(item.code),
+                        holdingNum,
                         ::onPriceClick
                     ) {
                         StockDetailFragment.show(item, fragmentManager)
