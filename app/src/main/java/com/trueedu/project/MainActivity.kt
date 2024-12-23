@@ -14,6 +14,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -25,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
@@ -287,8 +290,10 @@ class MainActivity : AppCompatActivity() {
             content = {
                 Scaffold(
                     bottomBar = { HomeBottomNavigation(navController = navController) },
-                ) { _ ->
-                    NavigationGraph(navController = navController)
+                ) { innerPadding ->
+                    // 탭 영역 제외하고 화면이 그려지도록
+                    val padding = PaddingValues(bottom = innerPadding.calculateBottomPadding())
+                    NavigationGraph(navController = navController, innerPadding = padding)
                 }
             }
         )
@@ -330,8 +335,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Composable
-    fun NavigationGraph(navController: NavHostController) {
-        NavHost(navController, startDestination = BottomNavItem.Home.screenRoute) {
+    fun NavigationGraph(navController: NavHostController, innerPadding: PaddingValues) {
+        NavHost(
+            navController = navController,
+            startDestination = BottomNavItem.Home.screenRoute,
+            modifier = Modifier.padding(innerPadding)
+        ) {
             composable(BottomNavItem.Home.screenRoute) {
                 homeScreen.Draw()
             }
