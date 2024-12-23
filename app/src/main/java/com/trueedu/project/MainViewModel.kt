@@ -12,6 +12,7 @@ import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.UserAssets
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
+import com.trueedu.project.model.dto.account.AccountAsset
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.utils.toAccountNumFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -100,5 +101,9 @@ class MainViewModel @Inject constructor(
         )
         local.marketPriceMode = state
         marketPriceMode.value = state
+    }
+
+    fun getUserStock(code: String): AccountAsset? {
+        return userStocks.value?.output1?.firstOrNull { it.code == code }
     }
 }

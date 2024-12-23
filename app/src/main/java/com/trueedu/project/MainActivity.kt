@@ -188,6 +188,7 @@ class MainActivity : AppCompatActivity() {
             fragmentManager = supportFragmentManager,
         )
         spacScreen = SpacScreen(
+            mainVm = vm,
             vm = spacVm,
             spacManager = spacManager,
             trueAnalytics = trueAnalytics,

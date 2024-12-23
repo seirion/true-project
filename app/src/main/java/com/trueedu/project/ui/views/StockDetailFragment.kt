@@ -21,11 +21,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.trueedu.project.MainViewModel
 import com.trueedu.project.R
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.RemoteConfig
@@ -50,6 +53,7 @@ import com.trueedu.project.ui.views.stock.DailyPriceFragment
 import com.trueedu.project.ui.widget.SettingItem
 import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
+import com.trueedu.project.utils.formatter.safeDouble
 import com.trueedu.project.utils.redemptionProfitRate
 import com.trueedu.project.utils.stringToLocalDate
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,6 +75,7 @@ class StockDetailFragment: BaseFragment() {
 
     lateinit var stockInfo: StockInfo
 
+    private val vmMain by activityViewModels<MainViewModel>()
     private val vm by viewModels<StockDetailViewModel>()
 
     @Inject
@@ -172,6 +177,30 @@ class StockDetailFragment: BaseFragment() {
                         TrueText(s = it.first, fontSize = 16, color = MaterialTheme.colorScheme.primary)
                         TrueText(
                             s = it.second ?: "",
+                            fontSize = 16,
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 2,
+                            textAlign = TextAlign.End,
+                        )
+                    }
+                }
+
+                val holding = vmMain.getUserStock(stockInfo.code)
+                val holdingQuantity = holding?.holdingQuantity.safeDouble()
+                if (holdingQuantity > 0.0) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        TrueText(s = "계좌 보유", fontSize = 16, fontWeight = FontWeight.W700, color = MaterialTheme.colorScheme.primary)
+                        val total = holding!!.evaluationAmount.safeDouble() / holdingQuantity
+                        val totalString = intFormatter.format(total)
+                        val quantityString = intFormatter.format(holdingQuantity)
+                        TrueText(
+                            s = "${totalString}\n${quantityString}주",
                             fontSize = 16,
                             color = MaterialTheme.colorScheme.primary,
                             maxLines = 2,
