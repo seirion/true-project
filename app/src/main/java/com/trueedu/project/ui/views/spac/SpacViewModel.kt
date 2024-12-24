@@ -9,6 +9,7 @@ import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.StockInfo
+import com.trueedu.project.utils.formatter.safeDouble
 import com.trueedu.project.utils.formatter.safeLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -37,7 +38,7 @@ class SpacViewModel @Inject constructor(
     private val sortFun = mapOf<SpacSort, (StockInfo) -> Double>(
         SpacSort.ISSUE_DATE to { it.listingDate().safeLong().toDouble() },
         SpacSort.MARKET_CAP to {  it.marketCap().safeLong().toDouble() },
-        SpacSort.GROWTH_RATE to { -1 * growthRate(it.prevPrice().safeLong()) },
+        SpacSort.GROWTH_RATE to { -1 * growthRate(it) },
         SpacSort.REDEMPTION_VALUE to { -1 * (spacManager.redemptionValueMap[it.code]?.second ?: Double.MIN_VALUE) },
         SpacSort.VOLUME to { -1 * (spacManager.volumeMap[it.code]?.toDouble() ?: 0.0) },
     )
@@ -91,8 +92,11 @@ class SpacViewModel @Inject constructor(
             .sortedBy(sortFun[sort.value]!!)
     }
 
-    private fun growthRate(price: Long): Double {
-        val base = if (price > 8_000) 10_000 else 2_000
+    private fun growthRate(stock: StockInfo): Double {
+        val code = stock.code
+        val prevPrice = stock.prevPrice().safeDouble()
+        val price = spacManager.priceMap.getOrDefault(code, prevPrice)
+        val base = if (stock.parValue().safeLong() == 100L) 2_000 else 10_000
         return (price - base) * 100.0 / base
     }
 
