@@ -84,7 +84,9 @@ class SpacViewModel @Inject constructor(
             .filterNot { stockPool.delisted(it.code) }
             .filter {
                 val searchKey = searchInput.value.trim().lowercase()
-                searchKey.isEmpty() || it.nameKr.lowercase().contains(searchKey)
+                searchKey.isEmpty() ||
+                        it.nameKr.lowercase().contains(searchKey) ||
+                        it.code.lowercase().contains(searchKey)
             }
             .sortedBy(sortFun[sort.value]!!)
     }
