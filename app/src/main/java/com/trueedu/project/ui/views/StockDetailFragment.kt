@@ -196,11 +196,11 @@ class StockDetailFragment: BaseFragment() {
                             .padding(8.dp)
                     ) {
                         TrueText(s = "계좌 보유", fontSize = 16, fontWeight = FontWeight.W700, color = MaterialTheme.colorScheme.primary)
-                        val total = holding!!.evaluationAmount.safeDouble() / holdingQuantity
-                        val totalString = intFormatter.format(total)
+                        val cost = holding!!.purchaseAveragePrice.safeDouble()
+                        val costString = intFormatter.format(cost)
                         val quantityString = intFormatter.format(holdingQuantity)
                         TrueText(
-                            s = "${totalString}\n${quantityString}주",
+                            s = "$costString • ${quantityString}주",
                             fontSize = 16,
                             color = MaterialTheme.colorScheme.primary,
                             maxLines = 2,
