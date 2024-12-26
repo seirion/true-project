@@ -1,5 +1,7 @@
 package com.trueedu.project.ui.views
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -161,6 +163,7 @@ class StockDetailFragment: BaseFragment() {
                     SettingItem("주문 하기", true, ::gotoOrder)
                     SettingItem("일별 가격", true, ::gotoDailyPrice)
                 }
+                SettingItem("기업 공시 보기", true, ::gotoAnnouncements)
 
                 vm.spacStatus.value?.let {
                     SpacDetailView(vm.currentPrice(), stockInfo, it)
@@ -229,6 +232,13 @@ class StockDetailFragment: BaseFragment() {
         } else {
             AppKeyInputFragment.show(false, childFragmentManager)
         }
+    }
+
+    private fun gotoAnnouncements() {
+        trueAnalytics.clickButton("stock_detail__announcements__click")
+        val code = stockInfo.code
+        val url = Uri.parse("https://dart.fss.or.kr/dsab001/main.do?autoSearch=true&textCrpNM=${code}")
+        requireActivity().startActivity(Intent(Intent.ACTION_VIEW, url))
     }
 
     private fun editAssets() {
