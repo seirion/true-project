@@ -89,7 +89,7 @@ fun StockHoldingView(
             .padding(vertical = 12.dp)
     ) {
         TrueText(
-            s = "보유/주문가능",
+            s = "보유/매도가능",
             fontSize = 12,
             color = MaterialTheme.colorScheme.primary
         )
