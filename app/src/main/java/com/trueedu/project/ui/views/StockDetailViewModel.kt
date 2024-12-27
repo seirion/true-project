@@ -91,7 +91,9 @@ class StockDetailViewModel @Inject constructor(
             //"이상급등" to stockInfo.unusualPriceSurge().toYnString(),
         ) + if (stockInfo.spac()) {
             assets.get(stockInfo.code)?.let {
-                listOf("보유(수동)" to "${intFormatter.format(it.price)}\n${intFormatter.format(it.quantity)}주")
+                val priceQuantity = "${intFormatter.format(it.price)} • ${intFormatter.format(it.quantity)}주"
+                val memo = if (it.memo.isNotEmpty()) "\n${it.memo}" else ""
+                listOf("보유(수동)" to "${priceQuantity}${memo}")
             } ?: emptyList()
         } else {
             listOf(
