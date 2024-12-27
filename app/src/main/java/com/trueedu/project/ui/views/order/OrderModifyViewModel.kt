@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.model.dto.price.OrderModifiableDetail
 import com.trueedu.project.model.dto.price.OrderModifiableResponse
 import com.trueedu.project.repository.remote.OrderRemote
-import com.trueedu.project.ui.views.order.OrderViewModel.Companion
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -34,7 +34,7 @@ class OrderModifyViewModel @Inject constructor(
         update()
     }
 
-    fun update() {
+    private fun update() {
         val accountNum = tokenKeyManager.userKey.value?.accountNum ?: return
         orderRemote.modifiable(accountNum)
             .onStart {
@@ -43,7 +43,11 @@ class OrderModifyViewModel @Inject constructor(
             .onEach {
                 Log.d(TAG, "정정/취소 목록: $it")
                 loading.value = false
-                items.value = it
+                items.value = it.copy(
+                    orderModifiableDetail = it.orderModifiableDetail.sortedBy(
+                        OrderModifiableDetail::orderTime
+                    )
+                )
             }
             .catch {
                 Log.d(TAG, "정정/취소 목록 받기 실패: $it")
