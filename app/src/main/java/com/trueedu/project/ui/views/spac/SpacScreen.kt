@@ -2,6 +2,7 @@ package com.trueedu.project.ui.views.spac
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,7 +11,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ViewList
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -63,6 +66,8 @@ class SpacScreen(
                     NativeAdView(admobManager.nativeAd.value!!)
                 }
             },
+            contentWindowInsets =
+                ScaffoldDefaults.contentWindowInsets.exclude(NavigationBarDefaults.windowInsets),
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background),
@@ -82,8 +87,8 @@ class SpacScreen(
             LazyColumn(
                 state = state,
                 modifier = Modifier
-                    .padding(innerPadding)
                     .fillMaxSize()
+                    .padding(innerPadding)
             ) {
                 item { SearchBar(searchText = vm.searchInput) {} }
                 stickyHeader { SpacSectionView() }
