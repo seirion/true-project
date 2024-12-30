@@ -309,7 +309,7 @@ fun SpacSectionView() {
                     .weight(1f)
             ) {
                 TrueText(s = "거래량", fontSize = 12, color = textColor)
-                TrueText(s = "청산가(수익)", fontSize = 12, color = textColor)
+                TrueText(s = "예상 청산가(수익)", fontSize = 12, color = textColor)
             }
             Column(
                 horizontalAlignment = Alignment.End,
