@@ -147,7 +147,7 @@ private fun PopupBody(
         radius = 20,
         bgColor = MaterialTheme.colorScheme.background,
         modifier = Modifier
-            .width(270.dp)
+            .width(300.dp)
             .wrapContentHeight()
     ) {
         TrueText(
