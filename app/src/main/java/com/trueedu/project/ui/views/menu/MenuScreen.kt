@@ -62,7 +62,7 @@ class MenuScreen(
                         "메뉴",
                         onBack = null,
                         actionIcon = Icons.Outlined.Search,
-                        onAction = {}, // TODO
+                        onAction = null, // TODO
                     )
                 },
                 contentWindowInsets =
