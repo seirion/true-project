@@ -48,6 +48,8 @@ class SpacManager @Inject constructor(
     val volumeMap = mutableStateMapOf<String, Long>()
     val redemptionValueMap = mutableStateMapOf<String, Pair<Int, Double>>()
 
+    val spacAnnualProfitMode = mutableStateOf(local.spacAnnualProfit)
+
     private var job: Job? = null
     private var requestIndex = 0
 
@@ -119,6 +121,18 @@ class SpacManager @Inject constructor(
         job = null
     }
 
+    fun setSpacAnnualProfit(on: Boolean) {
+        local.spacAnnualProfit = on
+        spacAnnualProfitMode.value = on
+
+        // 재계산
+        loading.value = true
+        spacList.value.forEach {
+            updateRedemptionValue(it.code)
+        }
+        loading.value = false
+    }
+
     private fun updateRedemptionValue(code: String) {
         val stock = stockPool.get(code) ?: return
         val price = priceMap[code] ?: stock.prevPrice().safeDouble()
@@ -126,7 +140,7 @@ class SpacManager @Inject constructor(
         val listingDateStr = stockPool.get(code)?.listingDate() ?: return
         val targetDate = stringToLocalDate(listingDateStr)
             .plusYears(3)
-        val isAnnualized = local.spacAnnualProfit
+        val isAnnualized = spacAnnualProfitMode.value
         val (valueRate, valueRateAnnualized) = redemptionProfitRate(price, redemptionPrice, targetDate)
         val rate = if (isAnnualized) valueRateAnnualized else valueRate
 

@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentManager
-import com.trueedu.project.repository.local.Local
+import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,19 +31,19 @@ class SpacSettingFragment: BaseFragment() {
     }
 
     @Inject
-    lateinit var local: Local
+    lateinit var spacManager: SpacManager
 
     private val spacAnnualProfit = mutableStateOf(true)
 
     override fun init() {
         super.init()
-        spacAnnualProfit.value = local.spacAnnualProfit
+        spacAnnualProfit.value = spacManager.spacAnnualProfitMode.value
     }
 
     fun setSpacAnnualProfit(on: Boolean) {
         trueAnalytics.clickToggleButton("${screenName()}__spac_annual_profit__click", !on)
         spacAnnualProfit.value = on
-        local.spacAnnualProfit = on
+        spacManager.setSpacAnnualProfit(on)
     }
 
     @Composable
