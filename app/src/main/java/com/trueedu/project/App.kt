@@ -76,7 +76,7 @@ class App : Application(), LifecycleEventObserver {
                 realPriceManager.start()
                 realOrderManager.start()
                 stockPool.loadStockInfo()
-                admobManager.start()
+                //admobManager.start()
             }
 
             Lifecycle.Event.ON_STOP -> {
@@ -85,7 +85,7 @@ class App : Application(), LifecycleEventObserver {
                 wsMessage.stop()
                 realPriceManager.stop()
                 realOrderManager.stop()
-                admobManager.stop()
+                //admobManager.stop()
             }
 
             Lifecycle.Event.ON_DESTROY -> {
