@@ -3,6 +3,7 @@ package com.trueedu.project.data.firebase
 import android.util.Log
 import com.google.firebase.database.GenericTypeIndicator
 import com.trueedu.project.data.GoogleAccount
+import com.trueedu.project.model.dto.firebase.SpacSchedule
 import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.utils.yyyyMMdd
 import kotlinx.coroutines.tasks.await
@@ -24,6 +25,8 @@ class SpacStatusManager @Inject constructor(
 
     // caching
     private var spacList: List<SpacStatus> = emptyList()
+
+    private var spacScheduleList: Map<String, SpacSchedule> = emptyMap()
 
     /**
      * @return yyyyMMdd 포맷의 스트링
@@ -82,5 +85,24 @@ class SpacStatusManager @Inject constructor(
             .addOnFailureListener {
                 onFail()
             }
+    }
+
+    suspend fun loadSpacSchedule(): Map<String, SpacSchedule> {
+        Log.d(TAG, "loadSpacSchedule()")
+        if (spacScheduleList.isNotEmpty()) {
+            return spacScheduleList
+        }
+
+        val currentUser = firebaseCurrentUser()
+        if (currentUser == null) {
+            Log.d(TAG, "load() failed: currentUser null")
+            return emptyMap()
+        }
+        val ref = database.getReference(SNAPSHOT_KEY) // spac 데이터
+        val snapshot = ref.child("schedule")
+        val list = snapshot.get().await()
+            .getValue(object : GenericTypeIndicator<Map<String, SpacSchedule>>() {})
+        if (list != null) spacScheduleList = list
+        return list ?: emptyMap()
     }
 }

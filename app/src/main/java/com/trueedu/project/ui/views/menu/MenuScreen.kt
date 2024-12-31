@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Construction
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
@@ -36,6 +37,7 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
+import com.trueedu.project.ui.spac.SpacScheduleFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.setting.SettingFragment
@@ -77,6 +79,7 @@ class MenuScreen(
                         .padding(innerPadding)
                 ) {
                     MenuItem(Icons.Outlined.Settings, "설정", ::onSettings)
+                    MenuItem(Icons.Outlined.CalendarMonth, "스팩 일정", ::onSpacSchedule)
                     if (tokenKeyManager.userKey.value != null) {
                         MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
                     }
@@ -91,6 +94,11 @@ class MenuScreen(
     private fun onSettings() {
         trueAnalytics.clickButton("${screenName()}__setting__click")
         SettingFragment.show(fragmentManager)
+    }
+
+    private fun onSpacSchedule() {
+        trueAnalytics.clickButton("${screenName()}__spac_schedule__click")
+        SpacScheduleFragment.show(fragmentManager)
     }
 
     private fun onVolumeRanking() {
