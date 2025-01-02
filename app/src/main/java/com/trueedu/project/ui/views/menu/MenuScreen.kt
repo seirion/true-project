@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.admin.spac.SpacAdminFragment
+import com.trueedu.project.admin.spac.SpacScheduleAdminFragment
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.TokenKeyManager
@@ -85,6 +86,7 @@ class MenuScreen(
                     }
                     if (BuildConfig.DEBUG) {
                         MenuItem(Icons.Outlined.Construction, "스팩 어드민", ::onSpacAdmin)
+                        MenuItem(Icons.Outlined.Construction, "스팩 스케쥴 어드민", ::onSpacScheduleAdmin)
                     }
                 }
             }
@@ -108,6 +110,10 @@ class MenuScreen(
 
     private fun onSpacAdmin() {
         SpacAdminFragment.show(fragmentManager)
+    }
+
+    private fun onSpacScheduleAdmin() {
+        SpacScheduleAdminFragment.show(fragmentManager)
     }
 }
 

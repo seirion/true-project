@@ -87,22 +87,46 @@ class SpacStatusManager @Inject constructor(
             }
     }
 
-    suspend fun loadSpacSchedule(): Map<String, SpacSchedule> {
+    suspend fun loadSpacSchedule(force: Boolean = false): Map<String, SpacSchedule> {
         Log.d(TAG, "loadSpacSchedule()")
-        if (spacScheduleList.isNotEmpty()) {
+        if (spacScheduleList.isNotEmpty() && !force) {
             return spacScheduleList
         }
 
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
             Log.d(TAG, "load() failed: currentUser null")
-            return emptyMap()
+            return spacScheduleList
         }
         val ref = database.getReference(SNAPSHOT_KEY) // spac 데이터
         val snapshot = ref.child("schedule")
-        val list = snapshot.get().await()
+        val m = snapshot.get().await()
             .getValue(object : GenericTypeIndicator<Map<String, SpacSchedule>>() {})
-        if (list != null) spacScheduleList = list
-        return list ?: emptyMap()
+        if (m != null) spacScheduleList = m
+        return spacScheduleList
+    }
+
+    suspend fun writeSpacSchedule(
+        list: List<Pair<String, SpacSchedule>>,
+        onSuccess: () -> Unit,
+        onFail: () -> Unit,
+    ) {
+        val currentUser = firebaseCurrentUser()
+        if (currentUser == null) {
+            Log.d(TAG, "write() failed: currentUser null")
+            onFail()
+            return
+        }
+        val ref = database.getReference(SNAPSHOT_KEY)
+        val snapshot = ref.child("schedule")
+        val m = list.associate { (date, schedule) -> date to schedule }
+
+        snapshot.setValue(m)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
+                onFail()
+            }
     }
 }
