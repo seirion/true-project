@@ -19,9 +19,11 @@ import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.widget.InputSet
 import com.trueedu.project.utils.formatter.intFormatter
+import com.trueedu.project.utils.formatter.safeDouble
 
 class OrderViewDrawer(
     private val vm: OrderViewModel,
+    private val modifyVm: OrderModifyViewModel,
     private val buy: () -> Unit,
     private val sell: () -> Unit,
     private val setOrderQuantity: (Double) -> Unit,
@@ -38,7 +40,21 @@ class OrderViewDrawer(
             ) {
                 Column {
                     Section()
-                    OrderBook(vm.sells(), vm.buys(), vm.price(), vm.previousClose()) {
+                    val myBuySells = modifyVm.items.value
+                        ?.orderModifiableDetail
+                        ?.filter { vm.code == it.code }
+                        ?.map { it.price.safeDouble() to it.possibleQuantity.safeDouble() }
+                        ?.groupBy { it.first }
+                        ?.mapValues { it.value.sumOf { it.second } }
+                        ?: emptyMap()
+
+                    OrderBook(
+                        vm.sells(),
+                        vm.buys(),
+                        vm.price(),
+                        vm.previousClose(),
+                        myBuySells,
+                    ) {
                         vm.setPrice(it)
                     }
                 }

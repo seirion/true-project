@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -23,8 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.Margin
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
@@ -35,6 +34,7 @@ fun OrderBook(
     buys: List<Pair<Double, Double>>,
     price: Double, // 현재가
     previousClose: Double,
+    myBuySells: Map<Double, Double>, // <price, quantity>
     onClick: (Double) -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -49,12 +49,12 @@ fun OrderBook(
             .verticalScroll(scrollState),
     ) {
         sells.forEach { (p, q) ->
-            SellItems(p, q, price, previousClose) {
+            SellItems(p, q, price, previousClose, myBuySells[p]) {
                 onClick(p)
             }
         }
         buys.forEach { (p, q) ->
-            BuyItems(p, q, price, previousClose) {
+            BuyItems(p, q, price, previousClose, myBuySells[p]) {
                 onClick(p)
             }
         }
@@ -74,10 +74,10 @@ fun Section() {
     ) {
         val textColor = MaterialTheme.colorScheme.primary
         val bgColor = MaterialTheme.colorScheme.background
-        NumberText("호가", textColor, bgColor)
+        NumberText("호가", null, textColor, bgColor)
         VerticalDivider(thickness = 1.dp, color = borderColor)
         Margin(1)
-        NumberText("잔량", textColor, bgColor)
+        NumberText("잔량", null, textColor, bgColor)
     }
 }
 
@@ -87,6 +87,7 @@ private fun SellItems(
     quantity: Double,
     currentPrice: Double,
     previousClose: Double,
+    orderQuantity: Double?,
     onClick: () -> Unit,
 ) {
     val priceString = if (price > 0.0) intFormatter.format(price) else ""
@@ -97,11 +98,15 @@ private fun SellItems(
         rateFormatter.format(rate, false)
     }
     val quantityString = if (quantity > 0.0) intFormatter.format(quantity) else ""
+    val orderQuantityString = orderQuantity?.let {
+        intFormatter.format(it)
+    }
     val selected = price != 0.0 && price == currentPrice
     SellBuyItems(
         priceString,
         rateString,
         quantityString,
+        orderQuantityString,
         selected,
         ChartColor.color(price - previousClose),
         ChartColor.up.copy(alpha = 0.1f),
@@ -115,6 +120,7 @@ private fun BuyItems(
     quantity: Double,
     currentPrice: Double,
     previousClose: Double,
+    orderQuantity: Double?,
     onClick: () -> Unit,
 ) {
     val priceString = if (price > 0.0) intFormatter.format(price) else ""
@@ -125,11 +131,15 @@ private fun BuyItems(
         rateFormatter.format(rate, false)
     }
     val quantityString = if (quantity > 0.0) intFormatter.format(quantity) else ""
+    val orderQuantityString = orderQuantity?.let {
+        intFormatter.format(it)
+    }
     val selected = price != 0.0 && price == currentPrice
     SellBuyItems(
         priceString,
         rateString,
         quantityString,
+        orderQuantityString,
         selected,
         ChartColor.color(price - previousClose),
         ChartColor.down.copy(alpha = 0.1f),
@@ -142,6 +152,7 @@ private fun SellBuyItems(
     price: String,
     rate: String,
     count: String,
+    order: String?,
     selected: Boolean,
     textColor: Color,
     bgColor: Color,
@@ -158,7 +169,7 @@ private fun SellBuyItems(
     ) {
         PriceText(price, rate, textColor, bgColor)
         Margin(1)
-        NumberText(count, textColor, bgColor)
+        NumberText(count, order, textColor, bgColor)
     }
 }
 
@@ -194,11 +205,13 @@ private fun RowScope.PriceText(
 @Composable
 private fun RowScope.NumberText(
     s: String,
+    order: String?,
     textColor: Color,
     bgColor: Color,
 ) {
-    Box(
-        contentAlignment = Alignment.CenterEnd,
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.End,
         modifier = Modifier.weight(1f)
             .fillMaxHeight()
             .background(color = bgColor)
@@ -209,5 +222,13 @@ private fun RowScope.NumberText(
             fontSize = 14,
             color = textColor,
         )
+        if (order != null) {
+            TrueText(
+                s = order,
+                fontSize = 10,
+                fontWeight = FontWeight.W500,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
     }
 }
