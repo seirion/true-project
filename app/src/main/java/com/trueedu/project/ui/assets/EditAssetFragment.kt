@@ -50,10 +50,12 @@ class EditAssetFragment: BaseFragment() {
     companion object {
         fun show(
             code: String,
-            fragmentManager: FragmentManager
+            fragmentManager: FragmentManager,
+            onCompleted: () -> Unit,
         ): EditAssetFragment {
             return EditAssetFragment().also {
                 it.code = code
+                it.onCompleted = onCompleted
                 it.show(fragmentManager, "edit-asset")
             }
         }
@@ -65,6 +67,7 @@ class EditAssetFragment: BaseFragment() {
     lateinit var stockPool: StockPool
 
     lateinit var code: String
+    lateinit var onCompleted: () -> Unit
 
     private val buttonEnabled = mutableStateOf(false)
 
@@ -148,6 +151,7 @@ class EditAssetFragment: BaseFragment() {
         ) {
             dismissAllowingStateLoss()
             Toast.makeText(requireContext(), "추가되었습니다", Toast.LENGTH_SHORT).show()
+            onCompleted()
         }
     }
 
@@ -170,6 +174,7 @@ class EditAssetFragment: BaseFragment() {
         manualAssets.deleteAsset(code) {
             Toast.makeText(requireContext(), "삭제되었습니다", Toast.LENGTH_SHORT).show()
             dismissAllowingStateLoss()
+            onCompleted()
         }
     }
 
