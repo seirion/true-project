@@ -37,6 +37,7 @@ import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.widget.InputSet
 import com.trueedu.project.utils.decreasePrice
 import com.trueedu.project.utils.decreaseQuantity
+import com.trueedu.project.utils.defaultTextColors
 import com.trueedu.project.utils.increasePrice
 import com.trueedu.project.utils.increaseQuantity
 import dagger.hilt.android.AndroidEntryPoint
@@ -228,5 +229,6 @@ private fun MemoInput(s: MutableState<String>) {
             )
         },
         maxLines = 8,
+        colors = defaultTextColors(),
     )
 }

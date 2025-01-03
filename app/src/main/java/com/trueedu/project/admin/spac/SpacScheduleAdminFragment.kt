@@ -42,6 +42,7 @@ import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.utils.defaultTextColors
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -182,6 +183,7 @@ private fun SpacScheduleItem(
                 modifier = Modifier.width(160.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
+                colors = defaultTextColors(),
             )
             TouchIcon24(
                 icon = Icons.Filled.RemoveCircle,
@@ -206,6 +208,7 @@ private fun SpacScheduleItem(
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             maxLines = 1,
+            colors = defaultTextColors(),
         )
         Margin(8)
         OutlinedTextField(
@@ -222,6 +225,7 @@ private fun SpacScheduleItem(
             },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            colors = defaultTextColors(),
         )
         Margin(8)
     }
