@@ -75,7 +75,7 @@ class OrderFragment: BaseFragment() {
 
     override fun init() {
         super.init()
-        orderViewDrawer = OrderViewDrawer(vm, ::buy, ::sell, vm::setQuantity)
+        orderViewDrawer = OrderViewDrawer(vm, modifyVm, ::buy, ::sell, vm::setQuantity)
         modifiableViewDrawer = ModifiableViewDrawer(modifyVm, ::cancelOrder)
         orderExecutionDrawer = OrderExecutionDrawer(executionVm)
         balanceDrawer = BalanceDrawer(userAssets, ::gotoOrder)
