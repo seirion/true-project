@@ -102,8 +102,8 @@ class SpacScreen(
                     }
 
                     // 한투 계좌 보유가 있으면 표시하고, 없으면 수동 보유를 표시함
-                    val holdingNum = userStock?.holdingQuantity.safeDouble()
-                        .coerceAtLeast(vm.holdingNum(item.code))
+                    val holdingNum = userStock?.holdingQuantity.safeDouble().takeIf { it > 0 }
+                        ?: -vm.holdingNum(item.code)
 
                     SpacItem(i, item,
                         spacManager.priceMap[item.code] ?: 0.0,

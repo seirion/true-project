@@ -201,7 +201,7 @@ fun SpacItem(
                     color = MaterialTheme.colorScheme.primary,
                 )
 
-                if (holdingNum > 0) {
+                if (holdingNum != 0.0) {
                     Margin(2)
                     val s = intFormatter.format(holdingNum)
                     HoldingBadge(s)
