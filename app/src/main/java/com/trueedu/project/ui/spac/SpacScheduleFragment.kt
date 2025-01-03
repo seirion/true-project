@@ -12,7 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -49,13 +49,17 @@ class SpacScheduleFragment: BaseFragment() {
 
     private val loading = mutableStateOf(false)
     // key - yyyyMMdd
-    private val m = mutableStateMapOf<String, SpacSchedule>()
+    private val list = mutableStateListOf<Pair<String, SpacSchedule>>()
 
     override fun init() {
         super.init()
 
         lifecycleScope.launch {
-            m.putAll(spacStatusManager.loadSpacSchedule())
+            list.addAll(
+                spacStatusManager.loadSpacSchedule()
+                    .map { it.key to it.value }
+                    .sortedBy { it.first }
+            )
             MainScope().launch {
                 loading.value = false
             }
@@ -81,7 +85,7 @@ class SpacScheduleFragment: BaseFragment() {
                 modifier = Modifier.padding(innerPadding)
                     .verticalScroll(state)
             ) {
-                m.map { (date, schedule) ->
+                list.map { (date, schedule) ->
                     val dateString = dateFormat(date)
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
