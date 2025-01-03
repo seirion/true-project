@@ -93,7 +93,7 @@ class StockDetailViewModel @Inject constructor(
             assets.get(stockInfo.code)?.let {
                 val priceQuantity = "${intFormatter.format(it.price)} • ${intFormatter.format(it.quantity)}주"
                 val memo = if (it.memo.isNotEmpty()) "\n${it.memo}" else ""
-                listOf("보유(수동)" to "${priceQuantity}${memo}")
+                listOf("수동 입력 자산" to "${priceQuantity}${memo}")
             } ?: emptyList()
         } else {
             listOf(
