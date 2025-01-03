@@ -59,6 +59,7 @@ import com.trueedu.project.ui.common.BottomBar
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.utils.defaultTextColors
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.onEach
@@ -321,6 +322,7 @@ private fun TextInputItem(
             modifier = Modifier.weight(1f),
             keyboardOptions = keyboardOptions,
             maxLines = 2,
+            colors = defaultTextColors(),
         )
         Margin(8)
         TouchIcon24(icon = Icons.Filled.ContentPaste, onClick = onPaste)

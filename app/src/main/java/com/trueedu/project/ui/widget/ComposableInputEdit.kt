@@ -105,6 +105,7 @@ fun DigitInput(
             )
             .padding(12.dp),
         textStyle = TextStyle(
+            color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.End,
         ),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
