@@ -244,11 +244,15 @@ class StockDetailFragment: BaseFragment() {
     private fun editAssets() {
         trueAnalytics.clickButton("stock_detail__edit_assets__click")
         if (googleAccount.loggedIn()) {
-            EditAssetFragment.show(stockInfo.code, childFragmentManager)
+            EditAssetFragment.show(stockInfo.code, childFragmentManager) {
+                vm.initInfoList()
+            }
         } else {
             googleAccount.login(requireActivity()) {
                 // 로그인 성공 후 다시 시도
-                EditAssetFragment.show(stockInfo.code, childFragmentManager)
+                EditAssetFragment.show(stockInfo.code, childFragmentManager) {
+                    vm.initInfoList()
+                }
             }
         }
     }

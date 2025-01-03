@@ -80,7 +80,7 @@ class StockDetailViewModel @Inject constructor(
         priceManager.popRequest(stockInfo.code)
     }
 
-    private fun initInfoList() {
+    fun initInfoList() {
         infoList.value = listOf(
             "전일가격" to numberFormatString(stockInfo.prevPrice()) + "원",
             "전일거래량" to numberFormatString(stockInfo.prevVolume()),
