@@ -34,7 +34,7 @@ class OrderModifyViewModel @Inject constructor(
         update()
     }
 
-    private fun update() {
+    fun update() {
         val accountNum = tokenKeyManager.userKey.value?.accountNum ?: return
         orderRemote.modifiable(accountNum)
             .onStart {

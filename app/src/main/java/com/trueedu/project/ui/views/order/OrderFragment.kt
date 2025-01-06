@@ -81,6 +81,7 @@ class OrderFragment: BaseFragment() {
         balanceDrawer = BalanceDrawer(userAssets, ::gotoOrder)
 
         vm.init(code)
+        modifyVm.init()
 
         lifecycleScope.launch {
             snapshotFlow { currentTab.value }
@@ -111,6 +112,7 @@ class OrderFragment: BaseFragment() {
         vm.buy(
             onSuccess = {
                 Toast.makeText(requireContext(), "매수 주문이 완료되었습니다.", Toast.LENGTH_SHORT).show()
+                modifyVm.update()
             },
             onFail = { msg ->
                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
@@ -123,6 +125,7 @@ class OrderFragment: BaseFragment() {
         vm.sell(
             onSuccess = {
                 Toast.makeText(requireContext(), "매도 주문이 완료되었습니다.", Toast.LENGTH_SHORT).show()
+                modifyVm.update()
             },
             onFail = { msg ->
                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
