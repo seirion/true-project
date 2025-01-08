@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Construction
+import androidx.compose.material.icons.outlined.QueryStats
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TrendingUp
@@ -38,6 +39,7 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
+import com.trueedu.project.ui.spac.SpacAnalysisFragment
 import com.trueedu.project.ui.spac.SpacScheduleFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.home.BottomNavScreen
@@ -87,6 +89,7 @@ class MenuScreen(
                     if (BuildConfig.DEBUG) {
                         MenuItem(Icons.Outlined.Construction, "스팩 어드민", ::onSpacAdmin)
                         MenuItem(Icons.Outlined.Construction, "스팩 스케쥴 어드민", ::onSpacScheduleAdmin)
+                        MenuItem(Icons.Outlined.QueryStats, "스팩 분석", ::onSpacAnalysis)
                     }
                 }
             }
@@ -114,6 +117,10 @@ class MenuScreen(
 
     private fun onSpacScheduleAdmin() {
         SpacScheduleAdminFragment.show(fragmentManager)
+    }
+
+    private fun onSpacAnalysis() {
+        SpacAnalysisFragment.show(fragmentManager)
     }
 }
 
