@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.spac
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -66,7 +67,7 @@ class SpacAnalysisFragment: BaseFragment() {
             launch {
                 snapshotFlow { spacManager.volumePriceMap.size }
                     .collectLatest {
-                        if (stocks.value.isNotEmpty() && it == stocks.value.size) {
+                        if (stocks.value.isNotEmpty()) {
                             stocks.value = stocks.value
                                 .sortedByDescending {
                                     spacManager.volumeMap[it.code] ?: 0L
@@ -84,10 +85,6 @@ class SpacAnalysisFragment: BaseFragment() {
                 val loadingNum = if (loading.value) {
                     ""
                 } else {
-                    if (spacManager.volumePriceMap.size >= stocks.value.size) {
-                        val a = spacManager.volumePriceMap.keys
-                        val b = stocks.value.map { it.code }.toSet()
-                    }
                     "${spacManager.volumePriceMap.size}/${stocks.value.size}"
                 }
 
