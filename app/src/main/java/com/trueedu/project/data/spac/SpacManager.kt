@@ -45,7 +45,8 @@ class SpacManager @Inject constructor(
     val spacList = mutableStateOf<List<StockInfo>>(emptyList())
     val priceMap = mutableStateMapOf<String, Double>()
     val priceChangeMap = mutableStateMapOf<String, Double>()
-    val volumeMap = mutableStateMapOf<String, Long>()
+    val volumeMap = mutableStateMapOf<String, Long>() // 거래량
+    val volumePriceMap = mutableStateMapOf<String, Long>() // 거래대금
     val redemptionValueMap = mutableStateMapOf<String, Pair<Int, Double>>()
 
     val spacAnnualProfitMode = mutableStateOf(local.spacAnnualProfit)
@@ -106,6 +107,7 @@ class SpacManager @Inject constructor(
                         priceMap[s.code] = it.output!!.price.toDouble()
                         priceChangeMap[s.code] = it.output.priceChange.toDouble()
                         volumeMap[s.code] = it.output.volume.safeLong()
+                        volumePriceMap[s.code] = it.output.volumePrice.safeLong()
 
                         // 가격 변경 시 청산 시 수익률도 업데이트 필요
                         updateRedemptionValue(s.code)
