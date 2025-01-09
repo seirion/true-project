@@ -118,3 +118,21 @@ fun BackStockTopBar(
         ),
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomTopBar(
+    navigationIcon: @Composable () -> Unit,
+    titleView: @Composable () -> Unit,
+    actionsView: @Composable RowScope.() -> Unit,
+) {
+    TopAppBar(
+        navigationIcon = navigationIcon,
+        title = titleView,
+        actions = actionsView,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
+    )
+}

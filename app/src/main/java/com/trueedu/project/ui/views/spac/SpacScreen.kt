@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.outlined.ViewList
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarDefaults
@@ -19,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.MainViewModel
 import com.trueedu.project.analytics.TrueAnalytics
@@ -26,9 +28,11 @@ import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
-import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.BottomSelectionFragment
+import com.trueedu.project.ui.common.CustomTopBar
 import com.trueedu.project.ui.common.LoadingView
+import com.trueedu.project.ui.common.TouchIcon32
+import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.order.OrderFragment
@@ -54,12 +58,7 @@ class SpacScreen(
     override fun Draw() {
         Scaffold(
             topBar = {
-                BackTitleTopBar(
-                    title = "스팩 검색",
-                    onBack = null,
-                    actionIcon = Icons.Outlined.ViewList,
-                    onAction = ::onSortOption,
-                )
+                SpacScreenTopBar(::onSortOption)
             },
             bottomBar = {
                 if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
@@ -158,4 +157,26 @@ class SpacScreen(
         super.onStop()
         spacManager.onStop()
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SpacScreenTopBar(
+    onSortOption: () -> Unit = {},
+) {
+    CustomTopBar(
+        navigationIcon = {
+            TouchIcon32(icon = Icons.Filled.ChevronLeft) {}
+        },
+        titleView = {
+            TrueText(
+                s = "스팩 검색",
+                fontSize = 20,
+                color = MaterialTheme.colorScheme.primary
+            )
+        },
+        actionsView = {
+            TouchIcon32(icon = Icons.Outlined.ViewList, onClick = onSortOption)
+        }
+    )
 }
