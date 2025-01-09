@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.outlined.ViewList
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +41,6 @@ import com.trueedu.project.ui.common.BottomSelectionFragment
 import com.trueedu.project.ui.common.CustomTopBar
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.TouchIcon24
-import com.trueedu.project.ui.common.TouchIcon32
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.home.BottomNavScreen
@@ -177,9 +175,7 @@ private fun SpacScreenTopBar(
     onSortOption: () -> Unit = {},
 ) {
     CustomTopBar(
-        navigationIcon = {
-            TouchIcon32(icon = Icons.Filled.ChevronLeft) {}
-        },
+        navigationIcon = {},
         titleView = {
             TrueText(
                 s = "스팩",
