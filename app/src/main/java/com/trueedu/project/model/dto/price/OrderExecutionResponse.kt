@@ -44,7 +44,7 @@ data class OrderExecutionDetail(
                         // 정정취소여부가 Y이면 *이 붙음
                         //ex) 매수취소* = 매수취소가 완료됨
     @SerialName("pdno")
-    val productNo: String, // 상품번호
+    val code: String, // 상품번호
     @SerialName("prdt_name")
     val nameKr: String, // 상품명
     @SerialName("ord_qty")

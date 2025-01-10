@@ -30,6 +30,7 @@ import com.trueedu.project.utils.formatter.intFormatter
 
 class OrderExecutionDrawer(
     private val vm: OrderExecutionViewModel,
+    private val gotoOrder: (String) -> Unit,
 ): ComposableDrawer {
 
     @Composable
@@ -46,7 +47,7 @@ class OrderExecutionDrawer(
                 val items = vm.response.value!!.orderExecutionDetail ?: emptyList()
                 itemsIndexed(items, key = { _, item -> item.orderNo }) { index, item ->
                     val bgColor = listBackgroundColor(index)
-                    ItemView(item, bgColor) {}
+                    ItemView(item, bgColor, gotoOrder)
                 }
             }
         }
@@ -56,7 +57,7 @@ class OrderExecutionDrawer(
     private fun ItemView(
         item: OrderExecutionDetail,
         bgColor: Color,
-        onClick: () -> Unit,
+        onClick: (String) -> Unit,
     ) {
         val isBuy = item.sellBuyDivisionCode == "02"
         val primary = MaterialTheme.colorScheme.primary
@@ -65,7 +66,7 @@ class OrderExecutionDrawer(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
                 .background(color = bgColor)
-                .clickable { onClick() }
+                .clickable { onClick(item.code) }
                 .padding(vertical = 4.dp)
         ) {
             val nameKr = item.nameKr
