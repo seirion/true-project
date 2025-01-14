@@ -42,6 +42,7 @@ import com.trueedu.project.ui.common.CustomTopBar
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.spac.SpacFilterBottomSheet
 import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.order.OrderFragment
@@ -67,7 +68,7 @@ class SpacScreen(
     override fun Draw() {
         Scaffold(
             topBar = {
-                SpacScreenTopBar(vm.sort.value, ::onSortOption)
+                SpacScreenTopBar(vm.sort.value, ::onSortOption, ::onSpacFilter)
             },
             bottomBar = {
                 if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
@@ -131,6 +132,8 @@ class SpacScreen(
 
     // 정렬하기
     private fun onSortOption() {
+        trueAnalytics.clickButton("${screenName()}__sort_option__click")
+
         val selected = SpacSort.entries.indexOfFirst { it == vm.sort.value }
         BottomSelectionFragment.show(
             selected = selected,
@@ -146,6 +149,12 @@ class SpacScreen(
             },
             fragmentManager = fragmentManager,
         )
+    }
+
+    // 스팩 필터 도구
+    private fun onSpacFilter() {
+        trueAnalytics.clickButton("${screenName()}__filter__click")
+        SpacFilterBottomSheet.show(fragmentManager)
     }
 
     private fun onPriceClick(code: String) {
@@ -173,6 +182,7 @@ class SpacScreen(
 private fun SpacScreenTopBar(
     sortType: SpacSort = SpacSort.ISSUE_DATE,
     onSortOption: () -> Unit = {},
+    onFilterOption: () -> Unit = {},
 ) {
     CustomTopBar(
         navigationIcon = {},
@@ -205,7 +215,7 @@ private fun SpacScreenTopBar(
                     contentDescription = "sort-select"
                 )
             }
-            TouchIcon24(icon = Icons.Outlined.ViewList, onClick = {})
+            TouchIcon24(icon = Icons.Outlined.ViewList, onClick = onFilterOption)
         }
     )
 }
