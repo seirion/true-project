@@ -142,6 +142,7 @@ class SpacManager @Inject constructor(
         val listingDateStr = stockPool.get(code)?.listingDate() ?: return
         val targetDate = stringToLocalDate(listingDateStr)
             .plusYears(3)
+            .plusDays(-51)
         val isAnnualized = spacAnnualProfitMode.value
         val (valueRate, valueRateAnnualized) = redemptionProfitRate(price, redemptionPrice, targetDate)
         val rate = if (isAnnualized) valueRateAnnualized else valueRate
