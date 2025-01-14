@@ -59,6 +59,8 @@ import com.trueedu.project.utils.formatter.safeDouble
 import com.trueedu.project.utils.redemptionProfitRate
 import com.trueedu.project.utils.stringToLocalDate
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -293,8 +295,9 @@ fun ColumnScope.SpacDetailView(
             rateFormatter.format(profitRate, true),
             ChartColor.color(profitRate)
         )
+        val days = ChronoUnit.DAYS.between(LocalDate.now(), targetDate)
         SpacDataView(
-            "1년 환산 수익률",
+            "연환산 수익률 (${days}일)",
             rateFormatter.format(annualizedProfit, true),
             ChartColor.color(annualizedProfit)
         )
