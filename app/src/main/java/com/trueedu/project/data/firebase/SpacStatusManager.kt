@@ -60,6 +60,8 @@ class SpacStatusManager @Inject constructor(
         val snapshot = ref.child("status")
         val list = snapshot.get().await()
             .getValue(object : GenericTypeIndicator<List<SpacStatus>>() {})
+            ?.filter { it?.code != null }
+
         if (list != null) spacList = list
         return list ?: emptyList()
     }

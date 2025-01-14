@@ -63,7 +63,9 @@ class SpacManager @Inject constructor(
                 .collect {
                     Log.d(TAG, "spac status init: ${it.size}")
                     spacList.value = stockPool.search(StockInfo::spac)
-                    spacStatusMap.value = it.associateBy(SpacStatus::code)
+                    spacStatusMap.value = it
+                        .filter { it?.code != null }
+                        .associateBy(SpacStatus::code)
                     init()
                 }
         }
