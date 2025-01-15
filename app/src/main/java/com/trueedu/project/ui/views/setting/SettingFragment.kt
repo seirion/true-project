@@ -63,10 +63,6 @@ class SettingFragment: BaseFragment() {
                     trueAnalytics.enterView("${screenName()}__screen_setting__click")
                     ScreenSettingFragment.show(parentFragmentManager)
                 }
-                SettingItem("스팩 설정", true) {
-                    trueAnalytics.enterView("${screenName()}__spac_setting__click")
-                    SpacSettingFragment.show(parentFragmentManager)
-                }
 
                 val label = "종목 정보 업데이트" + vm.stockUpdateLabel.value
                 SettingItem(label, vm.updateAvailable.value) {
