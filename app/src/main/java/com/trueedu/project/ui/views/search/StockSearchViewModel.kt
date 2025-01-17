@@ -5,7 +5,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.StockPool
-import com.trueedu.project.data.WatchList
 import com.trueedu.project.model.dto.firebase.StockInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -17,8 +16,7 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class StockSearchViewModel @Inject constructor(
-    private val stockPool: StockPool,
-    private val watchList: WatchList,
+    val stockPool: StockPool,
 ): ViewModel() {
 
     companion object {
@@ -28,6 +26,9 @@ class StockSearchViewModel @Inject constructor(
     val searchInput = mutableStateOf("")
     val searchResult = mutableStateOf<List<StockInfo>>(emptyList())
     val loading = mutableStateOf(true)
+
+    // 홈에서 진입한 경우, 관심 지정을 위한 팝업을 띄우는 용도
+    var selectedStock = mutableStateOf<StockInfo?>(null)
 
     init {
 
@@ -65,9 +66,5 @@ class StockSearchViewModel @Inject constructor(
                     }
             }
         }
-    }
-
-    fun updateStocks() {
-        stockPool.downloadMasterFiles()
     }
 }

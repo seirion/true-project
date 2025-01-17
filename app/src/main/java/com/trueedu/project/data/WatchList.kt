@@ -120,8 +120,16 @@ class WatchList @Inject constructor(
         firebaseRealtimeDatabase.writeWatchList(temp)
     }
 
+    // 특정 페이지에 관심 종목이 존재하는 지 여부
     fun contains(index: Int, code: String): Boolean {
         return list.value.getOrNull(index)?.contains(code) == true
+    }
+
+    // 전체 관심 종목에 존재하는 지 여부
+    fun contains(code: String): Boolean {
+        return list.value.any { watchList ->
+            watchList.contains(code)
+        }
     }
 
     // 관심 종목이 하나라도 있는 지 여부
