@@ -154,7 +154,12 @@ class SpacScreen(
     // 스팩 필터 도구
     private fun onSpacFilter() {
         trueAnalytics.clickButton("${screenName()}__filter__click")
-        SpacFilterBottomSheet.show(fragmentManager)
+        SpacFilterBottomSheet.show(vm.spacFilter, fragmentManager) {
+            if (vm.spacFilter != it) {
+                vm.spacFilter = it
+                vm.filterStocks()
+            }
+        }
     }
 
     private fun onPriceClick(code: String) {

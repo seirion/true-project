@@ -11,11 +11,13 @@ import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.utils.formatter.safeDouble
 import com.trueedu.project.utils.formatter.safeLong
+import com.trueedu.project.utils.yyyyMMdd
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -34,6 +36,7 @@ class SpacViewModel @Inject constructor(
     val searchInput = mutableStateOf("")
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
     val sort = mutableStateOf(SpacSort.ISSUE_DATE)
+    var spacFilter = SpacFilter()
 
     private val sortFun = mapOf<SpacSort, (StockInfo) -> Double>(
         SpacSort.ISSUE_DATE to { it.listingDate().safeLong().toDouble() },
@@ -80,9 +83,18 @@ class SpacViewModel @Inject constructor(
         filterStocks()
     }
 
-    private fun filterStocks() {
+    fun filterStocks() {
         stocks.value = spacManager.spacList.value
             .filterNot { stockPool.delisted(it.code) }
+            .filter {
+                if (spacFilter.listedOverTwoYears) {
+                    val listingDate = it.listingDate().safeDouble()
+                    val today = LocalDate.now().yyyyMMdd().safeLong()
+                    listingDate + 20000L < today
+                } else {
+                    true
+                }
+            }
             .filter {
                 val searchKey = searchInput.value.trim().lowercase()
                 searchKey.isEmpty() ||
