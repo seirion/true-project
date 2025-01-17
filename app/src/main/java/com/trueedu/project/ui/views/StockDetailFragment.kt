@@ -168,7 +168,7 @@ class StockDetailFragment: BaseFragment() {
                 SettingItem("기업 공시 보기", true, ::gotoAnnouncements)
 
                 vm.spacStatus.value?.let {
-                    SpacDetailView(vm.currentPrice(), stockInfo, it)
+                    SpacDetailView(vm.currentPrice().toInt(), stockInfo, it)
                 }
 
                 vm.infoList.value.forEach {
@@ -262,17 +262,18 @@ class StockDetailFragment: BaseFragment() {
 
 @Composable
 fun ColumnScope.SpacDetailView(
-    currentPrice: Double,
+    currentPrice: Int,
     stock: StockInfo,
     spac: SpacStatus
 ) {
     val redemptionPrice = spac.redemptionPrice?.toString() ?: "0"
-    val inputString = remember { mutableStateOf(TextFieldValue(redemptionPrice)) }
+    val baseInputString = remember { mutableStateOf(TextFieldValue(currentPrice.toString())) }
+    val targetInputString = remember { mutableStateOf(TextFieldValue(redemptionPrice)) }
 
     SpacValueSection()
     SpacValueView(
-        basePrice = currentPrice,
-        input = inputString,
+        baseInput = baseInputString,
+        targetInput = targetInputString,
     )
 
     val listingDateStr = stock.listingDate() ?: return
@@ -280,12 +281,16 @@ fun ColumnScope.SpacDetailView(
         .plusYears(3)
         .plusDays(-51)
 
-    val targetPrice = inputString.value.text.let {
+    val basePrice = baseInputString.value.text.let {
+        if (it.isEmpty()) 0
+        else it.toInt()
+    }
+    val targetPrice = targetInputString.value.text.let {
         if (it.isEmpty()) 0
         else it.toInt()
     }
     val (profitRate, annualizedProfit) = redemptionProfitRate(
-        currentPrice, targetPrice, targetDate
+        basePrice.toDouble(), targetPrice, targetDate
     )
     if (profitRate == null || annualizedProfit == null) {
 

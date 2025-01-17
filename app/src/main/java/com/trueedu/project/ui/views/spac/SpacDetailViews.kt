@@ -1,7 +1,6 @@
 package com.trueedu.project.ui.views.spac
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +17,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.widget.DigitInput
-import com.trueedu.project.utils.formatter.intFormatter
 
 @Preview(showBackground = true)
 @Composable
@@ -45,8 +43,8 @@ fun SpacValueSection() {
 
 @Composable
 fun ColumnScope.SpacValueView(
-    basePrice: Double,
-    input: MutableState<TextFieldValue>,
+    baseInput: MutableState<TextFieldValue>,
+    targetInput: MutableState<TextFieldValue>,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -55,13 +53,8 @@ fun ColumnScope.SpacValueView(
             .fillMaxWidth()
             .padding(8.dp)
     ) {
-        val valueString = intFormatter.format(basePrice)
-        TrueText(
-            s = valueString,
-            fontSize = 16,
-            color = MaterialTheme.colorScheme.primary,
-        )
-        DigitInput(input, Modifier.width(120.dp))
+        DigitInput(baseInput, Modifier.width(120.dp))
+        DigitInput(targetInput, Modifier.width(120.dp))
     }
 }
 
