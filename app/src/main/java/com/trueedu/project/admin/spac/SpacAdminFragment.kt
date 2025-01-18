@@ -90,7 +90,7 @@ class SpacAdminFragment: BaseFragment() {
                     val nameKr = spac.first().takeWhile { !it.isWhitespace() }
                     val stock = stockPool.search { it.nameKr == nameKr }.firstOrNull()
                         ?: return@mapNotNull null
-                    val price = beforeTax(spac.last().toInt(), stock.parValue().safeLong()) // 세전으로 표시
+                    val price = spac.last().toInt()
                     SpacStatus(
                         code = stock.code,
                         nameKr = nameKr,
