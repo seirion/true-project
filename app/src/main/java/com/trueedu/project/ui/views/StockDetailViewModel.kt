@@ -19,6 +19,7 @@ import com.trueedu.project.utils.formatter.numberFormatString
 import com.trueedu.project.utils.formatter.safeDouble
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -61,6 +62,10 @@ class StockDetailViewModel @Inject constructor(
                 val list = spacStatusManager.load()
                 val spacStatus = list.firstOrNull { it.code == stockInfo.code }
                 withContext(Dispatchers.Main) {
+                    if (tokenKeyManager.userKey.value != null) {
+                        // walkaround: api 를 통해 현재 가격을 받을 때까지 시간 지연
+                        delay(100)
+                    }
                     this@StockDetailViewModel.spacStatus.value = spacStatus
                 }
             }
