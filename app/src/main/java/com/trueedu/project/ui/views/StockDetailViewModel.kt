@@ -66,14 +66,16 @@ class StockDetailViewModel @Inject constructor(
             }
         }
 
-        priceRemote.currentPrice(stockInfo.code)
-            .onEach {
-                basePrice.value = it
-            }
-            .catch {
-                Log.d(TAG, "가격 데이터 받기 실패: $it")
-            }
-            .launchIn(viewModelScope)
+        if (tokenKeyManager.userKey.value != null) {
+            priceRemote.currentPrice(stockInfo.code)
+                .onEach {
+                    basePrice.value = it
+                }
+                .catch {
+                    Log.d(TAG, "가격 데이터 받기 실패: $it")
+                }
+                .launchIn(viewModelScope)
+        }
     }
 
     fun destroy() {
