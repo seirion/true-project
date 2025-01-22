@@ -24,6 +24,7 @@ import com.trueedu.project.data.firebase.SpacStatusManager
 import com.trueedu.project.model.dto.firebase.SpacSchedule
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
+import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.utils.formatter.dateFormat
@@ -108,6 +109,7 @@ class SpacScheduleFragment: BaseFragment() {
                             maxLines = Int.MAX_VALUE,
                         )
                     }
+                    DividerHorizontal()
                 }
             }
         }
