@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,9 +30,11 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.utils.formatter.dateFormat
+import com.trueedu.project.utils.yyyyMMdd
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -89,9 +92,20 @@ class SpacScheduleFragment: BaseFragment() {
             ) {
                 list.map { (date, schedule) ->
                     val dateString = dateFormat(date)
+                    val isPast = LocalDate.now().yyyyMMdd().let { now ->
+                        date < now
+                    }
+                    val bgColor = if (isPast) {
+                        MaterialTheme.colorScheme.surfaceDim.copy(
+                            alpha = 0.4f
+                        )
+                    } else {
+                        Color.Transparent
+                    }
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
+                            .background(color = bgColor)
                             .padding(vertical = 8.dp, horizontal = 8.dp)
                     ) {
                         TrueText(
