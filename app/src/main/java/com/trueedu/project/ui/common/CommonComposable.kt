@@ -37,7 +37,7 @@ fun TrueText(
     fontSize: Int,
     modifier: Modifier = Modifier,
     fontWeight: FontWeight = FontWeight.W400,
-    color: Color = Color.Black,
+    color: Color = MaterialTheme.colorScheme.primary,
     maxLines: Int = 1,
     textAlign: TextAlign? = null,
     lineHeight: TextUnit = 1.5.em,

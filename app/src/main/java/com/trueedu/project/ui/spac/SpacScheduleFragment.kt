@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -99,15 +100,23 @@ class SpacScheduleFragment: BaseFragment() {
                             fontWeight = FontWeight.W400,
                             color = MaterialTheme.colorScheme.primary,
                         )
-                        val s = "${schedule.nameKr}\n${schedule.note}"
-                        TrueText(
-                            s = s,
-                            fontSize = 15,
-                            fontWeight = FontWeight.W400,
-                            textAlign = TextAlign.End,
-                            color = MaterialTheme.colorScheme.primary,
-                            maxLines = Int.MAX_VALUE,
-                        )
+                        Column(horizontalAlignment = Alignment.End) {
+                            TrueText(
+                                s = schedule.nameKr,
+                                fontSize = 15,
+                                fontWeight = FontWeight.W500,
+                                textAlign = TextAlign.End,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            TrueText(
+                                s = schedule.note,
+                                fontSize = 14,
+                                fontWeight = FontWeight.W400,
+                                textAlign = TextAlign.End,
+                                color = MaterialTheme.colorScheme.primary,
+                                maxLines = Int.MAX_VALUE,
+                            )
+                        }
                     }
                     DividerHorizontal()
                 }
