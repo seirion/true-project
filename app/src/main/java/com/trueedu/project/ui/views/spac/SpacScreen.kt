@@ -100,7 +100,7 @@ class SpacScreen(
                     .padding(innerPadding)
             ) {
                 item { SearchBar(searchText = vm.searchInput) {} }
-                stickyHeader { SpacSectionView() }
+                stickyHeader { SpacSectionView(vm::setSort) }
 
                 itemsIndexed(vm.stocks.value, key = { i, _ -> i }) { i, item ->
                     val redemptionValue = spacManager.redemptionValueMap[item.code]
