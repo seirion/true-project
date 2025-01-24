@@ -71,6 +71,12 @@ class OrderViewModel @Inject constructor(
         this.code = code
         val stock = stockPool.get(code)
         nameKr.value = stock?.nameKr ?: ""
+
+        // 데이터 초기화
+        tradeBase.value = null
+        basePrice.value = null
+        realTimeQuotes.value = null
+
         priceManager.pushRequest(
             code,
             listOf(code)
