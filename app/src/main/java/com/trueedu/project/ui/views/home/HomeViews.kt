@@ -17,9 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.account.AccountAsset
 import com.trueedu.project.model.dto.account.AccountDetail
+import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIconWithSizeRotating
 import com.trueedu.project.ui.common.TrueText
@@ -187,14 +187,9 @@ fun HomeStockItem(
                 }
             }
 
-            val subText = if (marketPriceMode) {
-                "(${item.code})" // 종목 코드
-            } else {
-                val priceString = intFormatter.format(item.purchaseAveragePrice.toDouble())
-                "${priceString}원 • ${item.holdingQuantity}주" // 수량
-            }
+            val priceString = intFormatter.format(item.purchaseAveragePrice.toDouble())
             TrueText(
-                s = subText,
+                s = "${priceString}원 • ${item.holdingQuantity}주",
                 fontSize = 13,
                 color = MaterialTheme.colorScheme.secondary,
             )
