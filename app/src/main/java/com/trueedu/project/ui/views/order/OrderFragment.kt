@@ -98,6 +98,10 @@ class OrderFragment: BaseFragment() {
     }
 
     private fun gotoOrder(code: String) {
+        if (vm.stockPool.get(code) == null) {
+            Toast.makeText(requireContext(), "상장 폐지 종목입니다", Toast.LENGTH_SHORT).show()
+            return
+        }
         setOrderTab(OrderTab.Order)
         vm.init(code)
     }
