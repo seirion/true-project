@@ -73,13 +73,22 @@ fun AccountInfo(
         val profitRateString = rateFormatter.format(rate, true)
 
         Column {
-            // 총자산
-            TrueText(
-                s = totalString,
-                fontSize = 24,
-                fontWeight = FontWeight.W500,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // 총자산
+                TrueText(
+                    s = totalString,
+                    fontSize = 24,
+                    fontWeight = FontWeight.W500,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                // 새로 고침 버튼
+                TouchIconWithSizeRotating(
+                    size = 24.dp,
+                    tint= MaterialTheme.colorScheme.primary,
+                    icon = Icons.Outlined.Sync,
+                    onClick = onRefresh
+                )
+            }
             // 수익/수익률
             TrueText(
                 s = "$profitString ($profitRateString)",
@@ -88,19 +97,11 @@ fun AccountInfo(
             )
         }
 
-        Column(horizontalAlignment = Alignment.End) {
-            TouchIconWithSizeRotating(
-                size = 24.dp,
-                tint= MaterialTheme.colorScheme.primary,
-                icon = Icons.Outlined.Sync,
-                onClick = onRefresh
-            )
-            MyToggleButton(
-                defaultValue = if (dailyProfitMode) 0 else 1,
-                textKeys = listOf( "시세", "수익"),
-                toggleClick = onChangeDailyMode,
-            )
-        }
+        MyToggleButton(
+            defaultValue = if (dailyProfitMode) 0 else 1,
+            textKeys = listOf( "시세", "수익"),
+            toggleClick = onChangeDailyMode,
+        )
     }
 
     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
