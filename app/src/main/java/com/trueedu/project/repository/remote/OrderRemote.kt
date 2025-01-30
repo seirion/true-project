@@ -26,6 +26,13 @@ interface OrderRemote {
 
     fun modifiable(accountNum: String): Flow<OrderModifiableResponse>
 
+    fun modify(
+        accountNum: String,
+        originalOrderCode: String,
+        priceString: String,
+        quantityString: String,
+    ): Flow<OrderModifyResponse>
+
     fun cancel(
         accountNum: String,
         originalOrderCode: String,

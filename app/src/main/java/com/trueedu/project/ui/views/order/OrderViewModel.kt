@@ -12,6 +12,7 @@ import com.trueedu.project.data.UserAssets
 import com.trueedu.project.data.realtime.RealOrderManager
 import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.model.dto.firebase.StockInfo
+import com.trueedu.project.model.dto.price.OrderModifiableDetail
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
 import com.trueedu.project.model.ws.RealTimeOrder
@@ -67,8 +68,12 @@ class OrderViewModel @Inject constructor(
 
     val quantityInput = mutableStateOf(TextFieldValue("1"))
 
-    fun init(code: String) {
+    // 주문 수정인 경우 원주문 번호가 들어 있음
+    val originalOrder = mutableStateOf<OrderModifiableDetail?>(null)
+
+    fun init(code: String, originalOrder: OrderModifiableDetail? = null) {
         this.code = code
+        this.originalOrder.value = originalOrder
         val stock = stockPool.get(code)
         nameKr.value = stock?.nameKr ?: ""
 
