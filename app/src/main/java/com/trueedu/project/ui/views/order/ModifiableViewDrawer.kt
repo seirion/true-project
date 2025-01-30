@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.base.ComposableDrawer
 import com.trueedu.project.model.dto.price.OrderModifiableDetail
+import com.trueedu.project.model.dto.price.OrderModifiableResponse
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
@@ -32,6 +33,7 @@ import com.trueedu.project.utils.formatter.intFormatter
 class ModifiableViewDrawer(
     private val vm: OrderModifyViewModel,
     private val onCancel: (String) -> Unit, // orderNo
+    private val onModify: (String, OrderModifiableDetail) -> Unit, // orderNo, code
 ): ComposableDrawer {
     @Composable
     override fun Draw() {
@@ -47,7 +49,7 @@ class ModifiableViewDrawer(
                 val items = vm.items.value!!.orderModifiableDetail
                 itemsIndexed(items, key = { _, item -> item.orderNo }) { index, item ->
                     ItemView(item, onCancel) {
-
+                        onModify(item.code, item) // 주문 수정하기
                     }
                 }
             }

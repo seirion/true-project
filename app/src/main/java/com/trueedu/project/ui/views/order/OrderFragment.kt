@@ -23,6 +23,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.R
 import com.trueedu.project.data.UserAssets
+import com.trueedu.project.model.dto.price.OrderModifiableDetail
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -75,12 +76,12 @@ class OrderFragment: BaseFragment() {
 
     override fun init() {
         super.init()
-        orderViewDrawer = OrderViewDrawer(vm, modifyVm, ::buy, ::sell, vm::setQuantity)
-        modifiableViewDrawer = ModifiableViewDrawer(modifyVm, ::cancelOrder)
+        orderViewDrawer = OrderViewDrawer(vm, modifyVm, ::buy, ::sell, ::modifyOrder, vm::setQuantity)
+        modifiableViewDrawer = ModifiableViewDrawer(modifyVm, ::cancelOrder, ::gotoOrder)
         orderExecutionDrawer = OrderExecutionDrawer(executionVm, ::gotoOrder)
         balanceDrawer = BalanceDrawer(userAssets, ::gotoOrder)
 
-        vm.init(code)
+        vm.init(code, null)
         modifyVm.init()
 
         lifecycleScope.launch {
@@ -97,13 +98,13 @@ class OrderFragment: BaseFragment() {
         }
     }
 
-    private fun gotoOrder(code: String) {
+    private fun gotoOrder(code: String, originalOrder: OrderModifiableDetail? = null) {
         if (vm.stockPool.get(code) == null) {
             Toast.makeText(requireContext(), "상장 폐지 종목입니다", Toast.LENGTH_SHORT).show()
             return
         }
         setOrderTab(OrderTab.Order)
-        vm.init(code)
+        vm.init(code, originalOrder)
     }
 
     override fun onDestroy() {
@@ -134,6 +135,21 @@ class OrderFragment: BaseFragment() {
             onFail = { msg ->
                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
             }
+        )
+    }
+
+    private fun modifyOrder(order: OrderModifiableDetail) {
+        trueAnalytics.clickButton("${screenName()}__modify__click")
+        modifyVm.modify(
+            orderNo = order.orderNo,
+            priceString = vm.priceInput.value.text,
+            quantityString = vm.quantityInput.value.text,
+            onSuccess = {
+                Toast.makeText(requireContext(), "주문이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+            },
+            onFail = {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            },
         )
     }
 
@@ -168,6 +184,11 @@ class OrderFragment: BaseFragment() {
             ) {
                 TopStockInfoViewInternal()
                 TabViews()
+
+                if (currentTab.value != OrderTab.Order) {
+                    // 정정 주문 데이터 삭제
+                    vm.originalOrder.value = null
+                }
 
                 when (currentTab.value) {
                     OrderTab.Order -> {

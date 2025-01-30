@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.base.ComposableDrawer
 import com.trueedu.project.model.dto.account.AccountAsset
+import com.trueedu.project.model.dto.price.OrderModifiableDetail
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.widget.InputSet
@@ -26,6 +27,7 @@ class OrderViewDrawer(
     private val modifyVm: OrderModifyViewModel,
     private val buy: () -> Unit,
     private val sell: () -> Unit,
+    private val modify: (OrderModifiableDetail) -> Unit, // original order
     private val setOrderQuantity: (Double) -> Unit,
 ): ComposableDrawer {
     @Composable
@@ -84,7 +86,15 @@ class OrderViewDrawer(
                     }
                 }
             }
-            SellBuyButtons(buy, sell)
+
+            if (vm.originalOrder.value == null) {
+                SellBuyButtons(buy, sell)
+            } else {
+                // 01 매도, 02 매수
+                ModifyButtons(vm.originalOrder.value!!.sellBuyDivisionCode == "02") {
+                    modify(vm.originalOrder.value!!)
+                }
+            }
         }
     }
 }

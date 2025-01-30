@@ -71,3 +71,38 @@ fun SellBuyButtons(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun ModifyButtons(
+    isBuy: Boolean = true,
+    modify: () -> Unit = {},
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .height(52.dp)
+            .padding(horizontal = 16.dp)
+    ) {
+        val buttonColor = if (isBuy) ChartColor.up else ChartColor.down
+        Button(
+            onClick = { modify() },
+            modifier = Modifier.weight(1f)
+                .fillMaxHeight(),
+            colors = ButtonColors(
+                containerColor = buttonColor,
+                contentColor = MaterialTheme.colorScheme.background,
+                disabledContainerColor = Color.Transparent,
+                disabledContentColor = Color.Transparent,
+            ),
+        ) {
+            TrueText(
+                s = if (isBuy) "매수 수정" else "매도 수정",
+                fontSize = 18,
+                color = MaterialTheme.colorScheme.background,
+            )
+        }
+    }
+}

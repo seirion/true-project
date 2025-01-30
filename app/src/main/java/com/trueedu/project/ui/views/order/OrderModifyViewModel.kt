@@ -55,6 +55,37 @@ class OrderModifyViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    fun modify(
+        orderNo: String,
+        priceString: String,
+        quantityString: String,
+        onSuccess: () -> Unit,
+        onFail: (String) -> Unit
+    ) {
+        val accountNum = tokenKeyManager.userKey.value?.accountNum ?: return
+
+        orderRemote.modify(accountNum, orderNo, priceString, quantityString)
+            .flowOn(Dispatchers.IO)
+            .onEach {
+                if (it.rtCd == "0") {
+                    onSuccess()
+                } else {
+                    Log.d(TAG, "주문 수정 실패: $it")
+                    onFail(it.msg ?: it.msg1 ?: "주문 수정 실패")
+                }
+            }
+            .catch {
+                Log.d(TAG, "취소 실패: $it")
+                val message = it.message ?: "주문 수정 실패"
+                onFail(message)
+            }
+            .onCompletion {
+                update()
+            }
+            .flowOn(Dispatchers.Main)
+            .launchIn(viewModelScope)
+    }
+
     fun cancel(
         orderNo: String,
         onSuccess: () -> Unit,
