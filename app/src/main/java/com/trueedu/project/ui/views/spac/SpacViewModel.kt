@@ -96,6 +96,15 @@ class SpacViewModel @Inject constructor(
                 }
             }
             .filter {
+                if (spacFilter.underParValue) {
+                    val price = spacManager.priceMap.getOrDefault(it.code, 0.0).toInt()
+                    val base = if (it.parValue().safeLong() == 100L) 2_000 else 10_000
+                    price != 0 && price <= base
+                } else {
+                    true
+                }
+            }
+            .filter {
                 val searchKey = searchInput.value.trim().lowercase()
                 searchKey.isEmpty() ||
                         it.nameKr.lowercase().contains(searchKey) ||
