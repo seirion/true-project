@@ -104,17 +104,20 @@ class SpacFilterBottomSheet: BottomSheetDialogFragment() {
                 spacManager.spacAnnualProfitMode.value,
                 ::setSpacAnnualProfit
             )
-            OnOffSetting(
-                "1년 미만 종목만 보기",
-                spacFilter.value.listedOverTwoYears,
-                {
-                    trueAnalytics.clickToggleButton(
-                        "${screenName()}__listed_over_two_years__click",
-                        !it
-                    )
-                    spacFilter.value = spacFilter.value.copy(listedOverTwoYears = it)
-                }
-            )
+            OnOffSetting("1년 미만 종목만 보기", spacFilter.value.listedOverTwoYears) {
+                trueAnalytics.clickToggleButton(
+                    "${screenName()}__listed_over_two_years__click",
+                    !it
+                )
+                spacFilter.value = spacFilter.value.copy(listedOverTwoYears = it)
+            }
+            OnOffSetting("2,000원 이하 종목만 보기", spacFilter.value.underParValue) {
+                trueAnalytics.clickToggleButton(
+                    "${screenName()}__under_par_value__click",
+                    !it
+                )
+                spacFilter.value = spacFilter.value.copy(underParValue = it)
+            }
         }
     }
 
