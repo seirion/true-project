@@ -212,7 +212,7 @@ class OrderViewModel @Inject constructor(
         )
     }
 
-    private fun stockInfo(): StockInfo? {
+    fun stockInfo(): StockInfo? {
         return stockPool.get(code)
     }
 

@@ -15,11 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.base.ComposableDrawer
 import com.trueedu.project.model.dto.account.AccountAsset
+import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.OrderModifiableDetail
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.widget.InputSet
 import com.trueedu.project.utils.formatter.intFormatter
+import com.trueedu.project.utils.formatter.numberFormatString
 import com.trueedu.project.utils.formatter.safeDouble
 
 class OrderViewDrawer(
@@ -75,8 +77,8 @@ class OrderViewDrawer(
                     val asset = userAssets.value?.output1?.let {
                         it.firstOrNull { it.code == vm.code }
                     }
+                    Margin(36)
                     if (asset != null) {
-                        Margin(36)
                         HorizontalDivider(
                             color = MaterialTheme.colorScheme.outlineVariant,
                             thickness = 1.dp,
@@ -84,6 +86,7 @@ class OrderViewDrawer(
                         )
                         StockHoldingView(asset, setOrderQuantity)
                     }
+                    vm.stockInfo()?.let { MarketCapView(it) }
                 }
             }
 
@@ -122,6 +125,29 @@ fun StockHoldingView(
         TrueText(
             s = intFormatter.format(item.holdingQuantity.toDouble()) +
                     "/${intFormatter.format(orderPossibleQuantity)}",
+            fontSize = 12,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+private fun MarketCapView(stock: StockInfo) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+            //.padding(vertical = 12.dp)
+    ) {
+        TrueText(
+            s = "시가총액",
+            fontSize = 12,
+            color = MaterialTheme.colorScheme.primary
+        )
+        TrueText(
+            s = numberFormatString(stock.marketCap()) + "억",
             fontSize = 12,
             color = MaterialTheme.colorScheme.primary
         )
