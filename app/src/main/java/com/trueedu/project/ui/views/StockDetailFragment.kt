@@ -15,18 +15,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -52,6 +58,7 @@ import com.trueedu.project.ui.views.spac.SpacDataView
 import com.trueedu.project.ui.views.spac.SpacValueSection
 import com.trueedu.project.ui.views.spac.SpacValueView
 import com.trueedu.project.ui.views.stock.DailyPriceFragment
+import com.trueedu.project.ui.views.watch.StockDetailWatchingPopup
 import com.trueedu.project.ui.widget.SettingItem
 import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
@@ -113,6 +120,8 @@ class StockDetailFragment: BaseFragment() {
     @Composable
     override fun BodyScreen() {
         if (!::stockInfo.isInitialized) dismissAllowingStateLoss()
+
+        var dialogShowing by remember { mutableStateOf(false) }
         Scaffold(
             topBar = {
                 val realTimeTrade = vm.priceManager.dataMap[stockInfo.code]
@@ -125,14 +134,19 @@ class StockDetailFragment: BaseFragment() {
                     vm.basePrice.value != null -> priceChangeStr(vm.basePrice.value!!)
                     else -> "" to ChartColor.up
                 }
+
+                val isWatching = vm.watchList.contains(stockInfo.code)
+                val icon = if (isWatching) Icons.Filled.Star else Icons.Outlined.StarOutline
                 val actions: @Composable RowScope.() -> Unit =
                     if (stockInfo.spac()) {
-                        @Composable
                         {
+                            TouchIcon24(icon, onClick = { dialogShowing = true})
                             TouchIcon24(Icons.Outlined.Edit, onClick = ::editAssets)
                         }
                     } else {
-                        {}
+                        {
+                            TouchIcon24(icon, onClick = { dialogShowing = true})
+                        }
                     }
                 BackStockTopBar(
                     stockInfo.nameKr,
@@ -215,7 +229,27 @@ class StockDetailFragment: BaseFragment() {
                 }
 
             }
-        }
+
+            if (dialogShowing) {
+                Dialog(
+                    onDismissRequest = { dialogShowing = false },
+                    properties = DialogProperties(usePlatformDefaultWidth = false) // Important for custom positioning
+                ) {
+                    val code = stockInfo.code
+                    val watchingList = vm.watchList.list.value.indices.map {
+                        vm.watchList.contains(it, code)
+                    }
+                    StockDetailWatchingPopup(
+                        nameKr = stockInfo.nameKr,
+                        pageCount = vm.watchList.list.value.size,
+                        watchingList = watchingList,
+                        toggle = { index ->
+                            toggleWatching(index, code)
+                        }
+                    )
+                }
+            }
+        } // end of Scaffold
     }
 
     private fun gotoOrder() {
@@ -256,6 +290,15 @@ class StockDetailFragment: BaseFragment() {
                     vm.initInfoList()
                 }
             }
+        }
+    }
+
+    private fun toggleWatching(page: Int, code: String) {
+        trueAnalytics.clickButton("stock_detail__watch__click")
+        if (vm.watchList.contains(page, code)) {
+            vm.watchList.remove(page, code)
+        } else {
+            vm.watchList.add(page, code)
         }
     }
 }

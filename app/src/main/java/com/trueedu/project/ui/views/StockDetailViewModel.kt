@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.realtime.RealPriceManager
-import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.WatchList
 import com.trueedu.project.data.firebase.SpacStatusManager
 import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.model.dto.firebase.StockInfo
@@ -29,12 +29,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StockDetailViewModel @Inject constructor(
-    private val stockPool: StockPool,
     private val spacStatusManager: SpacStatusManager,
     private val priceRemote: PriceRemote,
     val priceManager: RealPriceManager,
     private val tokenKeyManager: TokenKeyManager,
     private val assets: ManualAssets,
+    val watchList: WatchList,
 ): ViewModel() {
 
     companion object {
