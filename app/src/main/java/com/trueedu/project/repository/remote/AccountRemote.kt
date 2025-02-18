@@ -6,5 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface AccountRemote {
     fun getUserStocks(
         accountNum: String,
+        fk100: String = "",
+        nk100: String = "",
     ): Flow<AccountResponse>
 }

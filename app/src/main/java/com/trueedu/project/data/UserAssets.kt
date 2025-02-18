@@ -62,10 +62,44 @@ class UserAssets @Inject constructor(
                 onFail(it)
             }
             .onEach {
-                assets.emit(it)
-                onSuccess()
+                if (it.fk100.isNotEmpty() && it.nk100.isNotEmpty() && it.output1.size >= 50) {
+                    loadNext(it, accountNum, it.fk100, it.nk100, onSuccess, onFail)
+                } else {
+                    assets.emit(it)
+                    onSuccess()
+                }
             }
             .flowOn(Dispatchers.Main)
             .launchIn(MainScope())
     }
+
+    // 자산 연속 조회
+    private fun loadNext(
+        prevResult: AccountResponse,
+        accountNum: String,
+        fk100: String,
+        nk100: String,
+        onSuccess: () -> Unit = {},
+        onFail: (Throwable) -> Unit = {},
+    ) {
+        accountRemote.getUserStocks(accountNum, fk100, nk100)
+            .flowOn(Dispatchers.IO)
+            .catch {
+                onFail(it)
+            }
+            .onEach {
+                val output1 = prevResult.output1 + it.output1
+                val result = it.copy(output1 = output1)
+                // 원래 header tr_cont 를 체크해야 하지만 편의상 output1 크기로 체크하기
+                if (it.fk100.isNotEmpty() && it.nk100.isNotEmpty() && it.output1.size >= 50) {
+                    loadNext(result, accountNum, it.fk100, it.nk100, onSuccess, onFail)
+                } else {
+                    assets.emit(result)
+                    onSuccess()
+                }
+            }
+            .flowOn(Dispatchers.Main)
+            .launchIn(MainScope())
+    }
+
 }
