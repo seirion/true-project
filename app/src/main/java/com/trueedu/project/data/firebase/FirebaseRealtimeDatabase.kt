@@ -182,7 +182,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             val currentUser = firebaseCurrentUser()
             if (currentUser == null) {
-                Log.d(TAG, "loadWatchList() failed: currentUser null")
+                Log.d(TAG, "writeWatchList() failed: currentUser null")
             }
             val userId = currentUser?.uid ?: return@launch
 
@@ -199,7 +199,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             val currentUser = firebaseCurrentUser()
             if (currentUser == null) {
-                Log.d(TAG, "loadWatchList() failed: currentUser null")
+                Log.d(TAG, "deleteUser() failed: currentUser null")
             }
             val userId = currentUser?.uid ?: return@launch
 
@@ -221,7 +221,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
     suspend fun loadUserConfig(): Map<String, String> {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "loadWatchList() failed: currentUser null")
+            Log.d(TAG, "loadUserConfig() failed: currentUser null")
             return emptyMap()
         }
         val userId = currentUser.uid
@@ -236,7 +236,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
     suspend fun writeUserConfig(m: Map<String, String>) {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "loadWatchList() failed: currentUser null")
+            Log.d(TAG, "writeUserConfig() failed: currentUser null")
             return
         }
         val userId = currentUser.uid
