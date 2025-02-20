@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.WatchList
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.utils.formatter.safeDouble
@@ -27,6 +28,7 @@ class SpacViewModel @Inject constructor(
     private val stockPool: StockPool,
     private val tokenKeyManager: TokenKeyManager,
     private val spacManager: SpacManager,
+    private val watchList: WatchList,
 ): ViewModel() {
 
     companion object {
@@ -100,6 +102,13 @@ class SpacViewModel @Inject constructor(
                     val price = spacManager.priceMap.getOrDefault(it.code, 0.0).toInt()
                     val base = if (it.parValue().safeLong() == 100L) 2_000 else 10_000
                     price != 0 && price <= base
+                } else {
+                    true
+                }
+            }
+            .filter {
+                if (spacFilter.onlyWatching) {
+                    watchList.contains(it.code)
                 } else {
                     true
                 }
