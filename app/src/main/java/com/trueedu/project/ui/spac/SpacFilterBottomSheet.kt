@@ -118,6 +118,13 @@ class SpacFilterBottomSheet: BottomSheetDialogFragment() {
                 )
                 spacFilter.value = spacFilter.value.copy(underParValue = it)
             }
+            OnOffSetting("관심 종목만 보기", spacFilter.value.onlyWatching) {
+                trueAnalytics.clickToggleButton(
+                    "${screenName()}__only_watching__click",
+                    !it
+                )
+                spacFilter.value = spacFilter.value.copy(onlyWatching = it)
+            }
         }
     }
 
