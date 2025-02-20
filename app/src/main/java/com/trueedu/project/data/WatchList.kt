@@ -2,7 +2,7 @@ package com.trueedu.project.data
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
+import com.trueedu.project.data.firebase.FirebaseWatchManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class WatchList @Inject constructor(
     private val googleAccount: GoogleAccount,
-    private val firebaseRealtimeDatabase: FirebaseRealtimeDatabase,
+    private val firebaseWatchManager: FirebaseWatchManager,
 ) {
     companion object {
         // 관심 그룹 개수
@@ -28,7 +28,7 @@ class WatchList @Inject constructor(
             googleAccount.loginSignal
                 .collect { login ->
                     if (login) {
-                        val temp = firebaseRealtimeDatabase.loadWatchList()
+                        val temp = firebaseWatchManager.loadWatchList()
                         Log.d(TAG, "loadWatchList: ${temp.size}")
                         withContext(Dispatchers.Main) {
                             fillDefaultList(temp)
@@ -65,7 +65,7 @@ class WatchList @Inject constructor(
                 }
             }
         list.value = temp
-        firebaseRealtimeDatabase.writeWatchList(temp)
+        firebaseWatchManager.writeWatchList(temp)
     }
 
     fun removeAt(targetPage: Int, index: Int) {
@@ -83,7 +83,7 @@ class WatchList @Inject constructor(
                 }
             }
         list.value = temp
-        firebaseRealtimeDatabase.writeWatchList(temp)
+        firebaseWatchManager.writeWatchList(temp)
     }
 
     fun remove(targetPage: Int, code: String) {
@@ -103,7 +103,7 @@ class WatchList @Inject constructor(
                 }
             }
         list.value = temp
-        firebaseRealtimeDatabase.writeWatchList(temp)
+        firebaseWatchManager.writeWatchList(temp)
     }
 
     // 편집한 관심종목 목록을 갱신
@@ -117,7 +117,7 @@ class WatchList @Inject constructor(
                 }
             }
         list.value = temp
-        firebaseRealtimeDatabase.writeWatchList(temp)
+        firebaseWatchManager.writeWatchList(temp)
     }
 
     // 특정 페이지에 관심 종목이 존재하는 지 여부

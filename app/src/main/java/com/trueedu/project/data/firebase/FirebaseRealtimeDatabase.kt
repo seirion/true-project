@@ -164,34 +164,6 @@ class FirebaseRealtimeDatabase @Inject constructor(
         }
     }
 
-    suspend fun loadWatchList(): List<List<String>> {
-        val currentUser = firebaseCurrentUser()
-        if (currentUser == null) {
-            Log.d(TAG, "loadWatchList() failed: currentUser null")
-        }
-        val userId = currentUser?.uid ?: return emptyList()
-
-        val ref = database.getReference("users") // 종목 데이터
-        val snapshot = ref.child(userId).child("watch")
-        val list = snapshot.get().await()
-            .getValue(object : GenericTypeIndicator<List<List<String>>>() {})
-        return list ?: emptyList()
-    }
-
-    fun writeWatchList(list :List<List<String>>) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val currentUser = firebaseCurrentUser()
-            if (currentUser == null) {
-                Log.d(TAG, "writeWatchList() failed: currentUser null")
-            }
-            val userId = currentUser?.uid ?: return@launch
-
-            val ref = database.getReference("users") // 종목 데이터
-            val snapshot = ref.child(userId).child("watch")
-            snapshot.setValue(list)
-        }
-    }
-
     fun deleteUser(
         onSuccess: () -> Unit,
         onFail: () -> Unit,
