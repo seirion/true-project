@@ -66,9 +66,12 @@ class WatchEditFragment: BaseFragment() {
     override fun BodyScreen() {
         Scaffold(
             topBar = {
-                BackTitleTopBar(
-                    title = "관심 종목 편집",
+                WatchEditTopBar(
+                    title = watchList.getGroupName(page) ?: "관심 그룹 $page",
                     onBack = ::dismissAllowingStateLoss,
+                    onTitleChanged = {
+                        watchList.updateGroupName(page, it)
+                    }
                 )
             },
             modifier = Modifier
