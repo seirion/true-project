@@ -30,6 +30,7 @@ import com.trueedu.project.ui.common.TrueText
 fun StockDetailWatchingPopup(
     nameKr: String = "삼성전자",
     pageCount: Int = 10,
+    watchNames: (Int) -> String = { "관심 그룹 $it" },
     watchingList: List<Boolean> = List(pageCount) { false },
     toggle: (Int) -> Unit = { _ -> }, // page
 ) {

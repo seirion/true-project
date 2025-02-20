@@ -96,6 +96,11 @@ class WatchListViewModel @Inject constructor(
     // 일단 고정
     fun pageCount() = WatchList.MAX_GROUP_SIZE
 
+    fun groupName(page: Int?): String {
+        if (page == null) return "관심 그룹"
+        return watchList.groupNames.value.getOrNull(page) ?: "관심 그룹 $page"
+    }
+
     fun getItems(index: Int): List<String> {
         return watchList.get(index)
     }
