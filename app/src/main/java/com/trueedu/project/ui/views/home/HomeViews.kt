@@ -226,11 +226,16 @@ fun HomeStockItem(
                 item.profitLossRate.toDouble()
             }
             val profitRateString = rateFormatter.format(profitRate, true)
+            val totalValueColor = if (marketPriceMode) {
+                ChartColor.color(profit)
+            } else {
+                MaterialTheme.colorScheme.primary
+            }
             TrueText(
                 s = totalValueString,
                 fontSize = 14,
                 fontWeight = FontWeight.W600,
-                color = ChartColor.color(profit),
+                color = totalValueColor,
             )
             TrueText(
                 s = "$profitString ($profitRateString)",
