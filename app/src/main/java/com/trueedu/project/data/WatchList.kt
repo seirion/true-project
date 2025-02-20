@@ -49,6 +49,21 @@ class WatchList @Inject constructor(
         }
     }
 
+
+    fun getGroupName(index: Int): String? {
+        return groupNames.value.getOrNull(index)
+    }
+
+    fun updateGroupName(index: Int, name: String) {
+        val list = List(MAX_GROUP_SIZE) {
+            if (it == index) name
+            else groupNames.value.getOrNull(it)
+        }
+
+        groupNames.value = list
+        firebaseWatchManager.writeGroupNames(list)
+    }
+
     fun get(index: Int): List<String> {
         return list.value.getOrElse(index) { emptyList() }
     }
