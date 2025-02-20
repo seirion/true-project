@@ -21,6 +21,7 @@ class WatchList @Inject constructor(
         private val TAG = WatchList::class.java.simpleName
     }
 
+    val groupNames = mutableStateOf<List<String?>>(emptyList())
     val list = mutableStateOf<List<List<String>>>(emptyList())
 
     init {
@@ -28,6 +29,11 @@ class WatchList @Inject constructor(
             googleAccount.loginSignal
                 .collect { login ->
                     if (login) {
+                        // 관심 그룹 이름
+                        groupNames.value = firebaseWatchManager.loadGroupNames()
+                        Log.d(TAG, "loadWatchGroupNames: ${groupNames.value.toList()}")
+
+                        // 관심 종목 데이터
                         val temp = firebaseWatchManager.loadWatchList()
                         Log.d(TAG, "loadWatchList: ${temp.size}")
                         withContext(Dispatchers.Main) {
@@ -35,6 +41,7 @@ class WatchList @Inject constructor(
                         }
                     } else { // logout
                         withContext(Dispatchers.Main) {
+                            groupNames.value = emptyList()
                             fillDefaultList(null)
                         }
                     }

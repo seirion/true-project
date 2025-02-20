@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -100,7 +99,7 @@ class WatchScreen(
         Scaffold(
             topBar = {
                 BackTitleTopBar(
-                    title = "관심 종목 ${vm.currentPage.value ?: ""}",
+                    title = vm.groupName(vm.currentPage.value),
                     onBack = null,
                     actionIcon = Icons.Filled.Search,
                     onAction = ::onSearch,
@@ -273,7 +272,7 @@ class WatchScreen(
                 .padding(16.dp)
         ) {
             TrueText(
-                s = item.nameKr,
+                s = "${item.nameKr} 이동",
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 18,
                 fontWeight = FontWeight.Bold,
@@ -283,9 +282,8 @@ class WatchScreen(
             DividerHorizontal()
             Column(modifier = Modifier.fillMaxWidth()) {
                 repeat(vm.pageCount()) {
-                    val t = if (it in listOf(0, 3, 6)) "으" else ""
                     TrueText(
-                        s = "관심 그룹 ${it}${t}로 이동",
+                        s = vm.groupName(it),
                         fontSize = 16,
                         color = MaterialTheme.colorScheme.primary
                             .copy(alpha = if (it == page) 0.1f else 1f),

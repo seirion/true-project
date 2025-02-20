@@ -16,6 +16,20 @@ class FirebaseWatchManager @Inject constructor(
         private val TAG = FirebaseWatchManager::class.java.simpleName
     }
 
+    suspend fun loadGroupNames(): List<String?> {
+        val currentUser = firebaseCurrentUser()
+        if (currentUser == null) {
+            Log.d(TAG, "loadGroupNames() failed: currentUser null")
+        }
+        val userId = currentUser?.uid ?: return emptyList()
+
+        val ref = database.getReference("users")
+        val snapshot = ref.child(userId).child("watch-names")
+        val list = snapshot.get().await()
+            .getValue(object : GenericTypeIndicator<List<String>>() {})
+        return list ?: emptyList()
+    }
+
     suspend fun loadWatchList(): List<List<String>> {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {

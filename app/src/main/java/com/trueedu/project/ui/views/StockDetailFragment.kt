@@ -242,6 +242,7 @@ class StockDetailFragment: BaseFragment() {
                     StockDetailWatchingPopup(
                         nameKr = stockInfo.nameKr,
                         pageCount = vm.watchList.list.value.size,
+                        watchNames = { vm.watchList.groupNames.value[it] ?: "관심 그룹 $it" },
                         watchingList = watchingList,
                         toggle = { index ->
                             toggleWatching(index, code)
