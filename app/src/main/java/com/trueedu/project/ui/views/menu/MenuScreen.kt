@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Construction
-import androidx.compose.material.icons.outlined.QueryStats
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TrendingUp
@@ -29,8 +28,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.BuildConfig
-import com.trueedu.project.admin.spac.SpacAdminFragment
-import com.trueedu.project.admin.spac.SpacScheduleAdminFragment
+import com.trueedu.project.admin.MyAdminFragment
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.TokenKeyManager
@@ -39,7 +37,6 @@ import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
-import com.trueedu.project.ui.spac.SpacAnalysisFragment
 import com.trueedu.project.ui.spac.SpacScheduleFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.home.BottomNavScreen
@@ -87,9 +84,8 @@ class MenuScreen(
                         MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
                     }
                     if (BuildConfig.DEBUG) {
-                        MenuItem(Icons.Outlined.Construction, "스팩 어드민", ::onSpacAdmin)
-                        MenuItem(Icons.Outlined.Construction, "스팩 스케쥴 어드민", ::onSpacScheduleAdmin)
-                        MenuItem(Icons.Outlined.QueryStats, "스팩 분석", ::onSpacAnalysis)
+                        Margin(12)
+                        MenuItem(Icons.Outlined.Construction, "어드민 메뉴", ::onAdminMenu)
                     }
                 }
             }
@@ -111,21 +107,13 @@ class MenuScreen(
         VolumeRankingFragment.show(fragmentManager)
     }
 
-    private fun onSpacAdmin() {
-        SpacAdminFragment.show(fragmentManager)
-    }
-
-    private fun onSpacScheduleAdmin() {
-        SpacScheduleAdminFragment.show(fragmentManager)
-    }
-
-    private fun onSpacAnalysis() {
-        SpacAnalysisFragment.show(fragmentManager)
+    private fun onAdminMenu() {
+        MyAdminFragment.show(fragmentManager)
     }
 }
 
 @Composable
-private fun MenuItem(
+fun MenuItem(
     icon: ImageVector,
     text: String,
     onClick: () -> Unit = {},
