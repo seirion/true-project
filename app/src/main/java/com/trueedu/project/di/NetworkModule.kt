@@ -109,11 +109,11 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @KisOkHttp
     fun providesOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
         chuckerInterceptor: ChuckerInterceptor,
         tokenInterceptor: TokenInterceptor,
-        tokenAuthenticator: TokenAuthenticator,
         flipperOkhttpInterceptor: FlipperOkhttpInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
@@ -126,7 +126,6 @@ object NetworkModule {
             .addInterceptor(loggingInterceptor)
             .addInterceptor(chuckerInterceptor)
             .addNetworkInterceptor(flipperOkhttpInterceptor)
-            //.authenticator(tokenAuthenticator)
             .connectTimeout(connectTimeout.toJavaDuration())
             .callTimeout(callTimeout.toJavaDuration())
             .writeTimeout(writeTimeout.toJavaDuration())
@@ -137,9 +136,10 @@ object NetworkModule {
     @OptIn(ExperimentalSerializationApi::class)
     @Provides
     @Singleton
+    @KisRetrofit
     fun providesRetrofit(
         @BaseUrl baseUrl: String,
-        okHttpClient: OkHttpClient
+        @KisOkHttp okHttpClient: OkHttpClient
     ): Retrofit {
         val contentType = "application/json".toMediaType()
         val json = Json {
@@ -187,7 +187,7 @@ object NetworkModule {
     @Singleton
     fun provideWebSocketService(
         @WebSocketUrl webSocketUrl: String,
-        okHttpClient: OkHttpClient,
+        @KisOkHttp okHttpClient: OkHttpClient,
     ): WebSocketService {
         return MyWebSocketService(webSocketUrl, okHttpClient)
     }

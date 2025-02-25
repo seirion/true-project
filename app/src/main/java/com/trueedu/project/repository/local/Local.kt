@@ -60,6 +60,9 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
 
     var webSocketKey by preferences.string("")
 
+    // dart 정보
+    var dartApiKey by preferences.string("")
+
     // 사용자 계정 정보
 
     // 면책 조항 표시

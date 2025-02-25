@@ -35,35 +35,35 @@ object RemoteModule {
     @Provides
     @Singleton
     @NormalService
-    fun providesAuthService(retrofit: Retrofit): AuthService {
+    fun providesAuthService(@KisRetrofit retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
     }
 
     @Provides
     @Singleton
     @NormalService
-    fun providesAccountService(retrofit: Retrofit): AccountService {
+    fun providesAccountService(@KisRetrofit retrofit: Retrofit): AccountService {
         return retrofit.create(AccountService::class.java)
     }
 
     @Provides
     @Singleton
     @NormalService
-    fun providesPriceService(retrofit: Retrofit): PriceService {
+    fun providesPriceService(@KisRetrofit retrofit: Retrofit): PriceService {
         return retrofit.create(PriceService::class.java)
     }
 
     @Provides
     @Singleton
     @NormalService
-    fun providesOrderService(retrofit: Retrofit): OrderService {
+    fun providesOrderService(@KisRetrofit retrofit: Retrofit): OrderService {
         return retrofit.create(OrderService::class.java)
     }
 
     @Provides
     @Singleton
     @NormalService
-    fun providesRankingService(retrofit: Retrofit): RankingService {
+    fun providesRankingService(@KisRetrofit retrofit: Retrofit): RankingService {
         return retrofit.create(RankingService::class.java)
     }
 
