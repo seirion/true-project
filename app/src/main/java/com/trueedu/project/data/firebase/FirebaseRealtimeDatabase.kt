@@ -4,11 +4,8 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.GenericTypeIndicator
-import com.google.firebase.database.ValueEventListener
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.model.dto.firebase.StockInfo
@@ -32,19 +29,10 @@ class FirebaseRealtimeDatabase @Inject constructor(
 
     // Firebase Realtime Database 인스턴스 가져오기
     private val database = FirebaseDatabase.getInstance()
+    private val metaRef = database.getReference("meta") // 마지막 업데이트 시각
     private val configRef = database.getReference("app_config") // 앱 속성 관련
     private val stocksRef = database.getReference("stocks") // 종목 데이터
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
-
-    init {
-        stocksRef.addValueEventListener(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })
-    }
 
     suspend fun needForceUpdate(): Boolean {
         try {
@@ -82,8 +70,8 @@ class FirebaseRealtimeDatabase @Inject constructor(
 
     suspend fun lastUpdatedTime(): Long {
         try {
-            val snapshot = stocksRef.get().await()
-            val lastUpdatedAt = snapshot.child("lastUpdatedAt").getValue(Long::class.java)
+            val snapshot = metaRef.get().await()
+            val lastUpdatedAt = snapshot.child("stockLastUpdatedAt").getValue(Long::class.java)
             return lastUpdatedAt ?: 0L
         } catch (e: Exception) {
             return 0L
@@ -93,8 +81,9 @@ class FirebaseRealtimeDatabase @Inject constructor(
     suspend fun loadStocks(): Pair<Long, Map<String, StockInfo>> {
         Log.d(TAG, "loadStocks()")
         try {
+            val snapshotMeta = metaRef.get().await()
             val snapshot = stocksRef.get().await()
-            val lastUpdatedAt = snapshot.child("lastUpdatedAt").getValue(Long::class.java)
+            val lastUpdatedAt = snapshotMeta.child("lastUpdatedAt").getValue(Long::class.java)
             val kospi = snapshot.child("kospi").getValue(object : GenericTypeIndicator<Map<String, StockInfoKospi>>() {})
                 ?: emptyMap()
             val kosdaq = snapshot.child("kosdaq").getValue(object : GenericTypeIndicator<Map<String, StockInfoKosdaq>>() {})
