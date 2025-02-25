@@ -25,3 +25,19 @@ annotation class NormalService
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class WebSocketUrl
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class KisRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DartRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class KisOkHttp
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DartOkHttp
