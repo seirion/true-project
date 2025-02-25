@@ -54,7 +54,8 @@ class StockPool @Inject constructor(
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            delisted = loadDelistedStocks()
+            // 임시로 막아둠
+            //delisted = loadDelistedStocks()
             val localStocks = loadLocalStocks()
 
             // 리모트 데이터가 필요한 지 체크

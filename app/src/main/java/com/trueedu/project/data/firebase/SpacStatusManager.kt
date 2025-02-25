@@ -20,6 +20,7 @@ class SpacStatusManager @Inject constructor(
 ): FirebaseDatabaseBase(googleAccount) {
     companion object {
         private val TAG = SpacStatusManager::class.java.simpleName
+        private const val META_KEY = "meta"
         private const val SNAPSHOT_KEY = "spac"
     }
 
@@ -31,17 +32,17 @@ class SpacStatusManager @Inject constructor(
     /**
      * @return yyyyMMdd 포맷의 스트링
      */
-    suspend fun serverLastUpdated(): String? {
+    suspend fun serverLastUpdated(): Long? {
         Log.d(TAG, "serverLastUpdated()")
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
             Log.d(TAG, "load() failed: currentUser null")
             return null
         }
-        val ref = database.getReference(SNAPSHOT_KEY) // spac 데이터
-        val snapshot = ref.child("last_updated")
+        val ref = database.getReference(META_KEY) // spac 데이터
+        val snapshot = ref.child("spacLastUpdatedAt")
         val lastUpdated = snapshot.get().await()
-            .getValue(String::class.java)
+            .getValue(Long::class.java)
         return lastUpdated
     }
 
@@ -76,8 +77,11 @@ class SpacStatusManager @Inject constructor(
             onFail()
             return
         }
+        val meta = database.getReference(META_KEY) // 종목 데이터
         val ref = database.getReference(SNAPSHOT_KEY) // 종목 데이터
-        ref.child("last_updated").setValue(LocalDate.now().yyyyMMdd())
+        meta.child("spacLastUpdatedAt").setValue(
+            LocalDate.now().yyyyMMdd().toLong()
+        )
 
         val snapshot = ref.child("status")
         snapshot.setValue(list)
