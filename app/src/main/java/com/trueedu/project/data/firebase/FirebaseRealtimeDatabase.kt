@@ -83,7 +83,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
         try {
             val snapshotMeta = metaRef.get().await()
             val snapshot = stocksRef.get().await()
-            val lastUpdatedAt = snapshotMeta.child("lastUpdatedAt").getValue(Long::class.java)
+            val lastUpdatedAt = snapshotMeta.child("stockLastUpdatedAt").getValue(Long::class.java)
             val kospi = snapshot.child("kospi").getValue(object : GenericTypeIndicator<Map<String, StockInfoKospi>>() {})
                 ?: emptyMap()
             val kosdaq = snapshot.child("kosdaq").getValue(object : GenericTypeIndicator<Map<String, StockInfoKosdaq>>() {})
@@ -147,7 +147,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
         try {
             stocksRef.child("kospi").setValue(kospi)
             stocksRef.child("kosdaq").setValue(kosdaq)
-            stocksRef.child("lastUpdatedAt").setValue(lastUpdatedAt)
+            metaRef.child("stockLastUpdatedAt").setValue(lastUpdatedAt)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to update stocks", e)
         }
