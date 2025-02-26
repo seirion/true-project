@@ -17,6 +17,7 @@ import com.trueedu.project.admin.spac.SpacAdminFragment
 import com.trueedu.project.admin.spac.SpacScheduleAdminFragment
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
+import com.trueedu.project.ui.dart.DartListFragment
 import com.trueedu.project.ui.spac.SpacAnalysisFragment
 import com.trueedu.project.ui.views.menu.MenuItem
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,6 +51,7 @@ class MyAdminFragment : BaseFragment() {
                     MenuItem(Icons.Outlined.Construction, "스팩 어드민", ::onSpacAdmin)
                     MenuItem(Icons.Outlined.Construction, "스팩 스케쥴 어드민", ::onSpacScheduleAdmin)
                     MenuItem(Icons.Outlined.QueryStats, "스팩 분석", ::onSpacAnalysis)
+                    MenuItem(Icons.Outlined.QueryStats, "스팩 공시", ::onDartList)
                 }
             }
         }
@@ -65,5 +67,9 @@ class MyAdminFragment : BaseFragment() {
 
     private fun onSpacAnalysis() {
         SpacAnalysisFragment.show(parentFragmentManager)
+    }
+
+    private fun onDartList() {
+        DartListFragment.show(parentFragmentManager)
     }
 }
