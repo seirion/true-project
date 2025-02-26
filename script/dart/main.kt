@@ -23,6 +23,9 @@ fun main() {
             started = true
         } else if (line.contains("</list>")) {
             started = false
+            corpName = ""
+            corpCode = ""
+            stockCode = ""
         } else if (started) {
             if (line.contains("<corp_code>")) {
                 corpCode = line.substring(line.indexOf("<corp_code>") + 11, line.indexOf("</corp_code>"))
