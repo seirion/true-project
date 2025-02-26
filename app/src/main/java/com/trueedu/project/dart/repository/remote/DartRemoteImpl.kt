@@ -7,10 +7,10 @@ class DartRemoteImpl(
     @NormalService
     private val dartService: DartService
 ): DartRemote {
-    override fun list(corpCode: String) = apiCallFlow {
+    override fun list(corpCode: String, fromDate: String) = apiCallFlow {
         val queries = mapOf(
             "corp_code" to corpCode,
-            "bgn_de" to "20250101",
+            "bgn_de" to fromDate,
         )
         dartService.list(emptyMap(), queries)
     }
