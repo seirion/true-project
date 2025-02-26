@@ -1,14 +1,11 @@
 package com.trueedu.project.ui.views.home
 
 import android.app.Activity
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -20,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
-import com.trueedu.project.BuildConfig
 import com.trueedu.project.MainViewModel
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RemoteConfig
@@ -52,10 +48,6 @@ class HomeScreen(
 
     @Composable
     override fun Draw() {
-        if (vm.forceUpdateVisible.value) {
-            ForceUpdateView(::gotoPlayStore)
-            return
-        }
         Scaffold(
             topBar = {
                 MainTopBar(
@@ -124,16 +116,6 @@ class HomeScreen(
 
     override fun onStop() {
         Log.d(TAG, "onStop")
-    }
-
-    private fun gotoPlayStore() {
-        activity.startActivity(
-            Intent(Intent.ACTION_VIEW).apply {
-                addCategory(Intent.CATEGORY_DEFAULT)
-                data =
-                    Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
-            }
-        )
     }
 
     private fun onItemClick(stockInfo: StockInfo) {

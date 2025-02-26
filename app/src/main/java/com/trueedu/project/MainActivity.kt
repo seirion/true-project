@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -57,6 +58,7 @@ import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.UserInfoViewModel
 import com.trueedu.project.ui.views.home.BottomNavItem
 import com.trueedu.project.ui.views.home.BottomNavScreen
+import com.trueedu.project.ui.views.home.ForceUpdateView
 import com.trueedu.project.ui.views.home.HomeBottomNavigation
 import com.trueedu.project.ui.views.home.HomeDrawer
 import com.trueedu.project.ui.views.home.HomeScreen
@@ -218,7 +220,11 @@ class MainActivity : AppCompatActivity() {
                 n = screen.theme.intValue,
                 forceDark = screen.forceDark.value
             ) {
-                MainScreen()
+                if (vm.forceUpdateVisible.value) {
+                    ForceUpdateView(::gotoPlayStore)
+                } else {
+                    MainScreen()
+                }
             }
         }
     }
@@ -231,6 +237,16 @@ class MainActivity : AppCompatActivity() {
             BottomNavItem.Menu.screenRoute -> menuScreen
             else -> null
         }
+    }
+
+    private fun gotoPlayStore() {
+        startActivity(
+            Intent(Intent.ACTION_VIEW).apply {
+                addCategory(Intent.CATEGORY_DEFAULT)
+                data =
+                    Uri.parse("https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}")
+            }
+        )
     }
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
