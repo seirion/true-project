@@ -8,14 +8,14 @@ data class DartListResponse(
     val status: String,
     val message: String,
     @SerialName("page_no")
-    val pageNum: Int,
+    val pageNum: Int?,
     @SerialName("page_count")
-    val pageCount: Int,
+    val pageCount: Int?,
     @SerialName("total_count")
-    val totalCount: Int,
+    val totalCount: Int?,
     @SerialName("total_page")
-    val totalPage: Int,
-    val list: List<DartListItem>,
+    val totalPage: Int?,
+    val list: List<DartListItem>?,
 )
 
 @Serializable
