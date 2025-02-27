@@ -1,3 +1,8 @@
+## 플레이스토어
+
+[앱 다운로드](https://play.google.com/store/apps/details?id=com.trueedu.project)
+
+
 ## 참고
 
 [KIS 트레이딩 오픈API 개발자 센터](https://apiportal.koreainvestment.com/)
