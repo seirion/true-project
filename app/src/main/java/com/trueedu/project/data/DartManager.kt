@@ -25,16 +25,6 @@ class DartManager @Inject constructor(
 
     val updateSignal = MutableSharedFlow<Unit>()
 
-    init {
-        val timestamp = System.currentTimeMillis()
-
-        // 1시간마다 체크
-        if (timestamp - lastUpdatedAt > 1000 * 60 * 60 * 1) {
-            lastUpdatedAt = timestamp
-            loadList()
-        }
-    }
-
     fun getSize(): Int {
         return items.size
     }
@@ -43,21 +33,39 @@ class DartManager @Inject constructor(
         return items.toMap()
     }
 
-    private fun loadList() {
+    fun loadList(codes: List<String>) {
+        if (lastUpdatedAt != 0L) {
+            // 1시간마다 체크
+            val timestamp = System.currentTimeMillis()
+            if (timestamp - lastUpdatedAt <= 1000 * 60 * 60 * 1) return
+        }
+
         val fromDate = LocalDate.now()
             .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))
 
-        dartCorpList.forEach {
-            dartRemote.list(it.corpCode, fromDate)
+        codes.forEach { code ->
+            val dartInfo = dartCorpMap[code] ?: return@forEach
+            dartRemote.list(dartInfo.corpCode, fromDate)
                 .onEach { res ->
                     if (res.list?.isNotEmpty() == true) {
-                        Log.d(TAG, "${it.nameKr} - ${res.list.first().let {"${it.receiptDate} ${it.reportName}"} }")
-                        items[it.code] = res.list
+                        Log.d(TAG, "${dartInfo.nameKr} - ${res.list.first().let {"${it.receiptDate} ${it.reportName}"} }")
+                        items[code] = res.list
                         updateSignal.emit(Unit)
                     }
                 }
                 .launchIn(MainScope())
         }
+        lastUpdatedAt = System.currentTimeMillis()
+    }
+
+    fun reload(codes: List<String>) {
+        clear()
+        loadList(codes)
+    }
+
+    private fun clear() {
+        items.clear()
+        lastUpdatedAt = 0L
     }
 }
 
@@ -67,7 +75,7 @@ data class DartCorpCode(
     val code: String,
 )
 
-private val dartCorpList = """
+private val dartCorpMap = """
 01678835 유진스팩9호 442130
 01677429 엔에이치스팩27호 440820
 01669475 하나금융25호스팩 435620
@@ -174,3 +182,4 @@ private val dartCorpList = """
             code = parts[2]
         )
     }
+    .associateBy(DartCorpCode::code)
