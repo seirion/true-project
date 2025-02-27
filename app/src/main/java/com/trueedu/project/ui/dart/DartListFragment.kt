@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -148,6 +149,7 @@ private fun NameView(nameKr: String, code: String) {
             s = nameKr,
             fontSize = 14,
             color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.W700,
         )
         Margin(4)
         TrueText(
