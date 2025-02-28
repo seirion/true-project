@@ -8,15 +8,18 @@ data class DartListResponse(
     val status: String,
     val message: String,
     @SerialName("page_no")
-    val pageNum: Int?,
+    val pageNum: Int? = null,
     @SerialName("page_count")
-    val pageCount: Int?,
+    val pageCount: Int? = null,
     @SerialName("total_count")
-    val totalCount: Int?,
+    val totalCount: Int? = null,
     @SerialName("total_page")
-    val totalPage: Int?,
+    val totalPage: Int? = null,
     val list: List<DartListItem>?,
-)
+) {
+    // No-argument constructor required for Firebase
+    constructor() : this("", "", list = null)
+}
 
 @Serializable
 data class DartListItem(
@@ -45,4 +48,7 @@ data class DartListItem(
                 // 연 : 본 보고서는 연결부분을 포함한 것임
                 // 정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람
                 // 철 : 본 보고서는 철회(간주)되었으니 관련 철회신고서(철회간주안내)를 참고하시기 바람
-)
+) {
+    // No-argument constructor required for Firebase
+    constructor() : this("", "", "", "", "", "", "", "", "")
+}
