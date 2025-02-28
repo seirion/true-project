@@ -1,29 +1,75 @@
 package com.trueedu.project.data
 
 import android.util.Log
+import androidx.compose.runtime.snapshotFlow
 import com.trueedu.project.dart.model.DartListItem
+import com.trueedu.project.dart.model.DartListResponse
 import com.trueedu.project.dart.repository.remote.DartRemote
+import com.trueedu.project.data.firebase.FirebaseDartManager
+import com.trueedu.project.data.spac.SpacManager
+import com.trueedu.project.repository.local.Local
+import com.trueedu.project.utils.yyyyMMddHHmm
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DartManager @Inject constructor(
+    private val local: Local,
     private val dartRemote: DartRemote,
+    private val spacManager: SpacManager,
+    private val firebaseDartManager: FirebaseDartManager,
 ) {
     companion object {
         private val TAG = DartManager::class.java.simpleName
     }
 
     private val items = ConcurrentHashMap<String, List<DartListItem>>()
-    private var lastUpdatedAt = 0L // timestamp
+    private var lastUpdatedAt = 0L // yyyyMMddHHmm (분단위)
 
     val updateSignal = MutableSharedFlow<Unit>()
+
+    init {
+        MainScope().launch {
+            // yyyyMMddHHmm
+            val lastUpdatedAtRemote = firebaseDartManager.lastUpdatedAt()
+            Log.d(TAG, "lastUpdatedAtRemote: $lastUpdatedAtRemote")
+            val now = Date().yyyyMMddHHmm().toLong()
+
+            if (now - lastUpdatedAtRemote > 100) { // 1 hour
+                // 다시 로딩
+                val list = spacManager.spacList.value
+                loadList(list.map { it.code })
+                Log.d(TAG, "lastUpdatedAt: $lastUpdatedAt")
+                // delay 필요함
+                delay(1000)
+                if (lastUpdatedAt != 0L) {
+                    firebaseDartManager.writeDartList(
+                        items.values.map {
+                            DartListResponse(status = "", message = "", list = it)
+                        }
+                    )
+                }
+            } else {
+                lastUpdatedAt = lastUpdatedAtRemote
+                firebaseDartManager.loadDartList().forEach {
+                    if (it.list?.isNotEmpty() == true) {
+                        val code = it.list.first().stockCode
+                        items[code] = it.list
+                    }
+                }
+            }
+        }
+    }
 
     fun getSize(): Int {
         return items.size
@@ -34,14 +80,10 @@ class DartManager @Inject constructor(
     }
 
     fun loadList(codes: List<String>) {
-        if (lastUpdatedAt != 0L) {
-            // 1시간마다 체크
-            val timestamp = System.currentTimeMillis()
-            if (timestamp - lastUpdatedAt <= 1000 * 60 * 60 * 1) return
-        }
+        if (local.dartApiKey.isBlank()) return
 
         val fromDate = LocalDate.now()
-            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))
+            .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
 
         codes.forEach { code ->
             val dartInfo = dartCorpMap[code] ?: return@forEach
@@ -55,7 +97,7 @@ class DartManager @Inject constructor(
                 }
                 .launchIn(MainScope())
         }
-        lastUpdatedAt = System.currentTimeMillis()
+        lastUpdatedAt = Date().yyyyMMddHHmm().toLong()
     }
 
     fun reload(codes: List<String>) {

@@ -1,5 +1,6 @@
 package com.trueedu.project.utils
 
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -24,6 +25,11 @@ fun currentTimeToHHmmss(): String {
 private val yyyyMMddFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
 fun LocalDate.yyyyMMdd(): String {
     return this.format(yyyyMMddFormatter)
+}
+
+private val yyyyMMddHHmmFormatter = SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())
+fun Date.yyyyMMddHHmm(): String {
+    return yyyyMMddHHmmFormatter.format(this)
 }
 
 fun stringToLocalDate(yyyyMMdd: String): LocalDate {

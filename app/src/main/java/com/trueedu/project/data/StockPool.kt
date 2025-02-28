@@ -10,14 +10,13 @@ import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.local.StockLocal
 import com.trueedu.project.utils.StockInfoDownloader
 import com.trueedu.project.utils.needUpdateRemoteData
+import com.trueedu.project.utils.yyyyMMddHHmm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -161,9 +160,7 @@ class StockPool @Inject constructor(
      * 분 단위 resolution
      */
     private fun currentTimeToyyyyMMddHHmm(): Long {
-        val currentDate = Date()
-        val formatter = SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())
-        return formatter.format(currentDate).toLong()
+        return Date().yyyyMMddHHmm().toLong()
     }
 
     fun get(code: String): StockInfo? {
