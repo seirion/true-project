@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Construction
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.Icon
@@ -63,8 +62,8 @@ class MenuScreen(
                     BackTitleTopBar(
                         "메뉴",
                         onBack = null,
-                        actionIcon = Icons.Outlined.Search,
-                        onAction = null, // TODO
+                        actionIcon = Icons.Outlined.Settings,
+                        onAction = ::onSettings,
                     )
                 },
                 contentWindowInsets =
@@ -78,7 +77,6 @@ class MenuScreen(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    MenuItem(Icons.Outlined.Settings, "설정", ::onSettings)
                     MenuItem(Icons.Outlined.CalendarMonth, "스팩 일정", ::onSpacSchedule)
                     if (tokenKeyManager.userKey.value != null) {
                         MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
