@@ -9,6 +9,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.realtime.RealOrderManager
 import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.data.StockPool
@@ -38,6 +39,7 @@ class App : Application(), LifecycleEventObserver {
         fun getRealPriceManager(): RealPriceManager
         fun getRealOrderManager(): RealOrderManager
         fun getStockPool(): StockPool
+        fun getDartManager(): DartManager
         fun getTrueAnalytics(): TrueAnalytics
         fun getAdmobManager(): AdmobManager
     }
@@ -62,6 +64,7 @@ class App : Application(), LifecycleEventObserver {
         val realPriceManager = entryPointInjector(InjectModule::class.java).getRealPriceManager()
         val realOrderManager = entryPointInjector(InjectModule::class.java).getRealOrderManager()
         val stockPool = entryPointInjector(InjectModule::class.java).getStockPool()
+        val dartManager = entryPointInjector(InjectModule::class.java).getDartManager()
         val trueAnalytics = entryPointInjector(InjectModule::class.java).getTrueAnalytics()
         val admobManager = entryPointInjector(InjectModule::class.java).getAdmobManager()
 
@@ -76,6 +79,7 @@ class App : Application(), LifecycleEventObserver {
                 realPriceManager.start()
                 realOrderManager.start()
                 stockPool.loadStockInfo()
+                dartManager.init()
                 //admobManager.start()
             }
 

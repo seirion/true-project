@@ -37,7 +37,8 @@ class DartManager @Inject constructor(
 
     val updateSignal = MutableSharedFlow<Unit>()
 
-    init {
+    fun init() {
+        Log.d(TAG, "init()")
         MainScope().launch {
             // yyyyMMddHHmm
             val lastUpdatedAtRemote = firebaseDartManager.lastUpdatedAt()
