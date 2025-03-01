@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -43,7 +42,6 @@ import com.trueedu.project.ui.common.TouchIconWithSizeRotating
 import com.trueedu.project.ui.common.TrueText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -75,14 +73,6 @@ class DartListFragment: BaseFragment() {
         super.init()
 
         lifecycleScope.launch {
-            launch {
-                snapshotFlow { spacManager.spacList.value }
-                    .filterNot { it.isEmpty() }
-                    .collectLatest {
-                        val codes = it.map { it.code }
-                        dartManager.loadList(codes)
-                    }
-            }
             launch {
                 dartManager.updateSignal
                     .collectLatest {
