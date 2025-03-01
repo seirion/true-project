@@ -1,7 +1,6 @@
 package com.trueedu.project.data
 
 import android.util.Log
-import androidx.compose.runtime.snapshotFlow
 import com.trueedu.project.dart.model.DartListItem
 import com.trueedu.project.dart.model.DartListResponse
 import com.trueedu.project.dart.repository.remote.DartRemote
@@ -45,7 +44,7 @@ class DartManager @Inject constructor(
             Log.d(TAG, "lastUpdatedAtRemote: $lastUpdatedAtRemote")
             val now = Date().yyyyMMddHHmm().toLong()
 
-            if (now - lastUpdatedAtRemote > 100) { // 1 hour
+            if (now - lastUpdatedAtRemote > 30) { // 30 minutes
                 // 다시 로딩
                 val list = spacManager.spacList.value
                 loadList(list.map { it.code })
@@ -100,9 +99,10 @@ class DartManager @Inject constructor(
         lastUpdatedAt = Date().yyyyMMddHHmm().toLong()
     }
 
-    fun reload(codes: List<String>) {
+    fun forceLoad() {
         clear()
-        loadList(codes)
+        val list = spacManager.spacList.value
+        loadList(list.map { it.code })
     }
 
     private fun clear() {

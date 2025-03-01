@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -22,6 +25,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -30,10 +34,12 @@ import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.ui.BaseFragment
-import com.trueedu.project.ui.common.BackTitleTopBar
+import com.trueedu.project.ui.common.CustomTopBar
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
+import com.trueedu.project.ui.common.TouchIcon32
+import com.trueedu.project.ui.common.TouchIconWithSizeRotating
 import com.trueedu.project.ui.common.TrueText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -91,7 +97,7 @@ class DartListFragment: BaseFragment() {
     override fun BodyScreen() {
         Scaffold(
             topBar = {
-                BackTitleTopBar("오늘의 스팩 공시 ${num.value}", ::dismissAllowingStateLoss)
+                DartTopBar(num.value, ::dismissAllowingStateLoss, ::forceRefresh)
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -124,6 +130,11 @@ class DartListFragment: BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun forceRefresh() {
+        trueAnalytics.clickButton("${screenName()}__force_refresh__click")
+        dartManager.forceLoad()
     }
 
     private fun onItemClick(receiptNum: String) {
@@ -180,4 +191,36 @@ private fun DartListItemView(
             color = MaterialTheme.colorScheme.primary,
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DartTopBar(
+    num: Int = 0,
+    onBack: () -> Unit = {},
+    onRefresh: () -> Unit = {},
+) {
+    CustomTopBar(
+        navigationIcon = {
+            TouchIcon32(
+                icon = Icons.Filled.ChevronLeft,
+                onClick = onBack,
+            )
+        },
+        titleView = {
+            TrueText(
+                s = "오늘의 스팩 공시 $num",
+                fontSize = 20,
+                color = MaterialTheme.colorScheme.primary
+            )
+        },
+        actionsView = {
+            TouchIconWithSizeRotating(
+                size = 24.dp,
+                tint = MaterialTheme.colorScheme.primary,
+                icon = Icons.Outlined.Sync,
+                onClick = onRefresh,
+            )
+        }
+    )
 }
