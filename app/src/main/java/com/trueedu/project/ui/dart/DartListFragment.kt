@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import com.trueedu.project.BuildConfig
 import com.trueedu.project.dart.model.DartListItem
 import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.StockPool
@@ -87,7 +88,12 @@ class DartListFragment: BaseFragment() {
     override fun BodyScreen() {
         Scaffold(
             topBar = {
-                DartTopBar(num.value, ::dismissAllowingStateLoss, ::forceRefresh)
+                val forceRefresh = if (BuildConfig.DEBUG) {
+                    ::forceRefresh
+                } else {
+                    null
+                }
+                DartTopBar(num.value, ::dismissAllowingStateLoss, forceRefresh)
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -188,7 +194,7 @@ private fun DartListItemView(
 private fun DartTopBar(
     num: Int = 0,
     onBack: () -> Unit = {},
-    onRefresh: () -> Unit = {},
+    onRefresh: (() -> Unit)? = {},
 ) {
     CustomTopBar(
         navigationIcon = {
@@ -205,12 +211,14 @@ private fun DartTopBar(
             )
         },
         actionsView = {
-            TouchIconWithSizeRotating(
-                size = 24.dp,
-                tint = MaterialTheme.colorScheme.primary,
-                icon = Icons.Outlined.Sync,
-                onClick = onRefresh,
-            )
-        }
+            if (onRefresh != null) {
+                TouchIconWithSizeRotating(
+                    size = 24.dp,
+                    tint = MaterialTheme.colorScheme.primary,
+                    icon = Icons.Outlined.Sync,
+                    onClick = onRefresh,
+                )
+            }
+        },
     )
 }
