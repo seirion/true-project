@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Construction
+import androidx.compose.material.icons.outlined.QueryStats
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.Icon
@@ -35,6 +36,7 @@ import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.dart.DartListFragment
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.spac.SpacScheduleFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
@@ -77,6 +79,7 @@ class MenuScreen(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
+                    MenuItem(Icons.Outlined.QueryStats, "스팩 공시", ::onDartList)
                     MenuItem(Icons.Outlined.CalendarMonth, "스팩 일정", ::onSpacSchedule)
                     if (tokenKeyManager.userKey.value != null) {
                         MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
@@ -93,6 +96,11 @@ class MenuScreen(
     private fun onSettings() {
         trueAnalytics.clickButton("${screenName()}__setting__click")
         SettingFragment.show(fragmentManager)
+    }
+
+    private fun onDartList() {
+        trueAnalytics.clickButton("${screenName()}__spac_dart_list__click")
+        DartListFragment.show(fragmentManager)
     }
 
     private fun onSpacSchedule() {
