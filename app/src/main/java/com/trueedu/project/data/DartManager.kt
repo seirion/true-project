@@ -9,10 +9,10 @@ import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.utils.yyyyMMddHHmm
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -50,8 +50,6 @@ class DartManager @Inject constructor(
                 val list = spacManager.spacList.value
                 loadList(list.map { it.code })
                 Log.d(TAG, "lastUpdatedAt: $lastUpdatedAt")
-                // delay 필요함
-                delay(1000)
                 if (lastUpdatedAt != 0L) {
                     firebaseDartManager.writeDartList(
                         items.values.map {
@@ -68,6 +66,7 @@ class DartManager @Inject constructor(
                     }
                 }
             }
+            Log.d(TAG, "init() completed - ${items.size}")
         }
     }
 
@@ -79,31 +78,42 @@ class DartManager @Inject constructor(
         return items.toMap()
     }
 
-    fun loadList(codes: List<String>) {
+    suspend fun loadList(codes: List<String>) {
         if (local.dartApiKey.isBlank()) return
 
         val fromDate = LocalDate.now()
             .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
 
-        codes.forEach { code ->
-            val dartInfo = dartCorpMap[code] ?: return@forEach
-            dartRemote.list(dartInfo.corpCode, fromDate)
-                .onEach { res ->
-                    if (res.list?.isNotEmpty() == true) {
-                        Log.d(TAG, "${dartInfo.nameKr} - ${res.list.first().let {"${it.receiptDate} ${it.reportName}"} }")
-                        items[code] = res.list
-                        updateSignal.emit(Unit)
+        // 모든 API 호출을 동시에 실행하고 결과를 기다림
+        coroutineScope {
+            codes.map { code ->
+                async {
+                    val dartInfo = dartCorpMap[code] ?: return@async
+                    try {
+                        val response = dartRemote.list(dartInfo.corpCode, fromDate)
+                        response.collect { res ->
+                            if (res.list?.isNotEmpty() == true) {
+                                Log.d(TAG, "${dartInfo.nameKr} - ${res.list.first().let {"${it.receiptDate} ${it.reportName}"} }")
+                                items[code] = res.list
+                                updateSignal.emit(Unit)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error loading dart list for ${dartInfo.nameKr}: ${e.message}")
                     }
                 }
-                .launchIn(MainScope())
+            }.awaitAll()
         }
+
         lastUpdatedAt = Date().yyyyMMddHHmm().toLong()
     }
 
     fun forceLoad() {
         clear()
-        val list = spacManager.spacList.value
-        loadList(list.map { it.code })
+        MainScope().launch {
+            val list = spacManager.spacList.value
+            loadList(list.map { it.code })
+        }
     }
 
     private fun clear() {
