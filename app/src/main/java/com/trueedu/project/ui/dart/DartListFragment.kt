@@ -68,7 +68,7 @@ class DartListFragment: BaseFragment() {
     lateinit var dartManager: DartManager
 
     private val loading = mutableStateOf(false)
-    private val num = mutableStateOf(0)
+    private val num = mutableStateOf(0) // 화면 갱신 용
 
     override fun init() {
         super.init()
@@ -86,6 +86,10 @@ class DartListFragment: BaseFragment() {
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun BodyScreen() {
+        val items = dartManager.getListMap().map {
+            it.key to it.value
+        }
+
         Scaffold(
             topBar = {
                 val forceRefresh = if (BuildConfig.DEBUG) {
@@ -93,7 +97,7 @@ class DartListFragment: BaseFragment() {
                 } else {
                     null
                 }
-                DartTopBar(num.value, ::dismissAllowingStateLoss, forceRefresh)
+                DartTopBar(items.size, ::dismissAllowingStateLoss, forceRefresh)
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -111,9 +115,6 @@ class DartListFragment: BaseFragment() {
                 state = state,
                 modifier = Modifier.padding(innerPadding)
             ) {
-                val items = dartManager.getListMap().map {
-                    it.key to it.value
-                }
                 stickyHeader { Header() }
                 itemsIndexed(items, key = { _, item -> item.first }) { _, (code, list) ->
                     val stock = stockPool.get(code) ?: return@itemsIndexed
