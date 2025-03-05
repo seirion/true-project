@@ -23,7 +23,7 @@ def getLocalProperty(String propertyName) {
 
 android {
     namespace 'com.trueedu.project'
-    compileSdk 34
+    compileSdk 35
 
     signingConfigs {
         devconfig {
@@ -43,7 +43,6 @@ android {
     defaultConfig {
         applicationId "com.trueedu.project"
         minSdk 29
-        targetSdk 34
         versionCode getNeoVersionCode()
         versionName getNeoVersionName()
 
@@ -144,6 +143,7 @@ dependencies {
     implementation(libs.bundles.firebase)
     implementation(libs.google.play.services)
     implementation(libs.google.play.services.ads)
+    implementation(libs.play.services.appset)
     implementation(libs.accompanist.navigation.material)
     implementation(libs.navigation.compose)
     implementation(libs.navigation.fragment)
