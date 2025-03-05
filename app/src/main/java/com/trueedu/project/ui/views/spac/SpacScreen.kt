@@ -114,6 +114,8 @@ class SpacScreen(
                     val holdingNum = userStock?.holdingQuantity.safeDouble().takeIf { it > 0 }
                         ?: -vm.holdingNum(item.code)
 
+                    val hasDisclosure = vm.hasDisclosure(item.code)
+
                     SpacItem(i, item,
                         spacManager.priceMap[item.code] ?: 0.0,
                         spacManager.priceChangeMap[item.code],
@@ -121,6 +123,7 @@ class SpacScreen(
                         expectedProfit,
                         expectedProfitRate,
                         holdingNum,
+                        hasDisclosure,
                         ::onPriceClick
                     ) {
                         StockDetailFragment.show(item, fragmentManager)

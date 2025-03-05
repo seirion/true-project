@@ -117,6 +117,10 @@ class DartManager @Inject constructor(
         }
     }
 
+    fun hasDisclosure(code: String): Boolean {
+        return items.containsKey(code)
+    }
+
     private fun clear() {
         items.clear()
         lastUpdatedAt = 0L

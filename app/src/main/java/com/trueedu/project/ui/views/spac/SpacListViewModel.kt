@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
@@ -24,6 +25,7 @@ class SpacListViewModel @Inject constructor(
     private val stockPool: StockPool,
     private val tokenKeyManager: TokenKeyManager,
     private val spacManager: SpacManager,
+    private val dartManager: DartManager,
 ): ViewModel() {
     companion object {
         private val TAG = SpacListViewModel::class.java.simpleName
@@ -76,6 +78,10 @@ class SpacListViewModel @Inject constructor(
     fun setSort(option: SpacSort) {
         sort.value = option
         filterStocks()
+    }
+
+    fun hasDisclosure(code: String): Boolean {
+        return dartManager.hasDisclosure(code)
     }
 
     private fun filterStocks() {

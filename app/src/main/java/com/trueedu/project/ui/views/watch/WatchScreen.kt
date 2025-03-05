@@ -63,6 +63,7 @@ import com.trueedu.project.ui.graphics.DrawCandle
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.common.DesignatedBadge
+import com.trueedu.project.ui.views.common.DisclosurePoint
 import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.order.OrderFragment
@@ -178,6 +179,7 @@ class WatchScreen(
                             volume = volume,
                             halt = stock.halt(),
                             designated = stock.designated(),
+                            hasDisclosure = vm.hasDisclosure(code),
                             onTradingClick = { gotoTrading(stock) },
                             onClick = { gotoStockDetail(stock) },
                         ) {
@@ -334,6 +336,7 @@ private fun WatchingStockItem(
     volume: Double,
     halt: Boolean,
     designated: Boolean,
+    hasDisclosure: Boolean,
     onTradingClick: () -> Unit,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -353,6 +356,9 @@ private fun WatchingStockItem(
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Row {
+                if (hasDisclosure) {
+                    DisclosurePoint()
+                }
                 TrueText(
                     s = nameKr,
                     fontSize = 14,

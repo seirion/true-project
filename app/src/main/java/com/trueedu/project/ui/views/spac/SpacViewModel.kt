@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
@@ -28,6 +29,7 @@ class SpacViewModel @Inject constructor(
     private val stockPool: StockPool,
     private val tokenKeyManager: TokenKeyManager,
     private val spacManager: SpacManager,
+    private val dartManager: DartManager,
     private val watchList: WatchList,
 ): ViewModel() {
 
@@ -120,6 +122,10 @@ class SpacViewModel @Inject constructor(
                         it.code.lowercase().contains(searchKey)
             }
             .sortedBy(sortFun[sort.value]!!)
+    }
+
+    fun hasDisclosure(code: String): Boolean {
+        return dartManager.hasDisclosure(code)
     }
 
     private fun growthRate(stock: StockInfo): Double {
