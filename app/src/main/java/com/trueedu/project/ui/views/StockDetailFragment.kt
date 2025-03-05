@@ -38,6 +38,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.trueedu.project.MainViewModel
 import com.trueedu.project.R
+import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.extensions.priceChangeStr
@@ -95,6 +96,8 @@ class StockDetailFragment: BaseFragment() {
     lateinit var admobManager: AdmobManager
     @Inject
     lateinit var googleAccount: GoogleAccount
+    @Inject
+    lateinit var dartManager: DartManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,6 +151,7 @@ class StockDetailFragment: BaseFragment() {
                             TouchIcon24(icon, onClick = { dialogShowing = true})
                         }
                     }
+
                 BackStockTopBar(
                     stockInfo.nameKr,
                     intFormatter.format(price, false),
@@ -155,6 +159,7 @@ class StockDetailFragment: BaseFragment() {
                     textColor,
                     stockInfo.halt(),
                     stockInfo.designated(),
+                    dartManager.hasDisclosure(stockInfo.code),
                     ::dismissAllowingStateLoss,
                     actions = actions
                 )
