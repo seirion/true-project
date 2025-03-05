@@ -38,7 +38,7 @@ class DartManager @Inject constructor(
     val updateSignal = MutableSharedFlow<Unit>()
 
     fun init() {
-        Log.d(TAG, "init()")
+        Log.d(TAG, "init() - ${local.dartApiKey.take(8)}")
         MainScope().launch {
             // yyyyMMddHHmm
             val lastUpdatedAtRemote = firebaseDartManager.lastUpdatedAt()
@@ -110,10 +110,18 @@ class DartManager @Inject constructor(
     }
 
     fun forceLoad() {
+        Log.d(TAG, "forceLoad()")
         clear()
         MainScope().launch {
             val list = spacManager.spacList.value
             loadList(list.map { it.code })
+            if (lastUpdatedAt != 0L) {
+                firebaseDartManager.writeDartList(
+                    items.values.map {
+                        DartListResponse(status = "", message = "", list = it)
+                    }
+                )
+            }
         }
     }
 
