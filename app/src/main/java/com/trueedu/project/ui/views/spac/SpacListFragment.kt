@@ -44,6 +44,7 @@ import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.common.DesignatedBadge
+import com.trueedu.project.ui.views.common.DisclosurePoint
 import com.trueedu.project.ui.views.common.HaltBadge
 import com.trueedu.project.ui.views.common.HoldingBadge
 import com.trueedu.project.ui.views.order.OrderFragment
@@ -126,6 +127,7 @@ class SpacListFragment: BaseFragment() {
                     val redemptionValue = spacManager.redemptionValueMap[item.code]
                     val expectedProfit = redemptionValue?.first
                     val expectedProfitRate = redemptionValue?.second
+                    val hasDisclosure = vm.hasDisclosure(item.code)
                     SpacItem(i, item,
                         spacManager.priceMap[item.code] ?: 0.0,
                         spacManager.priceChangeMap[item.code],
@@ -133,6 +135,7 @@ class SpacListFragment: BaseFragment() {
                         expectedProfit,
                         expectedProfitRate,
                         vm.holdingNum(item.code),
+                        hasDisclosure,
                         ::onPriceClick
                     ) {
                         StockDetailFragment.show(item, parentFragmentManager)
@@ -183,6 +186,7 @@ fun SpacItem(
     expectedProfit: Int? = null, // 청산 시 기대 수익
     expectedProfitRate: Double? = null, // 청산 시 기대 수익률(%)
     holdingNum: Double = 1.0,
+    hasDisclosure: Boolean = true, // 전자 공시 존재 여부
     onPriceClick: (String) -> Unit = {},
     onClick: () -> Unit = {},
 ) {
@@ -197,6 +201,9 @@ fun SpacItem(
     ) {
         Column {
             Row {
+                if (hasDisclosure) {
+                    DisclosurePoint()
+                }
                 TrueText(
                     s = item.nameKr,
                     fontSize = 14,

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -69,6 +70,20 @@ fun HaltBadge() {
 @Composable
 fun DesignatedBadge() {
     Badge("관", Color(0xFFF57C00))
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DisclosurePoint() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(4.dp)
+            .background(
+                color = Color(0xFF18DC43),
+                shape = CircleShape,
+            )
+    ) {}
 }
 
 @Preview(showBackground = true)

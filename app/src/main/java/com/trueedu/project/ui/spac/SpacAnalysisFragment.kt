@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.StockInfo
@@ -48,6 +49,9 @@ class SpacAnalysisFragment: BaseFragment() {
 
     @Inject
     lateinit var spacManager: SpacManager
+
+    @Inject
+    lateinit var dartManager: DartManager
 
     private val loading = mutableStateOf(false)
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
@@ -107,6 +111,7 @@ class SpacAnalysisFragment: BaseFragment() {
             ) {
                 item { VolumeSumView() }
                 itemsIndexed(stocks.value, key = { i, _ -> i }) { i, item ->
+                    val hasDisclosure = dartManager.hasDisclosure(item.code)
                     SpacItem(
                         i, item,
                         spacManager.priceMap[item.code] ?: 0.0,
@@ -115,6 +120,7 @@ class SpacAnalysisFragment: BaseFragment() {
                         null,
                         null,
                         0.0,
+                        hasDisclosure,
                         {},
                     ) {}
                 }
