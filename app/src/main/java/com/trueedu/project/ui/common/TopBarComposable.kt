@@ -75,8 +75,9 @@ fun BackStockTopBar(
     price: String = "13,000",
     priceChange: String = "+1,150(+1.15%)",
     textColor: Color = ChartColor.up,
-    halt: Boolean = false,
-    designated: Boolean = false,
+    halt: Boolean = true,
+    designated: Boolean = true,
+    hasDisclosure: Boolean = true,
     onBack: () -> Unit = {},
     actions: @Composable (RowScope.() -> Unit) = {},
 ) {
@@ -84,6 +85,9 @@ fun BackStockTopBar(
         title = {
             Column {
                 Row {
+                    if (hasDisclosure) {
+                        DisclosurePoint()
+                    }
                     TrueText(
                         s = nameKr,
                         fontSize = 16,
