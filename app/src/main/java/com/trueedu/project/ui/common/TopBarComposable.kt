@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.ui.views.common.DesignatedBadge
+import com.trueedu.project.ui.views.common.DisclosurePoint
 import com.trueedu.project.ui.views.common.HaltBadge
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,8 +76,9 @@ fun BackStockTopBar(
     price: String = "13,000",
     priceChange: String = "+1,150(+1.15%)",
     textColor: Color = ChartColor.up,
-    halt: Boolean = false,
-    designated: Boolean = false,
+    halt: Boolean = true,
+    designated: Boolean = true,
+    hasDisclosure: Boolean = true,
     onBack: () -> Unit = {},
     actions: @Composable (RowScope.() -> Unit) = {},
 ) {
@@ -84,6 +86,9 @@ fun BackStockTopBar(
         title = {
             Column {
                 Row {
+                    if (hasDisclosure) {
+                        DisclosurePoint()
+                    }
                     TrueText(
                         s = nameKr,
                         fontSize = 16,
