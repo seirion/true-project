@@ -44,8 +44,9 @@ class DartManager @Inject constructor(
             val lastUpdatedAtRemote = firebaseDartManager.lastUpdatedAt()
             Log.d(TAG, "lastUpdatedAtRemote: $lastUpdatedAtRemote")
             val now = Date().yyyyMMddHHmm().toLong()
+            val hasApiKey = local.dartApiKey.isNotBlank()
 
-            if (now - lastUpdatedAtRemote > 30) { // 30 minutes
+            if (hasApiKey && now - lastUpdatedAtRemote > 30) { // 30 minutes
                 // 다시 로딩
                 val list = spacManager.spacList.value
                 loadList(list.map { it.code })
