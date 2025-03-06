@@ -27,7 +27,7 @@ class FirebaseDartManager @Inject constructor(
     suspend fun lastUpdatedAt(): Long {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "loadAssets() failed: currentUser null")
+            Log.d(TAG, "lastUpdatedAt() failed: currentUser null")
         }
         val snapshot = database.getReference("meta").get().await()
         val lastUpdatedAt = snapshot.child("dartLastUpdatedAt").getValue(Long::class.java)

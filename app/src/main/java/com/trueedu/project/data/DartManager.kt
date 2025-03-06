@@ -51,13 +51,6 @@ class DartManager @Inject constructor(
                 val list = spacManager.spacList.value
                 loadList(list.map { it.code })
                 Log.d(TAG, "lastUpdatedAt: $lastUpdatedAt")
-                if (lastUpdatedAt != 0L) {
-                    firebaseDartManager.writeDartList(
-                        items.values.map {
-                            DartListResponse(status = "", message = "", list = it)
-                        }
-                    )
-                }
             } else {
                 lastUpdatedAt = lastUpdatedAtRemote
                 firebaseDartManager.loadDartList().forEach {
@@ -104,9 +97,15 @@ class DartManager @Inject constructor(
                     }
                 }
             }.awaitAll()
-        }
+            lastUpdatedAt = Date().yyyyMMddHHmm().toLong()
 
-        lastUpdatedAt = Date().yyyyMMddHHmm().toLong()
+            // 완료 후 firebase 업데이트
+            firebaseDartManager.writeDartList(
+                items.values.map {
+                    DartListResponse(status = "", message = "", list = it)
+                }
+            )
+        }
     }
 
     fun forceLoad() {
@@ -115,13 +114,6 @@ class DartManager @Inject constructor(
         MainScope().launch {
             val list = spacManager.spacList.value
             loadList(list.map { it.code })
-            if (lastUpdatedAt != 0L) {
-                firebaseDartManager.writeDartList(
-                    items.values.map {
-                        DartListResponse(status = "", message = "", list = it)
-                    }
-                )
-            }
         }
     }
 
