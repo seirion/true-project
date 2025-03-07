@@ -19,6 +19,9 @@ class FirebaseDartManager @Inject constructor(
 ): FirebaseDatabaseBase(googleAccount) {
     companion object {
         private val TAG = FirebaseDartManager::class.java.simpleName
+
+        private const val BASE_PATH = "dart"
+        private const val CHILD_PATH = "list"
     }
 
     /**
@@ -40,8 +43,8 @@ class FirebaseDartManager @Inject constructor(
         if (currentUser == null) {
             Log.d(TAG, "loadAssets() failed: currentUser null")
         }
-        val ref = database.getReference("dart")
-        val snapshot = ref.child("list")
+        val ref = database.getReference(BASE_PATH)
+        val snapshot = ref.child(CHILD_PATH)
         val list = snapshot.get().await()
             .getValue(object : GenericTypeIndicator<List<DartListResponse>>() {})
         return list ?: emptyList()
@@ -53,8 +56,8 @@ class FirebaseDartManager @Inject constructor(
         if (currentUser == null) {
             Log.d(TAG, "writeDartList() failed: currentUser null")
         }
-        val ref = database.getReference("dart")
-        val snapshot = ref.child("list")
+        val ref = database.getReference(BASE_PATH)
+        val snapshot = ref.child(CHILD_PATH)
         snapshot.setValue(list)
 
         val metaRef = database.getReference("meta")
