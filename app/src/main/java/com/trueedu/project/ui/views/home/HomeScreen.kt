@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.MainViewModel
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.dart.DartFragment
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.model.dto.firebase.StockInfo
@@ -129,8 +130,10 @@ class HomeScreen(
     }
 
     private fun onSearch() {
-        trueAnalytics.clickButton("${screenName()}__stock_search__click")
-        StockSearchFragment.show(null, fragmentManager)
+
+        DartFragment.show(fragmentManager)
+        //trueAnalytics.clickButton("${screenName()}__stock_search__click")
+        //StockSearchFragment.show(null, fragmentManager)
     }
 
     private fun onPriceClick(code: String) {
