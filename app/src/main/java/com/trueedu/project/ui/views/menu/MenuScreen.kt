@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Construction
 import androidx.compose.material.icons.outlined.QueryStats
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +42,7 @@ import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.spac.SpacScheduleFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.home.BottomNavScreen
+import com.trueedu.project.ui.views.schedule.OrderScheduleFragment
 import com.trueedu.project.ui.views.setting.SettingFragment
 
 class MenuScreen(
@@ -79,6 +81,9 @@ class MenuScreen(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
+                    if (tokenKeyManager.userKey.value != null) {
+                        MenuItem(Icons.Outlined.Timer, "예약 매매", ::onOrderSchedule)
+                    }
                     MenuItem(Icons.Outlined.QueryStats, "스팩 공시", ::onDartList)
                     MenuItem(Icons.Outlined.CalendarMonth, "스팩 일정", ::onSpacSchedule)
                     if (tokenKeyManager.userKey.value != null) {
@@ -96,6 +101,11 @@ class MenuScreen(
     private fun onSettings() {
         trueAnalytics.clickButton("${screenName()}__setting__click")
         SettingFragment.show(fragmentManager)
+    }
+
+    private fun onOrderSchedule() {
+        trueAnalytics.clickButton("${screenName()}__order_schedule__click")
+        OrderScheduleFragment.show(fragmentManager)
     }
 
     private fun onDartList() {
