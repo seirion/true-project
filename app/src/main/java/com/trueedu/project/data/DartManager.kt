@@ -8,12 +8,14 @@ import com.trueedu.project.data.firebase.FirebaseDartManager
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.utils.yyyyMMddHHmm
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -39,7 +41,7 @@ class DartManager @Inject constructor(
 
     fun init() {
         Log.d(TAG, "init() - ${local.dartApiKey.take(8)}")
-        MainScope().launch {
+        MainScope().launch(Dispatchers.IO) {
             // yyyyMMddHHmm
             val lastUpdatedAtRemote = firebaseDartManager.lastUpdatedAt()
             Log.d(TAG, "lastUpdatedAtRemote: $lastUpdatedAtRemote")
@@ -57,6 +59,7 @@ class DartManager @Inject constructor(
                     if (it.list?.isNotEmpty() == true) {
                         val code = it.list.first().stockCode
                         items[code] = it.list
+                        updateSignal.emit(Unit)
                     }
                 }
             }
@@ -79,7 +82,7 @@ class DartManager @Inject constructor(
             .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
 
         // 모든 API 호출을 동시에 실행하고 결과를 기다림
-        coroutineScope {
+        runBlocking {
             codes.map { code ->
                 async {
                     val dartInfo = dartCorpMap[code] ?: return@async
@@ -111,7 +114,7 @@ class DartManager @Inject constructor(
     fun forceLoad() {
         Log.d(TAG, "forceLoad()")
         clear()
-        MainScope().launch {
+        MainScope().launch(Dispatchers.IO) {
             val list = spacManager.spacList.value
             loadList(list.map { it.code })
         }
