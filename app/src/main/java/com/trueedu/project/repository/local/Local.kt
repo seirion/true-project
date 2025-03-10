@@ -8,6 +8,7 @@ import com.trueedu.project.extensions.string
 import com.trueedu.project.model.dto.auth.TokenResponse
 import com.trueedu.project.model.local.UserKey
 import com.trueedu.project.ui.views.order.OrderTab
+import com.trueedu.project.ui.views.schedule.OrderSchedule
 import com.trueedu.project.utils.parseDateString
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
@@ -91,4 +92,20 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
 
     // 스팩 설정
     var spacAnnualProfit by preferences.boolean(false) // 청산 가치 1년 환산 표시
+
+    // 예약 매매
+    private var orderScheduleJson by preferences.string("{}")
+
+    fun setOrderSchedule(orderSchedule: OrderSchedule): List<OrderSchedule> {
+        return emptyList()
+    }
+
+    fun getOrderSchedule(): List<OrderSchedule> {
+        return try {
+            val jsonString = orderScheduleJson
+            json.decodeFromString<List<OrderSchedule>>(jsonString)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }
