@@ -2,21 +2,24 @@ package com.trueedu.project
 
 import android.app.Application
 import android.content.Context
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.work.Configuration
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.DartManager
-import com.trueedu.project.data.realtime.RealOrderManager
-import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.UserAssets
+import com.trueedu.project.data.realtime.RealOrderManager
+import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.data.realtime.WsMessageHandler
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.ads.AdmobManager
+import com.trueedu.project.worker.initWorker
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
@@ -25,10 +28,23 @@ import dagger.hilt.android.internal.Contexts
 import dagger.hilt.components.SingletonComponent
 
 @HiltAndroidApp
-class App : Application(), LifecycleEventObserver {
+class App : Application(), LifecycleEventObserver, Configuration.Provider {
     companion object {
         private var foreground = false
     }
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface HiltWorkerFactoryEntryPoint {
+        fun workerFactory(): HiltWorkerFactory
+    }
+
+    // FIXME: 일단 강제로 주입
+    override val workManagerConfiguration =
+        Configuration.Builder()
+            .setWorkerFactory(EntryPoints.get(this, HiltWorkerFactoryEntryPoint::class.java).workerFactory())
+            //.setWorkerFactory(workerFactory)
+            .build()
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
@@ -46,7 +62,8 @@ class App : Application(), LifecycleEventObserver {
 
     override fun onCreate() {
         super.onCreate()
-        // init here
+        initWorker(applicationContext)
+
         val local = entryPointInjector(InjectModule::class.java).getLocal()
         local.migrate()
         MobileAds.initialize(this)
