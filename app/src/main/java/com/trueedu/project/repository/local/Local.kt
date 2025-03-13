@@ -110,5 +110,5 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
     }
 
     // 임시 - 테스트 결과 쓰기
-    var orderResult by preferences.string("{}")
+    var orderResult by preferences.string("")
 }

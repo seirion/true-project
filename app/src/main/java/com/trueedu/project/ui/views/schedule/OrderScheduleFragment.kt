@@ -1,6 +1,7 @@
 package com.trueedu.project.ui.views.schedule
 
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,12 +21,15 @@ import com.trueedu.project.R
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
+import com.trueedu.project.ui.common.TrueText
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderScheduleFragment: BaseFragment() {
     companion object {
+        private val TAG = OrderScheduleFragment::class.java.simpleName
+
         fun show(fragmentManager: FragmentManager): OrderScheduleFragment {
             val fragment = OrderScheduleFragment()
             fragment.show(fragmentManager, "order_schedule")
@@ -51,6 +55,7 @@ class OrderScheduleFragment: BaseFragment() {
 
     override fun init() {
         super.init()
+        Log.d(TAG, "daily alarm: ${local.orderResult}")
     }
 
     override fun onDestroy() {
@@ -72,6 +77,12 @@ class OrderScheduleFragment: BaseFragment() {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
+                // test
+                TrueText(
+                    s = local.orderResult,
+                    fontSize = 12,
+                    maxLines = 1000,
+                )
             }
         }
     }
