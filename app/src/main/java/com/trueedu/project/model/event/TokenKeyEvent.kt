@@ -2,14 +2,17 @@ package com.trueedu.project.model.event
 
 sealed class TokenKeyEvent
 
+// 유효한 토큰으로 확인 될 때
+data object TokenOk : TokenKeyEvent()
+
 // 새 토큰이 발행 될 때
-class TokenIssued: TokenKeyEvent()
+data object TokenIssued : TokenKeyEvent()
 
-class TokenIssueFail: TokenKeyEvent()
+data object TokenIssueFail : TokenKeyEvent()
 
-class TokenExpired: TokenKeyEvent()
+data object TokenExpired : TokenKeyEvent()
 
-class TokenRevoked: TokenKeyEvent()
+data object TokenRevoked : TokenKeyEvent()
 
 // 새 websocket key가 발행 될 때
-class WebSocketKeyIssued: TokenKeyEvent()
+data object WebSocketKeyIssued : TokenKeyEvent()
