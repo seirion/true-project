@@ -2,6 +2,7 @@ package com.trueedu.project.repository.remote
 
 import com.trueedu.project.di.NormalService
 import com.trueedu.project.model.dto.order.OrderResponse
+import com.trueedu.project.model.dto.order.ScheduleOrderCancelResponse
 import com.trueedu.project.model.dto.price.OrderExecutionResponse
 import com.trueedu.project.network.apiCallFlow
 import com.trueedu.project.repository.remote.service.OrderService
@@ -217,5 +218,47 @@ class OrderRemoteImpl(
             "CTX_AREA_NK100" to "", // 연속조회키100
         )
         orderService.orderExecution(headers, queries)
+    }
+
+    override fun scheduleOrder(
+        accountNum: String,
+        code: String,
+        isBuy: Boolean,
+        price: String,
+        quantity: String,
+        endDate: String,
+    ) = apiCallFlow {
+        val headers = mapOf(
+            "tr_id" to "CTSC0008U", // 국내예약매수입력/주문예약매도입력
+            "custtype" to "P",
+        )
+        val queries = mapOf(
+            "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
+            "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
+            "PDNO" to code, // 종목번호
+            "ORD_QTY" to quantity, // 주문 수량
+            "ORD_UNPR" to price, // 주문 단가
+            "SLL_BUY_DVSN_CD" to if(isBuy) "02" else "01", // 01 : 매도 02 : 매수
+            "ORD_DVSN_CD" to "00", // 00 : 지정가 01 : 시장가 02 : 조건부지정가 05 : 장전 시간외
+            "ORD_OBJT_CBLC_DVSN_CD" to "10", // 주문대상잔고구분코드: 항상 '현금'만 사용
+            "RSVN_ORD_END_DT" to endDate, // yyyyMMdd, 값이 없으면 다음날 주문처리되고 예약주문은 종료됨
+        )
+        orderService.scheduleOrder(headers, queries)
+    }
+
+    override fun cancelScheduleOrder(
+        accountNum: String,
+        orderSeq: String,
+    ) = apiCallFlow {
+        val headers = mapOf(
+            "tr_id" to "CTSC0009U", // CTSC0009U(취소), CTSC0013U(정정)
+            "custtype" to "P",
+        )
+        val queries = mapOf(
+            "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
+            "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
+            "RSVN_ORD_SEQ" to orderSeq, // 예약주문순번
+        )
+        orderService.cancelScheduleOrder(headers, queries)
     }
 }
