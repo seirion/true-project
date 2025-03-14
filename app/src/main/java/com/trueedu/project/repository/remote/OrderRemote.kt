@@ -4,6 +4,7 @@ import com.trueedu.project.model.dto.order.OrderModifyResponse
 import com.trueedu.project.model.dto.order.OrderResponse
 import com.trueedu.project.model.dto.order.ScheduleOrderCancelResponse
 import com.trueedu.project.model.dto.order.ScheduleOrderResponse
+import com.trueedu.project.model.dto.order.ScheduleOrderResult
 import com.trueedu.project.model.dto.price.OrderExecutionResponse
 import com.trueedu.project.model.dto.price.OrderModifiableResponse
 import kotlinx.coroutines.flow.Flow
@@ -52,7 +53,14 @@ interface OrderRemote {
     ): Flow<OrderExecutionResponse>
 
     /**
-     * 주식 매수 예약
+     * 주식 매수/매도 예약 - 목록
+     */
+    fun scheduleOrderList(
+        accountNum: String,
+    ): Flow<ScheduleOrderResult>
+
+    /**
+     * 주식 매수/매도 예약
      * 예약주문 가능시간 : 15시 40분 ~ 다음 영업일 7시 30분
      *  (단, 서버 초기화 작업 시 예약주문 불가 : 23시 40분 ~ 00시 10분)
      */
@@ -66,7 +74,7 @@ interface OrderRemote {
     ): Flow<ScheduleOrderResponse>
 
     /**
-     *
+     * 주식 매수/매도 예약 취소
      */
     fun cancelScheduleOrder(
         accountNum: String,
