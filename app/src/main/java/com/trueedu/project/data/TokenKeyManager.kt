@@ -9,6 +9,7 @@ import com.trueedu.project.model.dto.auth.WebSocketKeyRequest
 import com.trueedu.project.model.event.TokenIssueFail
 import com.trueedu.project.model.event.TokenIssued
 import com.trueedu.project.model.event.TokenKeyEvent
+import com.trueedu.project.model.event.TokenOk
 import com.trueedu.project.model.event.TokenRevoked
 import com.trueedu.project.model.event.WebSocketKeyIssued
 import com.trueedu.project.model.local.UserKey
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
@@ -99,7 +101,7 @@ class TokenKeyManager @Inject constructor(
             }
             .onEach {
                 local.webSocketKey = it.approvalKey
-                event.emit(WebSocketKeyIssued())
+                event.emit(WebSocketKeyIssued)
                 Log.d(TAG, "new web socket key: $it")
             }
             .launchIn(MainScope())
@@ -115,6 +117,9 @@ class TokenKeyManager @Inject constructor(
         }
         if (hasValidToken()) {
             Log.d(TAG, "token is valid")
+            MainScope().launch {
+                event.emit(TokenOk)
+            }
             return
         }
 
@@ -128,11 +133,11 @@ class TokenKeyManager @Inject constructor(
             .catch {
                 // service not available
                 Log.e(TAG, "failed to get AccessToken: $it")
-                event.emit(TokenIssueFail())
+                event.emit(TokenIssueFail)
             }
             .onEach {
                 setAccessToken(it)
-                event.emit(TokenIssued())
+                event.emit(TokenIssued)
                 Log.d(TAG, "new token: $it")
             }
             .launchIn(MainScope())
@@ -156,7 +161,7 @@ class TokenKeyManager @Inject constructor(
                 // service not available
             }
             .onEach {
-                event.emit(TokenRevoked())
+                event.emit(TokenRevoked)
                 Log.d(TAG, "revoke ok: $it")
             }
             .launchIn(MainScope())

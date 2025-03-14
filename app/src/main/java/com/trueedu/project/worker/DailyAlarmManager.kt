@@ -34,7 +34,7 @@ class DailyAlarmManager(private val context: Context) {
 
         var scheduledTime = now.withHour(8)
             .withMinute(50)
-            .withSecond(1)
+            .withSecond(0)
 
         // 현재 시간이 이미 8:50을 지났다면 다음날로 설정
         if (scheduledTime.isBefore(now)) {

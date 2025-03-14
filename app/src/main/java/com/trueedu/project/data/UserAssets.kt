@@ -3,6 +3,7 @@ package com.trueedu.project.data
 import android.util.Log
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.model.event.TokenIssued
+import com.trueedu.project.model.event.TokenOk
 import com.trueedu.project.repository.remote.AccountRemote
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -36,7 +37,7 @@ class UserAssets @Inject constructor(
         job = MainScope().launch {
             tokenKeyManager.observeTokenKeyEvent()
                 .collect {
-                    if (it is TokenIssued) {
+                    if (it is TokenOk || it is TokenIssued) {
                         loadUserStocks()
                     }
                 }
