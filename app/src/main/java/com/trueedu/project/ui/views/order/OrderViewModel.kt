@@ -39,7 +39,7 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderViewModel @Inject constructor(
     val stockPool: StockPool,
-    private val keyTokenKeyManager: TokenKeyManager,
+    private val tokenKeyManager: TokenKeyManager,
     private val priceRemote: PriceRemote,
     private val orderRemote: OrderRemote,
     private val priceManager: RealPriceManager,
@@ -137,7 +137,7 @@ class OrderViewModel @Inject constructor(
     }
 
     private fun buySell(isBuy: Boolean, onSuccess: () -> Unit, onFail: (String) -> Unit) {
-        val userKey = keyTokenKeyManager.userKey.value ?: return
+        val userKey = tokenKeyManager.userKey.value ?: return
         if (userKey.accountNum.isNullOrEmpty()) {
             Log.d(TAG, "order failed: empty accountNum")
         }
