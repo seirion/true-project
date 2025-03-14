@@ -3,6 +3,7 @@ package com.trueedu.project.repository.remote
 import com.trueedu.project.di.NormalService
 import com.trueedu.project.model.dto.order.OrderResponse
 import com.trueedu.project.model.dto.order.ScheduleOrderCancelResponse
+import com.trueedu.project.model.dto.order.ScheduleOrderResult
 import com.trueedu.project.model.dto.price.OrderExecutionResponse
 import com.trueedu.project.network.apiCallFlow
 import com.trueedu.project.repository.remote.service.OrderService
@@ -218,6 +219,31 @@ class OrderRemoteImpl(
             "CTX_AREA_NK100" to "", // 연속조회키100
         )
         orderService.orderExecution(headers, queries)
+    }
+
+    override fun scheduleOrderList(
+        accountNum: String,
+    ) = apiCallFlow {
+        val headers = mapOf(
+            "tr_id" to "CTSC0004R", // 국내주식예약주문조회
+            "custtype" to "P",
+        )
+        val queries = mapOf(
+            "RSVN_ORD_ORD_DT" to "", // 예약주문시작일자(8)
+            "RSVN_ORD_END_DT" to "", // 예약주문종료일자(8)
+            "RSVN_ORD_SEQ" to "", // 예약주문순번(10)
+            "TMNL_MDIA_KIND_CD" to "00", // 단말매체종류코드	String	Y	2	"00" 입력
+
+            "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
+            "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
+            "PRCS_DVSN_CD" to "0", // 처리구분코드	0: 전체 1: 처리내역 2: 미처리내역
+            "CNCL_YN" to "Y", // 취소여부	"Y" 유효한 주문만 조회
+            "PDNO" to "", // 종목코드(6자리) (공백 입력 시 전체 조회)
+            "SLL_BUY_DVSN_CD" to "00", // 매도매수구분코드 00 : 전체 / 01 : 매도 / 02 : 매수
+            "CTX_AREA_FK200" to "", // 연속조회검색조건200	String	Y	200	다음 페이지 조회시 사용
+            "CTX_AREA_NK200" to "", // 연속조회키200	String	Y	200	다음 페이지 조회시 사용
+        )
+        orderService.scheduleOrderResult(headers, queries)
     }
 
     override fun scheduleOrder(
