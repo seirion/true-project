@@ -2,9 +2,19 @@ package com.trueedu.project.ui.views.schedule
 
 import android.os.Bundle
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.RemoveCircle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TabRow
@@ -12,7 +22,10 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
@@ -20,6 +33,10 @@ import com.trueedu.project.R
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
+import com.trueedu.project.ui.common.TouchIcon24
+import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.utils.formatter.intFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -61,17 +78,43 @@ class OrderScheduleFragment: BaseFragment() {
     override fun BodyScreen() {
         Scaffold(
             topBar = {
-                BackTitleTopBar("주문 예약", ::dismissAllowingStateLoss)
+                val onAction = if (currentTab.value == Tab.List) {
+                    ::onAdd
+                } else {
+                    null
+                }
+                BackTitleTopBar(
+                    title = "주문 예약",
+                    onBack = ::dismissAllowingStateLoss,
+                    actionIcon = Icons.Outlined.Add,
+                    onAction = onAction,
+                )
             },
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background),
         ) { innerPadding ->
+            val scrollState = rememberScrollState()
+            val list = vm.list.value
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    .padding(top = 12.dp)
+                    .verticalScroll(scrollState)
             ) {
+                // ScheduleSummary()
+                list.forEachIndexed { index, it ->
+                    ScheduleItem(vm.nameKr(it.code), it, ::onModify) {
+                        onRemove(index)
+                    }
+                }
+                // test
+                TrueText(
+                    s = "test", // local.orderResult,
+                    fontSize = 12,
+                    maxLines = 1000,
+                )
             }
         }
     }
@@ -96,9 +139,94 @@ class OrderScheduleFragment: BaseFragment() {
         ) {
         }
     }
+
+    private fun onAdd() {
+        trueAnalytics.clickButton("${screenName()}__add__click")
+        ScheduleAddFragment.show(parentFragmentManager) {
+            vm.add(it)
+        }
+    }
+
+    private fun onModify() {
+        trueAnalytics.clickButton("${screenName()}__modify__click")
+    }
+
+    private fun onRemove(index: Int) {
+        trueAnalytics.clickButton("${screenName()}__remove__click")
+        vm.removeAt(index)
+    }
 }
 
 private enum class Tab {
     List, // 예약한 전체 예약 목록
     TodayOrders, // 오늘 수행한 결과
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun ScheduleSummary(
+    count: Int = 1,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(32.dp)
+    ) {
+        TrueText(
+            s = "예약 주문 $count",
+            fontSize = 12,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ScheduleItem(
+    nameKr: String = "삼성전자",
+    item: OrderSchedule = OrderSchedule("", true, 1000, 1),
+    onClick: () -> Unit = {},
+    onRemove: () -> Unit = {},
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+            .clickable { onClick() }
+            .padding(end = 12.dp)
+    ) {
+        TouchIcon24(
+            icon = Icons.Outlined.RemoveCircle,
+            tint = MaterialTheme.colorScheme.error,
+        ) { onRemove() }
+
+        val isBuy = item.isBuy
+        TrueText(
+            s = if (isBuy) "매수" else "매도" ,
+            fontSize = 12,
+            color = if (isBuy) ChartColor.up else ChartColor.down,
+            modifier = Modifier.weight(1f),
+        )
+        TrueText(
+            s = nameKr,
+            fontSize = 12,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.weight(3f),
+        )
+        listOf(
+            intFormatter.format(item.price.toDouble()) to 1.5f,
+            "${intFormatter.format(item.quantity.toDouble())}주" to 1f,
+        ).forEach { (s, w) ->
+            TrueText(
+                s = s,
+                fontSize = 12,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.End,
+                modifier = Modifier.weight(w),
+            )
+        }
+    }
+}
+

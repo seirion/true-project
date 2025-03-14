@@ -12,6 +12,7 @@ import com.trueedu.project.ui.views.schedule.OrderSchedule
 import com.trueedu.project.utils.parseDateString
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -96,8 +97,8 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
     // 예약 매매
     private var orderScheduleJson by preferences.string("{}")
 
-    fun setOrderSchedule(orderSchedule: OrderSchedule): List<OrderSchedule> {
-        return emptyList()
+    fun setOrderSchedule(list: List<OrderSchedule>) {
+        orderScheduleJson = json.encodeToString(list)
     }
 
     fun getOrderSchedule(): List<OrderSchedule> {
