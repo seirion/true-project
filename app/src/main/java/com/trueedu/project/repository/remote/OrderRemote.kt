@@ -57,6 +57,8 @@ interface OrderRemote {
      */
     fun scheduleOrderList(
         accountNum: String,
+        fk200: String,
+        nk200: String,
     ): Flow<ScheduleOrderResult>
 
     /**

@@ -108,7 +108,7 @@ class DailyOrderTaskReceiver : BroadcastReceiver() {
                     local.orderResult = "${Date()}\n    failed: ${it.message}}"
                 }
                 .collect {
-                    local.orderResult = "${Date()}\n    ok: ${it.msg}\n    ${it.orderDetail?.orderTime}}"
+                    local.orderResult = "${Date()}\n    ok: ${it.msg1}\n    ${it.orderDetail?.orderTime}}"
                 }
         }
     }

@@ -13,6 +13,10 @@ data class ScheduleOrderResult(
     val msg: String, // 응답메세지
     @SerialName("output")
     val list: List<ScheduleOrderResultDetail>,
+    @SerialName("ctx_area_fk200")
+    val fk200: String,
+    @SerialName("ctx_area_nk200")
+    val nk200: String,
 )
 
 @Serializable

@@ -1,7 +1,7 @@
 package com.trueedu.project.ui.views.schedule
 
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,9 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.trueedu.project.R
+import com.trueedu.project.model.dto.order.ScheduleOrderResultDetail
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
+import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
@@ -71,7 +73,6 @@ class OrderScheduleFragment: BaseFragment() {
 
     override fun init() {
         super.init()
-        Log.d(TAG, "daily alarm: ${local.orderResult}")
     }
 
     override fun onDestroy() {
@@ -98,8 +99,13 @@ class OrderScheduleFragment: BaseFragment() {
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background),
         ) { innerPadding ->
+            if (vm.loading.value) {
+                LoadingView()
+                return@Scaffold
+            }
+
             val scrollState = rememberScrollState()
-            val list = vm.list.value
+            val list = vm.list.value?.list ?: emptyList()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -109,9 +115,7 @@ class OrderScheduleFragment: BaseFragment() {
             ) {
                 // ScheduleSummary()
                 list.forEachIndexed { index, it ->
-                    ScheduleItem(vm.nameKr(it.code), it, ::onModify) {
-                        onRemove(index)
-                    }
+                    ScheduleItem(it)
                 }
                 // test
                 TrueText(
@@ -147,7 +151,9 @@ class OrderScheduleFragment: BaseFragment() {
     private fun onAdd() {
         trueAnalytics.clickButton("${screenName()}__add__click")
         ScheduleAddFragment.show(parentFragmentManager) {
-            vm.add(it)
+            vm.add(it) { errorMessage ->
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -190,8 +196,7 @@ private fun ScheduleSummary(
 @Preview(showBackground = true)
 @Composable
 fun ScheduleItem(
-    nameKr: String = "삼성전자",
-    item: OrderSchedule = OrderSchedule("", true, 1000, 1),
+    item: ScheduleOrderResultDetail = previewData(),
     onClick: () -> Unit = {},
     onRemove: () -> Unit = {},
 ) {
@@ -206,7 +211,7 @@ fun ScheduleItem(
             tint = MaterialTheme.colorScheme.error,
         ) { onRemove() }
 
-        val isBuy = item.isBuy
+        val isBuy = item.sellBuyDivisionCode == "02"
         TrueText(
             s = if (isBuy) "매수" else "매도" ,
             fontSize = 12,
@@ -214,14 +219,14 @@ fun ScheduleItem(
             modifier = Modifier.weight(1f),
         )
         TrueText(
-            s = nameKr,
+            s = item.nameKr,
             fontSize = 12,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.weight(3f),
         )
         listOf(
             intFormatter.format(item.price.toDouble()) to 1.5f,
-            "${intFormatter.format(item.quantity.toDouble())}주" to 1f,
+            "${intFormatter.format(item.orderReservedQuantity.toDouble())}주" to 1f,
         ).forEach { (s, w) ->
             TrueText(
                 s = s,
@@ -234,3 +239,26 @@ fun ScheduleItem(
     }
 }
 
+private fun previewData() =
+    ScheduleOrderResultDetail(
+        seq = "",
+        orderDate = "",
+        receivedDate = "",
+        code = "343300",
+        orderDivisionCode = "",
+        orderReservedQuantity = "",
+        totalClearedQuantity = "",
+        cancelOrderDate = "",
+        orderTime = "",
+        rejectReason = "",
+        orderNumber = "",
+        receivedTime = "",
+        nameKr = "삼성전자",
+        sellBuyDivisionCode = "",
+        price = "50,000",
+        totalClearedAmount = "",
+        cancelReceivedTime = "",
+        processResult = "",
+        orderDivisionName = "",
+        endDate = "",
+    )

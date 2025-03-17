@@ -2,9 +2,6 @@ package com.trueedu.project.repository.remote
 
 import com.trueedu.project.di.NormalService
 import com.trueedu.project.model.dto.order.OrderResponse
-import com.trueedu.project.model.dto.order.ScheduleOrderCancelResponse
-import com.trueedu.project.model.dto.order.ScheduleOrderResult
-import com.trueedu.project.model.dto.price.OrderExecutionResponse
 import com.trueedu.project.network.apiCallFlow
 import com.trueedu.project.repository.remote.service.OrderService
 import kotlinx.coroutines.flow.Flow
@@ -223,25 +220,30 @@ class OrderRemoteImpl(
 
     override fun scheduleOrderList(
         accountNum: String,
+        fk200: String,
+        nk200: String,
     ) = apiCallFlow {
+        val tc = if (fk200.isEmpty() || nk200.isEmpty()) "" else "N"
         val headers = mapOf(
             "tr_id" to "CTSC0004R", // 국내주식예약주문조회
             "custtype" to "P",
+            "tr_cont" to tc,
         )
         val queries = mapOf(
-            "RSVN_ORD_ORD_DT" to "", // 예약주문시작일자(8)
-            "RSVN_ORD_END_DT" to "", // 예약주문종료일자(8)
+            "RSVN_ORD_ORD_DT" to "20250319", // 예약주문시작일자(8)
+            "RSVN_ORD_END_DT" to "20250319", // 예약주문종료일자(8)
             "RSVN_ORD_SEQ" to "", // 예약주문순번(10)
-            "TMNL_MDIA_KIND_CD" to "00", // 단말매체종류코드	String	Y	2	"00" 입력
+            "RSVN_ORD_ORGNO" to "",
+            "TMNL_MDIA_KIND_CD" to "00", // 단말매체종류코드 - "00" 입력
 
             "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
             "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
             "PRCS_DVSN_CD" to "0", // 처리구분코드	0: 전체 1: 처리내역 2: 미처리내역
-            "CNCL_YN" to "Y", // 취소여부	"Y" 유효한 주문만 조회
+            "CNCL_YN" to "", // 취소여부	"Y" 유효한 주문만 조회
             "PDNO" to "", // 종목코드(6자리) (공백 입력 시 전체 조회)
             "SLL_BUY_DVSN_CD" to "00", // 매도매수구분코드 00 : 전체 / 01 : 매도 / 02 : 매수
-            "CTX_AREA_FK200" to "", // 연속조회검색조건200	String	Y	200	다음 페이지 조회시 사용
-            "CTX_AREA_NK200" to "", // 연속조회키200	String	Y	200	다음 페이지 조회시 사용
+            "CTX_AREA_FK200" to fk200, // 연속조회검색조건200	다음 페이지 조회시 사용
+            "CTX_AREA_NK200" to nk200, // 연속조회키200	다음 페이지 조회시 사용
         )
         orderService.scheduleOrderResult(headers, queries)
     }
@@ -258,7 +260,7 @@ class OrderRemoteImpl(
             "tr_id" to "CTSC0008U", // 국내예약매수입력/주문예약매도입력
             "custtype" to "P",
         )
-        val queries = mapOf(
+        val body = mapOf(
             "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
             "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
             "PDNO" to code, // 종목번호
@@ -269,7 +271,7 @@ class OrderRemoteImpl(
             "ORD_OBJT_CBLC_DVSN_CD" to "10", // 주문대상잔고구분코드: 항상 '현금'만 사용
             "RSVN_ORD_END_DT" to endDate, // yyyyMMdd, 값이 없으면 다음날 주문처리되고 예약주문은 종료됨
         )
-        orderService.scheduleOrder(headers, queries)
+        orderService.scheduleOrder(headers, body)
     }
 
     override fun cancelScheduleOrder(
@@ -280,11 +282,11 @@ class OrderRemoteImpl(
             "tr_id" to "CTSC0009U", // CTSC0009U(취소), CTSC0013U(정정)
             "custtype" to "P",
         )
-        val queries = mapOf(
+        val body = mapOf(
             "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
             "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
             "RSVN_ORD_SEQ" to orderSeq, // 예약주문순번
         )
-        orderService.cancelScheduleOrder(headers, queries)
+        orderService.cancelScheduleOrder(headers, body)
     }
 }
