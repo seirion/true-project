@@ -48,12 +48,12 @@ interface OrderService {
     @POST("/uapi/domestic-stock/v1/trading/order-resv")
     suspend fun scheduleOrder(
         @HeaderMap headers: Map<String, String>,
-        @QueryMap queries: Map<String, String>
+        @Body body: Map<String, String>
     ): Response<ScheduleOrderResponse>
 
     @POST("/uapi/domestic-stock/v1/trading/order-resv-rvsecncl")
     suspend fun cancelScheduleOrder(
         @HeaderMap headers: Map<String, String>,
-        @QueryMap queries: Map<String, String>
+        @Body body: Map<String, String>
     ): Response<ScheduleOrderCancelResponse>
 }
