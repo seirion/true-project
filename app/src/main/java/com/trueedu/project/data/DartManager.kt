@@ -13,6 +13,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -50,6 +51,10 @@ class DartManager @Inject constructor(
 
             if (hasApiKey && now - lastUpdatedAtRemote > 30) { // 30 minutes
                 // 다시 로딩
+                while (spacManager.loading.value) {
+                    Log.d(TAG, "waiting spacManager")
+                    delay(200)
+                }
                 val list = spacManager.spacList.value
                 loadList(list.map { it.code })
                 Log.d(TAG, "lastUpdatedAt: $lastUpdatedAt")
@@ -72,10 +77,10 @@ class DartManager @Inject constructor(
     }
 
     fun getListMap(): Map<String, List<DartListItem>> {
-        return items.toMap()
+        return items
     }
 
-    suspend fun loadList(codes: List<String>) {
+    fun loadList(codes: List<String>) {
         if (local.dartApiKey.isBlank()) return
 
         val fromDate = LocalDate.now()
