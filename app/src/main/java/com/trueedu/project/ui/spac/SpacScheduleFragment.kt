@@ -91,7 +91,7 @@ class SpacScheduleFragment: BaseFragment() {
                     .verticalScroll(state)
             ) {
                 list.map { (date, schedule) ->
-                    val dateString = dateFormat(date)
+                    val dateString = dateFormat(date.take(8))
                     val isPast = LocalDate.now().yyyyMMdd().let { now ->
                         date < now
                     }
