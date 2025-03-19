@@ -1,6 +1,5 @@
 package com.trueedu.project.ui.spac
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,12 +18,16 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.views.StockDetailFragment
+import com.trueedu.project.ui.views.order.OrderFragment
+import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.ui.views.spac.SpacItem
 import com.trueedu.project.utils.formatter.intFormatter
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,6 +55,9 @@ class SpacAnalysisFragment: BaseFragment() {
 
     @Inject
     lateinit var dartManager: DartManager
+
+    @Inject
+    lateinit var tokenKeyManager: TokenKeyManager
 
     private val loading = mutableStateOf(false)
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
@@ -121,8 +127,10 @@ class SpacAnalysisFragment: BaseFragment() {
                         null,
                         0.0,
                         hasDisclosure,
-                        {},
-                    ) {}
+                        { gotoOrder(item) },
+                    ) {
+                        gotoStockDetail(item)
+                    }
                 }
             }
         }
@@ -158,5 +166,21 @@ class SpacAnalysisFragment: BaseFragment() {
     override fun onStop() {
         super.onStop()
         spacManager.onStop()
+    }
+
+    private fun gotoOrder(stock: StockInfo) {
+        trueAnalytics.clickButton("${screenName()}__price__click")
+        val hasAppKey = tokenKeyManager.userKey.value != null
+
+        if (hasAppKey) {
+            OrderFragment.show(stock.code, parentFragmentManager)
+        } else {
+            AppKeyInputFragment.show(false, parentFragmentManager)
+        }
+    }
+
+    private fun gotoStockDetail(stock: StockInfo) {
+        trueAnalytics.clickButton("${screenName()}__item__click")
+        StockDetailFragment.show(stock, parentFragmentManager)
     }
 }
