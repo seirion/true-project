@@ -45,6 +45,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 @AndroidEntryPoint
 class DartListFragment: BaseFragment() {
@@ -135,7 +136,7 @@ class DartListFragment: BaseFragment() {
     }
 
     private fun onItemClick(receiptNum: String) {
-        val url = Uri.parse("https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${receiptNum}")
+        val url = "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${receiptNum}".toUri()
         requireActivity().startActivity(Intent(Intent.ACTION_VIEW, url))
     }
 

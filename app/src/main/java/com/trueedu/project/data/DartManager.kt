@@ -8,6 +8,7 @@ import com.trueedu.project.data.firebase.FirebaseDartManager
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.utils.yyyyMMddHHmm
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
@@ -80,40 +81,38 @@ class DartManager @Inject constructor(
         return items
     }
 
-    fun loadList(codes: List<String>) {
+    suspend fun CoroutineScope.loadList(codes: List<String>) {
         if (local.dartApiKey.isBlank()) return
 
         val fromDate = LocalDate.now()
             .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
 
         // 모든 API 호출을 동시에 실행하고 결과를 기다림
-        runBlocking {
-            codes.map { code ->
-                async {
-                    val dartInfo = dartCorpMap[code] ?: return@async
-                    try {
-                        val response = dartRemote.list(dartInfo.corpCode, fromDate)
-                        response.collect { res ->
-                            if (res.list?.isNotEmpty() == true) {
-                                Log.d(TAG, "${dartInfo.nameKr} - ${res.list.first().let {"${it.receiptDate} ${it.reportName}"} }")
-                                items[code] = res.list
-                                updateSignal.emit(Unit)
-                            }
+        codes.map { code ->
+            async {
+                val dartInfo = dartCorpMap[code] ?: return@async
+                try {
+                    val response = dartRemote.list(dartInfo.corpCode, fromDate)
+                    response.collect { res ->
+                        if (res.list?.isNotEmpty() == true) {
+                            Log.d(TAG, "${dartInfo.nameKr} - ${res.list.first().let {"${it.receiptDate} ${it.reportName}"} }")
+                            items[code] = res.list
+                            updateSignal.emit(Unit)
                         }
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error loading dart list for ${dartInfo.nameKr}: ${e.message}")
                     }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error loading dart list for ${dartInfo.nameKr}: ${e.message}")
                 }
-            }.awaitAll()
-            lastUpdatedAt = Date().yyyyMMddHHmm().toLong()
+            }
+        }.awaitAll()
+        lastUpdatedAt = Date().yyyyMMddHHmm().toLong()
 
-            // 완료 후 firebase 업데이트
-            firebaseDartManager.writeDartList(
-                items.values.map {
-                    DartListResponse(status = "", message = "", list = it)
-                }
-            )
-        }
+        // 완료 후 firebase 업데이트
+        firebaseDartManager.writeDartList(
+            items.values.map {
+                DartListResponse(status = "", message = "", list = it)
+            }
+        )
     }
 
     fun forceLoad() {

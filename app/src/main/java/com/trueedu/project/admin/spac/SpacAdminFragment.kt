@@ -100,7 +100,8 @@ class SpacAdminFragment: BaseFragment() {
                 }
 
             // fastDistinctBy 알고리즘에 따라 newValues 를 우선하여 사용함
-            namePrices.value = (newValues + oldValues).fastDistinctBy { it.code }
+            namePrices.value = (newValues + oldValues)
+                .fastDistinctBy(SpacStatus::code)
                 .sortedBy {
                     val s = stockPool.get(it.code)
                     s!!.listingDate() ?: ""

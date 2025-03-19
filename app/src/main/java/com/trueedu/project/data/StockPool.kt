@@ -15,7 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -70,22 +69,18 @@ class StockPool @Inject constructor(
                 Log.d(TAG, "종목 업데이트 ${local.stockUpdatedAt} < $remoteUpdatedTime")
                 val (_, stocks) = firebaseRealtimeDatabase.loadStocks()
 
-                withContext(Dispatchers.Main) {
-                    status.value = Status.SUCCESS
-                    this@StockPool.stocks = stocks
-                    local.stockUpdatedAt = remoteUpdatedTime
-                    Log.d(TAG, "remote stocks(${stocks.size}) loaded")
-                }
+                status.value = Status.SUCCESS
+                this@StockPool.stocks = stocks
+                local.stockUpdatedAt = remoteUpdatedTime
+                Log.d(TAG, "remote stocks(${stocks.size}) loaded")
 
                 if (stocks.isNotEmpty()) {
                     writeToLocalDatabase(stocks.values)
                 }
             } else {
                 Log.d(TAG, "종목 업데이트 불필요: ${localStocks.size}")
-                withContext(Dispatchers.Main) {
-                    status.value = Status.SUCCESS
-                    this@StockPool.stocks = localStocks
-                }
+                status.value = Status.SUCCESS
+                this@StockPool.stocks = localStocks
             }
         }
     }
@@ -128,13 +123,11 @@ class StockPool @Inject constructor(
             val yyyyMMddHHmm = currentTimeToyyyyMMddHHmm()
             firebaseRealtimeDatabase.writeStockInfo(yyyyMMddHHmm, stocks)
 
-            withContext(Dispatchers.Main) {
-                if (stocks.isNotEmpty()) {
-                    local.stockUpdatedAt = yyyyMMddHHmm
-                    status.value = Status.SUCCESS
-                } else {
-                    status.value = Status.FAIL
-                }
+            if (stocks.isNotEmpty()) {
+                local.stockUpdatedAt = yyyyMMddHHmm
+                status.value = Status.SUCCESS
+            } else {
+                status.value = Status.FAIL
             }
 
             if (stocks.isNotEmpty()) {
