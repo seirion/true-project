@@ -230,8 +230,8 @@ class OrderRemoteImpl(
             "tr_cont" to tc,
         )
         val queries = mapOf(
-            "RSVN_ORD_ORD_DT" to "20250319", // 예약주문시작일자(8)
-            "RSVN_ORD_END_DT" to "20250319", // 예약주문종료일자(8)
+            "RSVN_ORD_ORD_DT" to "", // 예약주문시작일자(8)
+            "RSVN_ORD_END_DT" to "", // 예약주문종료일자(8)
             "RSVN_ORD_SEQ" to "", // 예약주문순번(10)
             "RSVN_ORD_ORGNO" to "",
             "TMNL_MDIA_KIND_CD" to "00", // 단말매체종류코드 - "00" 입력
