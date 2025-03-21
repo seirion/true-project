@@ -1,7 +1,6 @@
 package com.trueedu.project.ui.dart
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.BuildConfig
@@ -45,7 +45,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import androidx.core.net.toUri
 
 @AndroidEntryPoint
 class DartListFragment: BaseFragment() {
@@ -69,16 +68,21 @@ class DartListFragment: BaseFragment() {
     lateinit var dartManager: DartManager
 
     private val loading = mutableStateOf(false)
-    private val num = mutableStateOf(0) // 화면 갱신 용
+    private val items = mutableStateOf<List<Pair<String, List<DartListItem>>>>(emptyList())
 
     override fun init() {
         super.init()
+        items.value = dartManager.getListMap().map {
+            it.key to it.value
+        }
 
         lifecycleScope.launch {
             launch {
                 dartManager.updateSignal
                     .collectLatest {
-                        num.value = dartManager.getSize()
+                        items.value = dartManager.getListMap().map {
+                            it.key to it.value
+                        }
                     }
             }
         }
@@ -87,10 +91,6 @@ class DartListFragment: BaseFragment() {
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun BodyScreen() {
-        val items = dartManager.getListMap().map {
-            it.key to it.value
-        }
-
         Scaffold(
             topBar = {
                 val forceRefresh = if (BuildConfig.DEBUG) {
@@ -98,7 +98,7 @@ class DartListFragment: BaseFragment() {
                 } else {
                     null
                 }
-                DartTopBar(items.size, ::dismissAllowingStateLoss, forceRefresh)
+                DartTopBar(items.value.size, ::dismissAllowingStateLoss, forceRefresh)
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -110,14 +110,13 @@ class DartListFragment: BaseFragment() {
                 return@Scaffold
             }
 
-            num.value
             val state = rememberLazyListState()
             LazyColumn(
                 state = state,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 stickyHeader { Header() }
-                itemsIndexed(items, key = { _, item -> item.first }) { _, (code, list) ->
+                itemsIndexed(items.value, key = { _, item -> item.first }) { _, (code, list) ->
                     val stock = stockPool.get(code) ?: return@itemsIndexed
                     NameView(stock.nameKr, stock.code)
                     list.forEach {
