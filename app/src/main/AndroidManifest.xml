@@ -37,18 +37,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver
-            android:name=".broadcast.DailyOrderTaskReceiver"
-            android:exported="false" />
-
-        <receiver
-            android:name=".broadcast.BootReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="@string/admob_id"/>
