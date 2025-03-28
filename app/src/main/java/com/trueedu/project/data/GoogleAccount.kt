@@ -9,6 +9,8 @@ import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.trueedu.project.R
 import com.trueedu.project.analytics.TrueAnalytics
 import kotlinx.coroutines.Job
@@ -51,6 +53,17 @@ class GoogleAccount @Inject constructor(
         googleSignInAccount = account
         MainScope().launch {
             loginSignal.emit(account != null)
+        }
+
+        account?.idToken?.let {
+            val credential = GoogleAuthProvider.getCredential(it, null)
+            val auth = FirebaseAuth.getInstance()
+            auth.signInWithCredential(credential)
+                .addOnSuccessListener {
+                    it.user?.uid?.let {
+                        trueAnalytics.setUserId(it)
+                    }
+                }
         }
     }
 
