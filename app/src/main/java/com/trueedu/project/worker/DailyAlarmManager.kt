@@ -6,8 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import com.trueedu.project.broadcast.DailyOrderTaskReceiver
 import android.util.Log
+import com.trueedu.project.BuildConfig
+import com.trueedu.project.broadcast.DailyOrderTaskReceiver
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -22,12 +23,17 @@ class DailyAlarmManager(private val context: Context) {
 
     fun scheduleDailyTask() {
         Log.d(TAG, "scheduleDailyTask() : ${isAlarmSet()}")
+
         if (!checkAlarmPermission()) {
             Log.d(TAG, "Not Alarm Permission")
             return
         }
 
         if (isAlarmSet()) cancelAlarm()
+        if (!BuildConfig.DEBUG) {
+            // 일단 기능 막음
+            return
+        }
 
         // 한국 시간으로 오전 8시 50분 설정
         val now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"))
