@@ -81,7 +81,7 @@ class MenuScreen(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    if (tokenKeyManager.userKey.value != null) {
+                    if (BuildConfig.DEBUG && tokenKeyManager.userKey.value != null) {
                         MenuItem(Icons.Outlined.Timer, "예약 매매", ::onOrderSchedule)
                     }
                     MenuItem(Icons.Outlined.QueryStats, "스팩 공시", ::onDartList)
