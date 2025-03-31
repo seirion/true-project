@@ -112,6 +112,9 @@ class StockDetailFragment: BaseFragment() {
     }
 
     override fun init() {
+        if (!::stockInfo.isInitialized) {
+            dismissAllowingStateLoss()
+        }
         vm.init(stockInfo)
     }
 
