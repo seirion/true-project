@@ -53,7 +53,7 @@ class DartManager @Inject constructor(
             if (hasApiKey && now - lastUpdatedAtRemote > 30) { // 30 minutes
                 // 다시 로딩
                 while (spacManager.loading.value) {
-                    Log.d(TAG, "waiting spacManager")
+                    //Log.d(TAG, "waiting spacManager")
                     delay(200)
                 }
                 val list = spacManager.spacList.value
