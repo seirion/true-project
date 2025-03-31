@@ -7,7 +7,7 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.2"
-composeBom = "2024.11.00"
+composeBom = "2025.02.00"
 room = "2.6.1"
 hilt = "2.51.1"
 ksp = "2.0.0-1.0.21"
@@ -17,7 +17,7 @@ okhttp-bom = "4.11.0"
 flipper = "0.240.0"
 material = "1.12.0"
 lifecycleProcess = "2.8.7"
-firebaseAuthKtx = "23.1.0"
+firebaseAuthKtx = "23.2.0"
 symbolProcessingApi = "2.0.21-1.0.26"
 
 [libraries]
@@ -41,13 +41,15 @@ hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 hilt-androidx-compiler = { module = "androidx.hilt:hilt-compiler", version = "1.2.0" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version = "1.2.0" }
-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.8.3" }
-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version = "2.8.3" }
+hilt-worker = { module = "androidx.hilt:hilt-work", version = "1.2.0" }
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.8.8" }
+navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version = "2.8.8" }
 androidx-room = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 ksp-gradle-plugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+play-services-appset = { module = "com.google.android.gms:play-services-appset", version = "16.1.0" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-serialization = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version = "1.0.0" }
 chucker-debug = { group = "com.github.chuckerteam.chucker", name = "library", version.ref = "chucker" }
@@ -62,18 +64,18 @@ flipper-network-plugin = { group = "com.facebook.flipper", name = "flipper-netwo
 flipper-noop = { group = "com.github.theGlenn", name = "flipper-android-no-op", version = "0.10.0" }
 soloader = { group = "com.facebook.soloader", name = "soloader", version = "0.11.0" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-material-extended = { group = "androidx.compose.material", name ="material-icons-extended", version = "1.7.5" }
-amplitude = { module = "com.amplitude:android-sdk", version = "2.23.2" }
+material-extended = { group = "androidx.compose.material", name ="material-icons-extended", version = "1.7.8" }
+amplitude = { module = "com.amplitude:android-sdk", version = "3.35.1" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
 
-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version = "33.5.1" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version = "33.10.0" }
 firebase-database = { module = "com.google.firebase:firebase-database-ktx" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 firebase-performance = { module = "com.google.firebase:firebase-perf-ktx" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
-google-play-services = { group = "com.google.android.gms", name = "play-services-auth", version = "21.2.0" }
-google-play-services-ads = { module = "com.google.android.gms:play-services-ads", version = "23.5.0" }
+google-play-services = { group = "com.google.android.gms", name = "play-services-auth", version = "21.3.0" }
+google-play-services-ads = { module = "com.google.android.gms:play-services-ads", version = "24.0.0" }
 accompanist-navigation-material = { group = "com.google.accompanist", name = "accompanist-navigation-material", version = "0.32.0" }
 coil-compose = { module = "io.coil-kt:coil-compose", version = "2.3.0" }
 symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "symbolProcessingApi" }
@@ -88,7 +90,7 @@ hilt = {id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 googleServices = { id = "com.google.gms.google-services", version = "4.4.2" }
-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.2" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.3" }
 firebase-performance = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
 
 [bundles]
@@ -101,6 +103,7 @@ ksps = [
 hilt = [
     "hilt",
     "hilt-navigation-compose",
+    "hilt-worker"
 ]
 
 firebase = [
