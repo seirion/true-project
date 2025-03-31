@@ -86,7 +86,7 @@ class MenuScreen(
                     }
                     MenuItem(Icons.Outlined.QueryStats, "스팩 공시", ::onDartList)
                     MenuItem(Icons.Outlined.CalendarMonth, "스팩 일정", ::onSpacSchedule)
-                    if (tokenKeyManager.userKey.value != null) {
+                    if (BuildConfig.DEBUG && tokenKeyManager.userKey.value != null) {
                         MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
                     }
                     if (BuildConfig.DEBUG) {
