@@ -22,12 +22,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.firebase.SpacStatusManager
 import com.trueedu.project.model.dto.firebase.SpacSchedule
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
+import com.trueedu.project.ui.common.NeedLogin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.utils.formatter.dateFormat
 import com.trueedu.project.utils.yyyyMMdd
@@ -49,6 +51,8 @@ class SpacScheduleFragment: BaseFragment() {
         }
     }
 
+    @Inject
+    lateinit var googleAccount: GoogleAccount
     @Inject
     lateinit var spacStatusManager: SpacStatusManager
 
@@ -82,6 +86,13 @@ class SpacScheduleFragment: BaseFragment() {
 
             if (loading.value) {
                 LoadingView()
+                return@Scaffold
+            }
+
+            if (!googleAccount.loggedIn()) {
+                NeedLogin("로그인 후 스팩 일정을 확인할 수 있습니다") {
+                    googleAccount.login(requireActivity())
+                }
                 return@Scaffold
             }
 
