@@ -31,6 +31,7 @@ import androidx.fragment.app.FragmentManager
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.admin.MyAdminFragment
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -49,6 +50,7 @@ class MenuScreen(
     private val screen: ScreenControl,
     private val trueAnalytics: TrueAnalytics,
     private val tokenKeyManager: TokenKeyManager,
+    private val dartManager: DartManager,
     private val fragmentManager: FragmentManager,
 ): BottomNavScreen {
     companion object {
@@ -84,7 +86,11 @@ class MenuScreen(
                     if (BuildConfig.DEBUG && tokenKeyManager.userKey.value != null) {
                         MenuItem(Icons.Outlined.Timer, "예약 매매", ::onOrderSchedule)
                     }
-                    MenuItem(Icons.Outlined.QueryStats, "스팩 공시", ::onDartList)
+
+                    val dartCount = dartManager.getSize().let {
+                        if (it == 0) "" else " ($it)"
+                    }
+                    MenuItem(Icons.Outlined.QueryStats, "스팩 공시${dartCount}", ::onDartList)
                     MenuItem(Icons.Outlined.CalendarMonth, "스팩 일정", ::onSpacSchedule)
                     if (BuildConfig.DEBUG && tokenKeyManager.userKey.value != null) {
                         MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
