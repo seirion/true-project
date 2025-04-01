@@ -40,6 +40,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.broadcast.DownloadCompleteReceiver
+import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.ScreenControl
@@ -96,6 +97,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var downloadCompleteReceiver: DownloadCompleteReceiver
     @Inject
     lateinit var spacManager: SpacManager
+    @Inject
+    lateinit var dartManager: DartManager
     @Inject
     lateinit var remoteConfig: RemoteConfig
     @Inject
@@ -202,6 +205,7 @@ class MainActivity : AppCompatActivity() {
             screen = screen,
             trueAnalytics = trueAnalytics,
             tokenKeyManager = tokenKeyManager,
+            dartManager = dartManager,
             fragmentManager = supportFragmentManager,
         )
 
