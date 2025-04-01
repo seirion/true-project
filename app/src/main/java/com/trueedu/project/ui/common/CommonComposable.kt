@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.common
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -82,6 +83,21 @@ fun LoadingView() {
             modifier = Modifier
                 .size(32.dp)
                 .align(Alignment.Center)
+        )
+    }
+}
+@Composable
+fun NeedLogin(text: String = "", onClick: () -> Unit) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        TrueText(
+            s = text,
+            fontSize = 18,
+            color = MaterialTheme.colorScheme.tertiary,
+            modifier = Modifier.align(Alignment.Center)
+                .clickable { onClick() }
         )
     }
 }

@@ -31,6 +31,7 @@ import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.dart.model.DartListItem
 import com.trueedu.project.data.DartManager
+import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.ui.BaseFragment
@@ -38,6 +39,7 @@ import com.trueedu.project.ui.common.CustomTopBar
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.Margin
+import com.trueedu.project.ui.common.NeedLogin
 import com.trueedu.project.ui.common.TouchIcon32
 import com.trueedu.project.ui.common.TouchIconWithSizeRotating
 import com.trueedu.project.ui.common.TrueText
@@ -60,6 +62,9 @@ class DartListFragment: BaseFragment() {
 
     @Inject
     lateinit var stockPool: StockPool
+
+    @Inject
+    lateinit var googleAccount: GoogleAccount
 
     @Inject
     lateinit var spacManager: SpacManager
@@ -107,6 +112,13 @@ class DartListFragment: BaseFragment() {
 
             if (loading.value) {
                 LoadingView()
+                return@Scaffold
+            }
+
+            if (!googleAccount.loggedIn()) {
+                NeedLogin("로그인 후 공시 정보를 볼 수 있습니다") {
+                    googleAccount.login(requireActivity())
+                }
                 return@Scaffold
             }
 
