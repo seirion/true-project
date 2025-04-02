@@ -132,9 +132,7 @@ class StockDetailFragment: BaseFragment() {
             topBar = {
                 val realTimeTrade = vm.priceManager.dataMap[stockInfo.code]
 
-                val price = realTimeTrade?.price
-                    ?: vm.basePrice.value?.output?.price?.toDouble()
-                    ?: 0.0
+                val price = vm.currentPrice()
                 val (priceChangeStr, textColor) = when {
                     realTimeTrade != null -> priceChangeStr(realTimeTrade)
                     vm.basePrice.value != null -> priceChangeStr(vm.basePrice.value!!)
