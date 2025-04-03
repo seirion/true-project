@@ -73,6 +73,7 @@ class DartListFragment: BaseFragment() {
     lateinit var dartManager: DartManager
 
     private val loading = mutableStateOf(false)
+    private val login = mutableStateOf(false)
     private val items = mutableStateOf<List<Pair<String, List<DartListItem>>>>(emptyList())
 
     override fun init() {
@@ -88,6 +89,12 @@ class DartListFragment: BaseFragment() {
                         items.value = dartManager.getListMap().map {
                             it.key to it.value
                         }
+                    }
+            }
+            launch {
+                googleAccount.loginSignal
+                    .collectLatest {
+                        login.value = it
                     }
             }
         }
@@ -115,7 +122,7 @@ class DartListFragment: BaseFragment() {
                 return@Scaffold
             }
 
-            if (!googleAccount.loggedIn()) {
+            if (!login.value) {
                 NeedLogin("로그인 후 공시 정보를 볼 수 있습니다") {
                     googleAccount.login(requireActivity())
                 }
