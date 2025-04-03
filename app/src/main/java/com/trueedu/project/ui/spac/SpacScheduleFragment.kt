@@ -35,6 +35,7 @@ import com.trueedu.project.utils.formatter.dateFormat
 import com.trueedu.project.utils.yyyyMMdd
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -57,6 +58,7 @@ class SpacScheduleFragment: BaseFragment() {
     lateinit var spacStatusManager: SpacStatusManager
 
     private val loading = mutableStateOf(false)
+    private val login = mutableStateOf(false)
     // key - yyyyMMdd
     private val list = mutableStateListOf<Pair<String, SpacSchedule>>()
 
@@ -69,8 +71,13 @@ class SpacScheduleFragment: BaseFragment() {
                     .map { it.key to it.value }
                     .sortedBy { it.first }
             )
-            MainScope().launch {
-                loading.value = false
+            loading.value = false
+
+            launch {
+                googleAccount.loginSignal
+                    .collectLatest {
+                        login.value = it
+                    }
             }
         }
     }
