@@ -18,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -85,6 +86,13 @@ class DartManager @Inject constructor(
         if (local.dartApiKey.isBlank()) return
 
         val fromDate = LocalDate.now()
+            .let {
+                when (it.dayOfWeek) {
+                    it.dayOfWeek -> it.minusDays(1)
+                    it.dayOfWeek -> it.minusDays(2)
+                    else -> it
+                }
+            }
             .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
 
         // 모든 API 호출을 동시에 실행하고 결과를 기다림
