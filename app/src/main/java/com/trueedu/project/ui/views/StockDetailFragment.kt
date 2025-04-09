@@ -185,7 +185,7 @@ class StockDetailFragment: BaseFragment() {
                     SettingItem("주문 하기", true, ::gotoOrder)
                     SettingItem("일별 가격", true, ::gotoDailyPrice)
                 }
-                SettingItem("기업 공시 보기", true, ::gotoAnnouncements)
+                SettingItem("기업 공시 보기", true, ::gotoDart)
 
                 vm.spacStatus.value?.let {
                     SpacDetailView(vm.currentPrice().toInt(), stockInfo, it)
@@ -277,8 +277,8 @@ class StockDetailFragment: BaseFragment() {
         }
     }
 
-    private fun gotoAnnouncements() {
-        trueAnalytics.clickButton("stock_detail__announcements__click")
+    private fun gotoDart() {
+        trueAnalytics.clickButton("stock_detail__dart__click")
         val code = stockInfo.code
         val url = Uri.parse("https://dart.fss.or.kr/dsab001/main.do?autoSearch=true&textCrpNM=${code}")
         requireActivity().startActivity(Intent(Intent.ACTION_VIEW, url))
