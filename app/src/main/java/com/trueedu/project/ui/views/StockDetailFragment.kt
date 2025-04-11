@@ -278,7 +278,10 @@ class StockDetailFragment: BaseFragment() {
     }
 
     private fun gotoDart() {
-        trueAnalytics.clickButton("stock_detail__dart__click")
+        trueAnalytics.clickButton(
+            "stock_detail__dart__click",
+            mapOf("name" to stockInfo.nameKr)
+        )
         val code = stockInfo.code
         val url = Uri.parse("https://dart.fss.or.kr/dsab001/main.do?autoSearch=true&textCrpNM=${code}")
         requireActivity().startActivity(Intent(Intent.ACTION_VIEW, url))
