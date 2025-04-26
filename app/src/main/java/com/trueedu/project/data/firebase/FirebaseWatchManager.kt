@@ -67,7 +67,7 @@ class FirebaseWatchManager @Inject constructor(
             val list = snapshot.get().await()
                 .getValue(object : GenericTypeIndicator<Map<String, List<String>>>() {})
                 ?.let { m ->
-                    (0 until MAX_GROUP_SIZE).map {
+                    List(MAX_GROUP_SIZE) {
                         m[it.toString()] ?: emptyList()
                     }
                 }
