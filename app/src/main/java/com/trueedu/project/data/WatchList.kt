@@ -42,7 +42,7 @@ class WatchList @Inject constructor(
                     } else { // logout
                         withContext(Dispatchers.Main) {
                             groupNames.value = emptyList()
-                            fillDefaultList(null)
+                            fillDefaultList(emptyList())
                         }
                     }
                 }
@@ -162,9 +162,9 @@ class WatchList @Inject constructor(
     /**
      * 크기가 MAX_GROUP_SIZE 인 리스트를 만들어서 list 에 넣는다.
      */
-    private fun fillDefaultList(loadedData: List<List<String>>?) {
+    private fun fillDefaultList(loadedData: List<List<String>>) {
         list.value = MutableList(MAX_GROUP_SIZE) {
-            loadedData?.getOrNull(it) ?: listOf()
+            loadedData.getOrNull(it) ?: listOf()
         }
     }
 }

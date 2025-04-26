@@ -58,9 +58,21 @@ class FirebaseWatchManager @Inject constructor(
 
         val ref = database.getReference("users") // 종목 데이터
         val snapshot = ref.child(userId).child("watch")
-        val list = snapshot.get().await()
-            .getValue(object : GenericTypeIndicator<List<List<String>>>() {})
-        return list ?: emptyList()
+        try {
+            val list = snapshot.get().await()
+                .getValue(object : GenericTypeIndicator<List<List<String>>>() {})
+
+            return list ?: emptyList()
+        } catch (e: Exception) {
+            val list = snapshot.get().await()
+                .getValue(object : GenericTypeIndicator<Map<String, List<String>>>() {})
+                ?.let { m ->
+                    (0 until MAX_GROUP_SIZE).map {
+                        m[it.toString()] ?: emptyList()
+                    }
+                }
+            return list ?: emptyList()
+        }
     }
 
     fun writeWatchList(list :List<List<String>>) {
