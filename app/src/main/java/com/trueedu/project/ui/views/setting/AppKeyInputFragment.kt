@@ -284,6 +284,9 @@ class AppKeyInputFragment: BaseFragment() {
 }
 
 private val notice = """
+    앱 키를 입력하면 실시간 시세와
+    한국투자증권 자산 정보를 확인할 수 있습니다.
+
     앱 키와 시크릿은 서버에 저장되지 않습니다.
     타인에게 노출 되지 않도록 주의해 주세요.
 """.trimIndent()
