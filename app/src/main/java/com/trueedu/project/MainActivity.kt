@@ -120,6 +120,9 @@ class MainActivity : AppCompatActivity() {
 
     private var openDrawer: (() -> Unit)? = null
 
+    // 앱이 백그라운드로 진입할 때의 시각 저장
+    private var lastBackgroundTime = System.currentTimeMillis()
+
     override fun onStart() {
         super.onStart()
         if (screen.keepScreenOn.value) {
@@ -279,7 +282,18 @@ class MainActivity : AppCompatActivity() {
                     Lifecycle.Event.ON_CREATE -> {
                     }
                     Lifecycle.Event.ON_START -> {
-                        screen.onStart()
+                        val currentTime = System.currentTimeMillis()
+                        val elapsedTime = currentTime - lastBackgroundTime
+
+                        Log.d(TAG, "elapsedTime: $elapsedTime")
+                        if (elapsedTime >= 10 * 60 * 1000) { // 10 minutes
+                            val intent = Intent(this, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(intent)
+                            Runtime.getRuntime().exit(0)
+                        } else {
+                            screen.onStart()
+                        }
                     }
                     Lifecycle.Event.ON_RESUME -> {
                     }
@@ -287,6 +301,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     Lifecycle.Event.ON_STOP -> {
                         screen.onStop()
+                        lastBackgroundTime = System.currentTimeMillis()
                     }
                     Lifecycle.Event.ON_DESTROY -> {
                     }
