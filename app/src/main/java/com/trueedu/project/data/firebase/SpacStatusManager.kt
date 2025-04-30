@@ -129,6 +129,7 @@ class SpacStatusManager @Inject constructor(
 
         snapshot.setValue(m)
             .addOnSuccessListener {
+                spacScheduleList = m
                 onSuccess()
             }
             .addOnFailureListener {
