@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -208,6 +209,16 @@ class MainActivity : AppCompatActivity() {
             dartManager = dartManager,
             fragmentManager = supportFragmentManager,
         )
+
+        // Register the onBackPressed callback
+        val onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Exit the app when the back button is pressed.
+                finishAffinity()
+            }
+        }
+
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         setContent {
             DisposableEffect(screen.forceDark.value) {
