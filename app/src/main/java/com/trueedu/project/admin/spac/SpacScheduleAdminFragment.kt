@@ -131,6 +131,12 @@ class SpacScheduleAdminFragment: BaseFragment() {
     }
 
     private fun onSave() {
+        val keySize = list.map { it.first }.toSet().count()
+        if (keySize != list.size) {
+            Toast.makeText(requireContext(), "날짜 중복 !!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         MainScope().launch {
             loading.value = true
             spacStatusManager.writeSpacSchedule(
