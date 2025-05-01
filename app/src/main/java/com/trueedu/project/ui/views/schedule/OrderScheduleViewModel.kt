@@ -84,7 +84,22 @@ class OrderScheduleViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun removeAt(index: Int) {
+    fun removeAt(index: Int, onFailed: (String) -> Unit) {
+        val userKey = tokenKeyManager.userKey.value
+        if (userKey == null) {
+            Log.d(TAG, "removeAt(): no user key")
+            return
+        }
+        orderRemote.cancelScheduleOrder(
+            userKey.accountNum ?: "",
+            list.value?.list?.get(index)?.seq?: ""
+        ).onEach {
+            if (it.rtCd == "0") {
+                load()
+            } else {
+                onFailed(it.msg ?: it.msg1 ?: "예약 취소 실패")
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun nameKr(code: String): String {
