@@ -122,6 +122,7 @@ class OrderScheduleFragment: BaseFragment() {
                     s = local.orderResult,
                     fontSize = 12,
                     maxLines = 1000,
+                    modifier = Modifier.padding(horizontal = 12.dp)
                 )
             }
         }
