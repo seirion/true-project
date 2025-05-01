@@ -11,7 +11,7 @@ data class ScheduleOrderCancelResponse(
     val msgCd: String, // 응답코드 - "KIOK0560"
     val msg: String?, // 응답메세지
     val msg1: String?, // 응답메세지 - 문서와는 달리 msg1 필드로 성공 또는 실패 메시지가 오고 있음
-    val output: ResponseResult,
+    val output: ResponseResult?,
 )
 
 @Serializable
