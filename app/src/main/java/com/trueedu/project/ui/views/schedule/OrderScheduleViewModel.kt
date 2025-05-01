@@ -9,6 +9,7 @@ import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.model.dto.order.ScheduleOrderResult
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.OrderRemote
+import com.trueedu.project.utils.isHoliday
 import com.trueedu.project.utils.yyyyMMdd
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
@@ -58,6 +59,13 @@ class OrderScheduleViewModel @Inject constructor(
 
         val endDate = LocalDate.now()
             .plusDays(30)
+            .let {
+                var date = it
+                while (date.isHoliday()) {
+                    date = date.minusDays(1)
+                }
+                date
+            }
             .yyyyMMdd()
 
         orderRemote.scheduleOrder(
