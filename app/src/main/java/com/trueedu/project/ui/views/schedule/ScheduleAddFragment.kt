@@ -214,14 +214,14 @@ class ScheduleAddFragment: BaseFragment() {
             return
         }
 
-        val a = OrderSchedule(
+        val order = OrderSchedule(
             code = code.value,
             isBuy = isBuy,
             price = priceInput.value.text.toInt(),
             quantity = quantityInput.value.text.toInt(),
         )
 
-        onCompleted(a)
+        onCompleted(order)
         dismissAllowingStateLoss()
     }
 }
