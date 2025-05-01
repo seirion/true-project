@@ -117,13 +117,6 @@ class OrderScheduleFragment: BaseFragment() {
                 list.forEachIndexed { index, it ->
                     ScheduleItem(it)
                 }
-                // test
-                TrueText(
-                    s = local.orderResult,
-                    fontSize = 12,
-                    maxLines = 1000,
-                    modifier = Modifier.padding(horizontal = 12.dp)
-                )
             }
         }
     }
