@@ -46,6 +46,7 @@ import com.trueedu.project.utils.defaultTextColors
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import okhttp3.internal.toImmutableList
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -140,7 +141,7 @@ class SpacScheduleAdminFragment: BaseFragment() {
         MainScope().launch {
             loading.value = true
             spacStatusManager.writeSpacSchedule(
-                list = list.toList(),
+                list = list.toImmutableList(),
                 onSuccess = {
                     Toast.makeText(requireContext(), "저장 완료", Toast.LENGTH_SHORT).show()
                 },
