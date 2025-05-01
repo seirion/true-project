@@ -5,6 +5,8 @@ import com.trueedu.project.model.dto.order.OrderResponse
 import com.trueedu.project.network.apiCallFlow
 import com.trueedu.project.repository.remote.service.OrderService
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class OrderRemoteImpl(
     @NormalService
@@ -229,19 +231,22 @@ class OrderRemoteImpl(
             "custtype" to "P",
             "tr_cont" to tc,
         )
+        val fromDate = LocalDate.now()
+            .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+        val toDate = LocalDate.now().plusMonths(1)
+            .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
         val queries = mapOf(
-            "RSVN_ORD_ORD_DT" to "", // 예약주문시작일자(8)
-            "RSVN_ORD_END_DT" to "", // 예약주문종료일자(8)
+            "RSVN_ORD_ORD_DT" to fromDate, // 예약주문시작일자(8)
+            "RSVN_ORD_END_DT" to toDate, // 예약주문종료일자(8)
             "RSVN_ORD_SEQ" to "", // 예약주문순번(10)
-            "RSVN_ORD_ORGNO" to "",
             "TMNL_MDIA_KIND_CD" to "00", // 단말매체종류코드 - "00" 입력
 
             "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
             "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
             "PRCS_DVSN_CD" to "0", // 처리구분코드	0: 전체 1: 처리내역 2: 미처리내역
-            "CNCL_YN" to "", // 취소여부	"Y" 유효한 주문만 조회
+            "CNCL_YN" to "Y", // 취소여부	"Y" 유효한 주문만 조회
             "PDNO" to "", // 종목코드(6자리) (공백 입력 시 전체 조회)
-            "SLL_BUY_DVSN_CD" to "00", // 매도매수구분코드 00 : 전체 / 01 : 매도 / 02 : 매수
+            "SLL_BUY_DVSN_CD" to "", // 매도매수구분코드 00 : 전체 / 01 : 매도 / 02 : 매수 (공백이 전체임)
             "CTX_AREA_FK200" to fk200, // 연속조회검색조건200	다음 페이지 조회시 사용
             "CTX_AREA_NK200" to nk200, // 연속조회키200	다음 페이지 조회시 사용
         )
