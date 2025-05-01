@@ -39,6 +39,7 @@ import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
+import com.trueedu.project.utils.formatter.dateFormat
 import com.trueedu.project.utils.formatter.intFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -113,11 +114,13 @@ class OrderScheduleFragment: BaseFragment() {
                     .padding(top = 12.dp)
                     .verticalScroll(scrollState)
             ) {
-                // ScheduleSummary()
+                ScheduleSummary(list.size)
                 list.forEachIndexed { index, it ->
-                    ScheduleItem(it, {}) {
-                        onRemove(index)
-                    }
+                    ScheduleItem(
+                        item = it,
+                        onClick = { onModify() },
+                        onRemove = { onRemove(index) },
+                    )
                 }
             }
         }
@@ -180,6 +183,7 @@ private fun ScheduleSummary(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 12.dp)
             .height(32.dp)
     ) {
         TrueText(
@@ -198,40 +202,58 @@ fun ScheduleItem(
     onClick: () -> Unit = {},
     onRemove: () -> Unit = {},
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
         modifier = Modifier.fillMaxWidth()
             .clickable { onClick() }
-            .padding(end = 12.dp)
     ) {
-        TouchIcon24(
-            icon = Icons.Outlined.RemoveCircle,
-            tint = MaterialTheme.colorScheme.error,
-        ) { onRemove() }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+                .padding(end = 12.dp)
+        ) {
+            TouchIcon24(
+                icon = Icons.Outlined.RemoveCircle,
+                tint = MaterialTheme.colorScheme.error,
+            ) { onRemove() }
 
-        val isBuy = item.sellBuyDivisionCode == "02"
-        TrueText(
-            s = if (isBuy) "매수" else "매도" ,
-            fontSize = 12,
-            color = if (isBuy) ChartColor.up else ChartColor.down,
-            modifier = Modifier.weight(1f),
-        )
-        TrueText(
-            s = item.nameKr,
-            fontSize = 12,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.weight(3f),
-        )
-        listOf(
-            intFormatter.format(item.price.toDouble()) to 1.5f,
-            "${intFormatter.format(item.orderReservedQuantity.toDouble())}주" to 1f,
-        ).forEach { (s, w) ->
+            val isBuy = item.sellBuyDivisionCode == "02"
             TrueText(
-                s = s,
+                s = if (isBuy) "매수" else "매도",
+                fontSize = 12,
+                color = if (isBuy) ChartColor.up else ChartColor.down,
+                modifier = Modifier.weight(1f),
+            )
+            TrueText(
+                s = item.nameKr,
                 fontSize = 12,
                 color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.End,
-                modifier = Modifier.weight(w),
+                modifier = Modifier.weight(3f),
+            )
+            listOf(
+                intFormatter.format(item.price.toDouble()) to 1.5f,
+                "${intFormatter.format(item.orderReservedQuantity.toDouble())}주" to 1f,
+            ).forEach { (s, w) ->
+                TrueText(
+                    s = s,
+                    fontSize = 12,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.weight(w),
+                )
+            }
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier.fillMaxWidth()
+                .padding(end = 12.dp, bottom = 8.dp)
+        ) {
+            val endDate = "예약 종료 ${dateFormat(item.endDate)}"
+            TrueText(
+                s = endDate,
+                fontSize = 12,
+                color = MaterialTheme.colorScheme.primary,
             )
         }
     }

@@ -12,7 +12,7 @@ data class ScheduleOrderResult(
     @SerialName("msg1")
     val msg: String, // 응답메세지
     @SerialName("output")
-    val list: List<ScheduleOrderResultDetail>,
+    val list: List<ScheduleOrderResultDetail>?,
     @SerialName("ctx_area_fk200")
     val fk200: String,
     @SerialName("ctx_area_nk200")
