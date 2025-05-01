@@ -83,7 +83,7 @@ class MenuScreen(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    if (BuildConfig.DEBUG && tokenKeyManager.userKey.value != null) {
+                    if (tokenKeyManager.userKey.value != null) {
                         MenuItem(Icons.Outlined.Timer, "예약 매매", ::onOrderSchedule)
                     }
 
