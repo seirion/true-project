@@ -9,13 +9,14 @@ data class ScheduleOrderCancelResponse(
     val rtCd: String, // 성공 실패 여부 "0" 성공
     @SerialName("msg_cd")
     val msgCd: String, // 응답코드 - "KIOK0560"
-    @SerialName("msg")
-    val msg: String, // 응답메세지
-    val output: List<ResponseResult>,
+    val msg: String?, // 응답메세지
+    val msg1: String?, // 응답메세지 - 문서와는 달리 msg1 필드로 성공 또는 실패 메시지가 오고 있음
+    val output: ResponseResult,
 )
 
 @Serializable
 data class ResponseResult(
-    @SerialName("nrml_prcs_yn")
+    // 문서에는 소문자로 되어 있지만, 실제로 대문자로 오고 있음
+    @SerialName("NRML_PRCS_YN")
     val result: String, // Y or N
 )

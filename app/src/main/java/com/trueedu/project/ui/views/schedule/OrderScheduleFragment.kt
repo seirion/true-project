@@ -115,7 +115,9 @@ class OrderScheduleFragment: BaseFragment() {
             ) {
                 // ScheduleSummary()
                 list.forEachIndexed { index, it ->
-                    ScheduleItem(it)
+                    ScheduleItem(it, {}) {
+                        onRemove(index)
+                    }
                 }
             }
         }
@@ -157,7 +159,9 @@ class OrderScheduleFragment: BaseFragment() {
 
     private fun onRemove(index: Int) {
         trueAnalytics.clickButton("${screenName()}__remove__click")
-        vm.removeAt(index)
+        vm.removeAt(index) { errorMessage ->
+            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+        }
     }
 }
 
