@@ -7,19 +7,16 @@ import com.trueedu.project.dart.repository.remote.DartRemote
 import com.trueedu.project.data.firebase.FirebaseDartManager
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.repository.local.Local
+import com.trueedu.project.utils.latestWorkDay
 import com.trueedu.project.utils.yyyyMMddHHmm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.time.DayOfWeek
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
@@ -85,14 +82,7 @@ class DartManager @Inject constructor(
     suspend fun CoroutineScope.loadList(codes: List<String>) {
         if (local.dartApiKey.isBlank()) return
 
-        val fromDate = LocalDate.now()
-            .let {
-                when (it.dayOfWeek) {
-                    DayOfWeek.SATURDAY -> it.minusDays(1)
-                    DayOfWeek.SUNDAY -> it.minusDays(2)
-                    else -> it
-                }
-            }
+        val fromDate = latestWorkDay()
             .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
 
         // 모든 API 호출을 동시에 실행하고 결과를 기다림
