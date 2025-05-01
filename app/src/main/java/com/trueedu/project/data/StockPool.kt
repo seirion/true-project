@@ -9,12 +9,14 @@ import com.trueedu.project.model.dto.firebase.StockInfoKospi
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.local.StockLocal
 import com.trueedu.project.utils.StockInfoDownloader
+import com.trueedu.project.utils.isHoliday
 import com.trueedu.project.utils.needUpdateRemoteData
 import com.trueedu.project.utils.yyyyMMddHHmm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -61,8 +63,9 @@ class StockPool @Inject constructor(
             val needUpdateMasterFile = needUpdateRemoteData(remoteUpdatedTime, currentTimeToyyyyMMddHHmm())
 
             Log.d(TAG, "업데이트 체크 - 리모트(${needUpdateRemote}) 마스타파일(${needUpdateMasterFile})")
+            val isWorkDay = !LocalDate.now().isHoliday()
 
-            if (needUpdateMasterFile) {
+            if (needUpdateMasterFile && isWorkDay) {
                 Log.d(TAG, "마스터 파일 업데이트 $remoteUpdatedTime < ${currentTimeToyyyyMMddHHmm()}")
                 downloadMasterFiles()
             } else if(needUpdateRemote) {
