@@ -29,13 +29,10 @@ import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
-import com.trueedu.project.ui.common.NeedLogin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.utils.formatter.dateFormat
 import com.trueedu.project.utils.yyyyMMdd
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -58,7 +55,6 @@ class SpacScheduleFragment: BaseFragment() {
     lateinit var spacStatusManager: SpacStatusManager
 
     private val loading = mutableStateOf(false)
-    private val login = mutableStateOf(false)
     // key - yyyyMMdd
     private val list = mutableStateListOf<Pair<String, SpacSchedule>>()
 
@@ -72,13 +68,6 @@ class SpacScheduleFragment: BaseFragment() {
                     .sortedBy { it.first }
             )
             loading.value = false
-
-            launch {
-                googleAccount.loginSignal
-                    .collectLatest {
-                        login.value = it
-                    }
-            }
         }
     }
 
@@ -93,13 +82,6 @@ class SpacScheduleFragment: BaseFragment() {
 
             if (loading.value) {
                 LoadingView()
-                return@Scaffold
-            }
-
-            if (!googleAccount.loggedIn()) {
-                NeedLogin("로그인 후 스팩 일정을 확인할 수 있습니다") {
-                    googleAccount.login(requireActivity())
-                }
                 return@Scaffold
             }
 
