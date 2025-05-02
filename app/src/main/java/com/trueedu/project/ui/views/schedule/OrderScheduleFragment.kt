@@ -211,10 +211,14 @@ fun ScheduleItem(
             modifier = Modifier.fillMaxWidth()
                 .padding(end = 12.dp)
         ) {
-            TouchIcon24(
-                icon = Icons.Outlined.RemoveCircle,
-                tint = MaterialTheme.colorScheme.error,
-            ) { onRemove() }
+            val tint = if (item.disabled()) {
+                MaterialTheme.colorScheme.surfaceDim
+            } else {
+                MaterialTheme.colorScheme.error
+            }
+            TouchIcon24(icon = Icons.Outlined.RemoveCircle, tint = tint) {
+                if (!item.disabled()) onRemove()
+            }
 
             val isBuy = item.sellBuyDivisionCode == "02"
             TrueText(
@@ -230,7 +234,7 @@ fun ScheduleItem(
                 modifier = Modifier.weight(3f),
             )
             listOf(
-                intFormatter.format(item.price.toDouble()) to 1.5f,
+                "${intFormatter.format(item.price.toDouble())}원" to 1.5f,
                 "${intFormatter.format(item.orderReservedQuantity.toDouble())}주" to 1f,
             ).forEach { (s, w) ->
                 TrueText(
@@ -249,11 +253,13 @@ fun ScheduleItem(
             modifier = Modifier.fillMaxWidth()
                 .padding(end = 12.dp, bottom = 8.dp)
         ) {
-            val endDate = "예약 종료 ${dateFormat(item.endDate)}"
+            val endDate = "예약 종료: ${dateFormat(item.endDate)}" +
+                    " | 처리 여부: ${item.processResult}"
             TrueText(
                 s = endDate,
                 fontSize = 12,
                 color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.End,
             )
         }
     }
@@ -278,7 +284,7 @@ private fun previewData() =
         price = "50,000",
         totalClearedAmount = "",
         cancelReceivedTime = "",
-        processResult = "",
+        processResult = "처리",
         orderDivisionName = "",
-        endDate = "",
+        endDate = "2999.12.12",
     )
