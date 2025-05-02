@@ -231,13 +231,11 @@ class OrderRemoteImpl(
             "custtype" to "P",
             "tr_cont" to tc,
         )
-        val fromDate = LocalDate.now()
-            .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-        val toDate = LocalDate.now().plusMonths(1)
+        val date = LocalDate.now()
             .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
         val queries = mapOf(
-            "RSVN_ORD_ORD_DT" to fromDate, // 예약주문시작일자(8)
-            "RSVN_ORD_END_DT" to toDate, // 예약주문종료일자(8)
+            "RSVN_ORD_ORD_DT" to date, // 예약주문시작일자(8)
+            "RSVN_ORD_END_DT" to date, // 예약주문종료일자(8)
             "RSVN_ORD_SEQ" to "", // 예약주문순번(10)
             "TMNL_MDIA_KIND_CD" to "00", // 단말매체종류코드 - "00" 입력
 
