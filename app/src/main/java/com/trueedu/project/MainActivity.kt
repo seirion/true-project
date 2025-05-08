@@ -49,6 +49,7 @@ import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.realtime.WsMessageHandler
 import com.trueedu.project.data.spac.SpacManager
+import com.trueedu.project.model.dto.firebase.AppNotice
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.ads.AdmobManager
@@ -58,6 +59,7 @@ import com.trueedu.project.ui.common.PopupType
 import com.trueedu.project.ui.dev.OnOffState
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.UserInfoViewModel
+import com.trueedu.project.ui.views.home.AppNoticePopup
 import com.trueedu.project.ui.views.home.BottomNavItem
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.ForceUpdateView
@@ -240,6 +242,15 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if (vm.forceUpdateVisible.value) {
                     ForceUpdateView(::gotoPlayStore)
+                } else if (vm.appNotice.value.available() && local.appNoticeId < vm.appNotice.value.id) {
+                    AppNoticePopup(vm.appNotice.value, supportFragmentManager) {
+                        if (vm.appNotice.value.cancellable) {
+                            local.appNoticeId = vm.appNotice.value.id
+                            vm.appNotice.value = AppNotice()
+                        } else {
+                            Runtime.getRuntime().exit(0)
+                        }
+                    }
                 } else {
                     MainScreen()
                 }

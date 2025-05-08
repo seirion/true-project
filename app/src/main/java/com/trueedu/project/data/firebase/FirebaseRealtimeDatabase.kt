@@ -8,6 +8,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.GenericTypeIndicator
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.data.GoogleAccount
+import com.trueedu.project.model.dto.firebase.AppNotice
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.firebase.StockInfoKosdaq
 import com.trueedu.project.model.dto.firebase.StockInfoKospi
@@ -47,6 +48,18 @@ class FirebaseRealtimeDatabase @Inject constructor(
             // 오류 처리
             Log.e(TAG, "Error checking for update", e)
             return false
+        }
+    }
+
+    suspend fun appNotice(): AppNotice {
+        try {
+            val snapshot = configRef.get().await()
+            val notice = snapshot.child("notice").getValue(AppNotice::class.java)
+            return notice ?: AppNotice()
+        } catch (e: Exception) {
+            // 오류 처리
+            Log.e(TAG, "Error checking for notice", e)
+            return AppNotice()
         }
     }
 

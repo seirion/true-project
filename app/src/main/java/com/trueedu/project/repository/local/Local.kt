@@ -70,6 +70,9 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
     // 면책 조항 표시
     var disclaimerVisible by preferences.boolean(true)
 
+    // 확인한 notice 마지막 id
+    var appNoticeId by preferences.int(0)
+
     // UI
     var forceDark by preferences.boolean(false)
     var theme by preferences.int(1)

@@ -13,6 +13,7 @@ import com.trueedu.project.data.UserAssets
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
 import com.trueedu.project.model.dto.account.AccountAsset
+import com.trueedu.project.model.dto.firebase.AppNotice
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.utils.toAccountNumFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,6 +43,9 @@ class MainViewModel @Inject constructor(
     val marketPriceMode = mutableStateOf(local.marketPriceMode)
     val forceUpdateVisible = mutableStateOf(false)
 
+    // notice
+    val appNotice = mutableStateOf(AppNotice())
+
     fun init() {
         if (local.getUserKeys().isEmpty()) {
             // 키가 없어서 자산을 못 불러오면 로딩 상태가 불필요함
@@ -56,6 +60,12 @@ class MainViewModel @Inject constructor(
                     )
                     Log.d(TAG, "need app update")
                     forceUpdateVisible.value = true
+                }
+            }
+            launch {
+                firebaseDatabase.appNotice().let {
+                    Log.d(TAG, "notice: $it")
+                    appNotice.value = it
                 }
             }
             launch {
