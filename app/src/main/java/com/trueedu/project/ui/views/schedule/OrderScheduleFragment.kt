@@ -118,7 +118,7 @@ class OrderScheduleFragment: BaseFragment() {
                 list.forEachIndexed { index, it ->
                     ScheduleItem(
                         item = it,
-                        onClick = { onModify() },
+                        onClick = { onModify(it) },
                         onRemove = { onRemove(index) },
                     )
                 }
@@ -156,8 +156,21 @@ class OrderScheduleFragment: BaseFragment() {
         }
     }
 
-    private fun onModify() {
+    private fun onModify(detail: ScheduleOrderResultDetail) {
         trueAnalytics.clickButton("${screenName()}__modify__click")
+        if (detail.disabled()) {
+            Toast.makeText(
+                requireContext(),
+                "처리 완료된 예약입니다",
+                Toast.LENGTH_SHORT,
+            ).show()
+            return
+        }
+        ScheduleModifyFragment.show(detail, parentFragmentManager) { price, quantity ->
+            vm.modify(detail, price, quantity) { message ->
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun onRemove(index: Int) {

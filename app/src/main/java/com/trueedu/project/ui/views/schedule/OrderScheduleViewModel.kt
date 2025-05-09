@@ -7,12 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.model.dto.order.ScheduleOrderResult
+import com.trueedu.project.model.dto.order.ScheduleOrderResultDetail
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.OrderRemote
 import com.trueedu.project.utils.isHoliday
 import com.trueedu.project.utils.yyyyMMdd
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -98,6 +98,36 @@ class OrderScheduleViewModel @Inject constructor(
                 load()
             } else {
                 onFailed(it.msg ?: it.msg1 ?: "예약 취소 실패")
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun modify(
+        orderDetail: ScheduleOrderResultDetail,
+        price: String,
+        quantity: String,
+        onCompleted: (String) -> Unit,
+    ) {
+        val userKey = tokenKeyManager.userKey.value
+        if (userKey == null) {
+            Log.d(TAG, "modify(): no user key")
+            return
+        }
+        val isBuy = orderDetail.sellBuyDivisionCode == "02"
+        orderRemote.modifyScheduleOrder(
+            accountNum = userKey.accountNum ?: "",
+            code = orderDetail.code,
+            orderSeq = orderDetail.seq,
+            isBuy = isBuy,
+            price = price,
+            quantity = quantity,
+        ).onEach {
+            if (it.rtCd == "0") {
+                load()
+                onCompleted("예약 수정 되었습니다")
+            } else {
+                Log.d(TAG, "error: ${it.msg ?: it.msg1}")
+                onCompleted(it.msg ?: it.msg1 ?: "예약 취소 실패")
             }
         }.launchIn(viewModelScope)
     }
