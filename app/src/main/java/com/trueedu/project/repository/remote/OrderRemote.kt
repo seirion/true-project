@@ -82,4 +82,16 @@ interface OrderRemote {
         accountNum: String,
         orderSeq: String,
     ): Flow<ScheduleOrderCancelResponse>
+
+    /**
+     * 주식 예약 매매 수정
+     */
+    fun modifyScheduleOrder(
+        accountNum: String,
+        code: String,
+        orderSeq: String,
+        isBuy: Boolean,
+        price: String,
+        quantity: String,
+    ): Flow<ScheduleOrderCancelResponse>
 }

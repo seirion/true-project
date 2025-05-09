@@ -294,4 +294,30 @@ class OrderRemoteImpl(
         )
         orderService.cancelScheduleOrder(headers, body)
     }
+
+    override fun modifyScheduleOrder(
+        accountNum: String,
+        code: String,
+        orderSeq: String,
+        isBuy: Boolean,
+        price: String,
+        quantity: String,
+    ) = apiCallFlow {
+        val headers = mapOf(
+            "tr_id" to "CTSC0013U", // CTSC0009U(취소), CTSC0013U(정정)
+            "custtype" to "P",
+        )
+        val body = mapOf(
+            "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
+            "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
+            "PDNO" to code,
+            "ORD_QTY" to quantity, // 주문 수량
+            "ORD_UNPR" to price, // 주문 단가
+            "SLL_BUY_DVSN_CD" to if(isBuy) "02" else "01", // 01 : 매도 02 : 매수
+            "ORD_DVSN_CD" to "00", // 00 : 지정가 01 : 시장가 02 : 조건부지정가 05 : 장전 시간외
+            "ORD_OBJT_CBLC_DVSN_CD" to "10", // 주문대상잔고구분코드: 항상 '현금'만 사용
+            "RSVN_ORD_SEQ" to orderSeq, // 예약주문순번
+        )
+        orderService.modifyScheduleOrder(headers, body)
+    }
 }

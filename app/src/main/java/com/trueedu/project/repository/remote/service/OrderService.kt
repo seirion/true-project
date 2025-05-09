@@ -56,4 +56,10 @@ interface OrderService {
         @HeaderMap headers: Map<String, String>,
         @Body body: Map<String, String>
     ): Response<ScheduleOrderCancelResponse>
+
+    @POST("/uapi/domestic-stock/v1/trading/order-resv-rvsecncl")
+    suspend fun modifyScheduleOrder(
+        @HeaderMap headers: Map<String, String>,
+        @Body body: Map<String, String>
+    ): Response<ScheduleOrderCancelResponse>
 }
