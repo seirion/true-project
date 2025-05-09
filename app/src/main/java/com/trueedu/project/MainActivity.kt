@@ -244,6 +244,7 @@ class MainActivity : AppCompatActivity() {
                     ForceUpdateView(::gotoPlayStore)
                 } else if (vm.appNotice.value.available() && local.appNoticeId < vm.appNotice.value.id) {
                     AppNoticePopup(vm.appNotice.value, supportFragmentManager) {
+                        trueAnalytics.clickButton("main__notice_close__click")
                         if (vm.appNotice.value.cancellable) {
                             local.appNoticeId = vm.appNotice.value.id
                             vm.appNotice.value = AppNotice()
