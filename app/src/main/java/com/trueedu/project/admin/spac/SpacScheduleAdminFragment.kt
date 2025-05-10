@@ -1,5 +1,6 @@
 package com.trueedu.project.admin.spac
 
+import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -32,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import com.trueedu.project.R
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.firebase.SpacStatusManager
 import com.trueedu.project.model.dto.firebase.SpacSchedule
@@ -71,6 +73,11 @@ class SpacScheduleAdminFragment: BaseFragment() {
     private val loading = mutableStateOf(false)
     // key - yyyyMMdd
     private val list = mutableStateListOf<Pair<String, SpacSchedule>>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.FullScreenSheetKeyboardDialogTheme)
+    }
 
     override fun init() {
         lifecycleScope.launch {
