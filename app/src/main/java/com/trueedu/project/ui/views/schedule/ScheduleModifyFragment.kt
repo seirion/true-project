@@ -27,6 +27,7 @@ import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.views.order.ModifyButtons
 import com.trueedu.project.ui.widget.InputSet
+import com.trueedu.project.utils.formatter.dateFormat
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -113,6 +114,8 @@ class ScheduleModifyFragment: BaseFragment() {
                     Margin(24)
                     InputSet("수량", quantityInput, ::increaseQuantity, ::decreaseQuantity)
                 }
+                Margin(48)
+                InfoViews(orderDetail)
             }
         }
     }
@@ -151,5 +154,22 @@ class ScheduleModifyFragment: BaseFragment() {
         val quantity = quantityInput.value.text
         onCompleted(price, quantity)
         dismissAllowingStateLoss()
+    }
+}
+
+@Composable
+private fun InfoViews(order: ScheduleOrderResultDetail) {
+    Column(modifier = Modifier.padding(horizontal = 12.dp)) {
+        listOf(
+            "예약주문 순번" to order.seq,
+            "예약 주문일자" to dateFormat(order.orderDate),
+            "예약 접수일자" to dateFormat(order.receivedDate),
+            "예약 종료일자" to dateFormat(order.endDate),
+        ).forEach {
+            TrueText(
+                s = "${it.first}: ${it.second}",
+                fontSize = 14,
+            )
+        }
     }
 }
