@@ -94,7 +94,9 @@ class DartManager @Inject constructor(
                     response.collect { res ->
                         if (res.list?.isNotEmpty() == true) {
                             Log.d(TAG, "${dartInfo.nameKr} - ${res.list.first().let {"${it.receiptDate} ${it.reportName}"} }")
-                            items[code] = res.list
+                            items[code] = res.list.map {
+                                it.copy(reportName = it.reportName.replace(Regex("\\s+"), " "))
+                            }
                             updateSignal.emit(Unit)
                         }
                     }
