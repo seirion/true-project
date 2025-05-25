@@ -38,9 +38,14 @@ fun stringToLocalDate(yyyyMMdd: String): LocalDate {
     return LocalDate.parse(yyyyMMdd, formatter)
 }
 
-// 오늘 포함 가장 가까운 평일 반환 (주식 장이 열리는 날)
+// 오전 9:00 이전까지는 이전 날포함 가장 최근 장이 열리는 날로 결정
 fun latestWorkDay(): LocalDate {
-    var date = LocalDate.now()
+    val now = LocalDateTime.now()
+    var date = if (now.hour < 9) {
+        now.toLocalDate().minusDays(1)
+    } else {
+        now.toLocalDate()
+    }
     while (date.isHoliday()) {
         date = date.minusDays(1)
     }
