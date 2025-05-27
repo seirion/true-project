@@ -332,7 +332,7 @@ fun ColumnScope.SpacDetailView(
     val listingDateStr = stock.listingDate() ?: return
     val targetDate = stringToLocalDate(listingDateStr)
         .plusYears(3)
-        .plusDays(-51)
+        .plusDays(-41)
 
     val basePrice = baseInputString.value.text.let {
         if (it.isEmpty()) 0
