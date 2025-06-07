@@ -298,7 +298,7 @@ class MainActivity : AppCompatActivity() {
                         val elapsedTime = currentTime - lastBackgroundTime
 
                         Log.d(TAG, "elapsedTime: $elapsedTime")
-                        if (elapsedTime >= 10 * 60 * 1000) { // 10 minutes
+                        if (elapsedTime >= 30 * 60 * 1000) { // 30 minutes
                             val intent = Intent(this, MainActivity::class.java)
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(intent)
