@@ -9,10 +9,10 @@ class AmplitudeAnalytics : BaseAnalytics {
     private lateinit var analytics: AmplitudeClient
 
     override fun init(application: Application) {
-        Amplitude.getInstance().trackSessionEvents(true)
         analytics = Amplitude.getInstance()
             .initialize(application.applicationContext, "2e301a7903ed06d9cd208500f4e3d9f2")
             .enableForegroundTracking(application)
+        analytics.trackSessionEvents(true)
     }
 
     override fun log(event: String, params: Map<String, Any>) {
