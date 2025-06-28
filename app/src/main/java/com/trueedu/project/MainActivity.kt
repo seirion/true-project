@@ -17,7 +17,6 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -29,14 +28,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.trueedu.project.analytics.TrueAnalytics
@@ -57,6 +52,7 @@ import com.trueedu.project.ui.common.ButtonAction
 import com.trueedu.project.ui.common.PopupFragment
 import com.trueedu.project.ui.common.PopupType
 import com.trueedu.project.ui.dev.OnOffState
+import com.trueedu.project.ui.main.MainNavigation
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.UserInfoViewModel
 import com.trueedu.project.ui.views.home.AppNoticePopup
@@ -352,7 +348,14 @@ class MainActivity : AppCompatActivity() {
                 ) { innerPadding ->
                     // 탭 영역 제외하고 화면이 그려지도록
                     val padding = PaddingValues(bottom = innerPadding.calculateBottomPadding())
-                    NavigationGraph(navController = navController, innerPadding = padding)
+                    MainNavigation(
+                        navController = navController,
+                        innerPadding = padding,
+                        homeScreen = homeScreen,
+                        watchScreen = watchScreen,
+                        spacScreen = spacScreen,
+                        menuScreen = menuScreen,
+                    )
                 }
             }
         )
@@ -390,28 +393,6 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GoogleAccount.RC_SIGN_IN) {
             googleAccount.handleActivityResult(requestCode, resultCode, data, this)
-        }
-    }
-
-    @Composable
-    fun NavigationGraph(navController: NavHostController, innerPadding: PaddingValues) {
-        NavHost(
-            navController = navController,
-            startDestination = BottomNavItem.Home.screenRoute,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(BottomNavItem.Home.screenRoute) {
-                homeScreen.Draw()
-            }
-            composable(BottomNavItem.Watch.screenRoute) {
-                watchScreen.Draw()
-            }
-            composable(BottomNavItem.Spac.screenRoute) {
-                spacScreen.Draw()
-            }
-            composable(BottomNavItem.Menu.screenRoute) {
-                menuScreen.Draw()
-            }
         }
     }
 }
