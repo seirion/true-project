@@ -40,19 +40,9 @@ jobs:
       id: createGoogleService
       run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > ./app/google-services.json
 
-    - name: Build with Gradle
-      run: ./gradlew build
-
     - name: Build Release AAB
       id: buildRelease
       run: ./gradlew bundleRelease
-
-    - name: Upload APK
-      id: uploadArtifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: app
-        path: app/build/outputs/bundle/release/app-release.aab
 
     - name: Create service_account.json
       id: createServiceAccount
