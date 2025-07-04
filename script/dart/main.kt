@@ -39,7 +39,7 @@ fun main() {
                 return@forEachLine
             }
 
-            if (corpName.contains("스팩")) {
+            if (corpName.contains("스팩") && corpName != "아스팩오일") {
                 println("$corpCode $corpName $stockCode")
                 corpName = ""
                 corpCode = ""
