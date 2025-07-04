@@ -93,7 +93,7 @@ class SpacScheduleFragment: BaseFragment() {
                 list.map { (date, schedule) ->
                     val dateString = dateFormat(date.take(8))
                     val isPast = LocalDate.now().yyyyMMdd().let { now ->
-                        date < now
+                        date <= now
                     }
                     val bgColor = if (isPast) {
                         MaterialTheme.colorScheme.surfaceDim.copy(
