@@ -71,6 +71,7 @@ class SpacAnalysisFragment: BaseFragment() {
                     .collect {
                         if (!it) {
                             stocks.value = spacManager.spacList.value
+                                .filterNot { stockPool.delisted(it.code) }
                         }
                     }
             }
