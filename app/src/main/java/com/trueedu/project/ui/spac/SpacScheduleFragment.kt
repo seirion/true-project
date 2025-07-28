@@ -1,6 +1,7 @@
 package com.trueedu.project.ui.spac
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,12 +25,14 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.firebase.SpacStatusManager
+import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.SpacSchedule
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.DividerHorizontal
 import com.trueedu.project.ui.common.LoadingView
 import com.trueedu.project.ui.common.TrueText
+import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.utils.formatter.dateFormat
 import com.trueedu.project.utils.yyyyMMdd
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,6 +54,8 @@ class SpacScheduleFragment: BaseFragment() {
 
     @Inject
     lateinit var googleAccount: GoogleAccount
+    @Inject
+    lateinit var spackManager: SpacManager
     @Inject
     lateinit var spacStatusManager: SpacStatusManager
 
@@ -102,10 +107,14 @@ class SpacScheduleFragment: BaseFragment() {
                     } else {
                         Color.Transparent
                     }
+
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                             .background(color = bgColor)
+                            .clickable {
+                                gotoStockDetail(schedule.nameKr)
+                            }
                             .padding(vertical = 8.dp, horizontal = 8.dp)
                     ) {
                         TrueText(
@@ -135,6 +144,20 @@ class SpacScheduleFragment: BaseFragment() {
                     DividerHorizontal()
                 }
             }
+        }
+    }
+
+    private fun gotoStockDetail(nameKr: String) {
+        spackManager.spacList.value.firstOrNull {
+            it.nameKr == nameKr
+        }?.let {
+            trueAnalytics.log(
+                "${screenName()}__stock_detail__click",
+                mapOf(
+                    "nameKr" to it.nameKr,
+                )
+            )
+            StockDetailFragment.show(it, parentFragmentManager)
         }
     }
 }
