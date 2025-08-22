@@ -28,6 +28,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.firebase.SpacStatusManager
+import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -62,6 +63,8 @@ class SpacAdminFragment: BaseFragment() {
 
     @Inject
     lateinit var stockPool: StockPool
+    @Inject
+    lateinit var spacManager: SpacManager
     @Inject
     lateinit var spacStatusManager: SpacStatusManager
 
@@ -167,6 +170,7 @@ class SpacAdminFragment: BaseFragment() {
             spacStatusManager.write(
                 list,
                 {
+                    spacManager.spacStatusMap.value = list.associateBy { it.code }
                     MainScope().launch(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "저장 완료", Toast.LENGTH_SHORT).show()
                     }
