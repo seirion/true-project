@@ -38,7 +38,6 @@ import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.theme.ChartColor
 import com.trueedu.project.utils.formatter.intFormatter
-import com.trueedu.project.utils.formatter.safeLong
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -82,11 +81,6 @@ class SpacAdminFragment: BaseFragment() {
                     }
             }
 
-            val oldValues = spacStatusManager.load()
-                .filter { s ->
-                    // 상폐 되어 검색되지 않는 종목은 제외
-                    stockPool.search { it.nameKr == s.nameKr }.firstOrNull() != null
-                }
             val newValues = spacRedemptionPrices
                 .map { it.split("\t") }
                 .mapNotNull { spac ->
@@ -102,8 +96,7 @@ class SpacAdminFragment: BaseFragment() {
                     )
                 }
 
-            // fastDistinctBy 알고리즘에 따라 newValues 를 우선하여 사용함
-            namePrices.value = (newValues + oldValues)
+            namePrices.value = newValues
                 .fastDistinctBy(SpacStatus::code)
                 .sortedBy {
                     val s = stockPool.get(it.code)
