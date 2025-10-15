@@ -55,9 +55,7 @@ class SpacAdminFragment: BaseFragment() {
             }
         }
 
-        private val statusList = listOf(
-            "", "합병심사", "합병승인", "반대의사", "매수청구", "상장폐지"
-        )
+        private val statusList = SpacStatus.Status.entries
     }
 
     @Inject
@@ -88,11 +86,12 @@ class SpacAdminFragment: BaseFragment() {
                     val stock = stockPool.search { it.nameKr == nameKr }.firstOrNull()
                         ?: return@mapNotNull null
                     val price = spac.last().toInt()
+                    val status = SpacStatus.Status.NORMAL
                     SpacStatus(
                         code = stock.code,
                         nameKr = nameKr,
                         redemptionPrice = price,
-                        status = "",
+                        _status = status,
                     )
                 }
 
@@ -141,7 +140,7 @@ class SpacAdminFragment: BaseFragment() {
                         val currentStatus = statusList[(index + 1) % statusList.size]
                         namePrices.value = namePrices.value.map {
                             if (it.code == code) {
-                                it.copy(status = currentStatus)
+                                it.copy(_status = currentStatus)
                             } else {
                                 it
                             }
@@ -185,7 +184,7 @@ private fun SpacItemInternal(
     code: String,
     currentPrice: Double,
     spacRedemptionPrices: Int,
-    status: String,
+    status: SpacStatus.Status,
     onClick: () -> Unit,
 ) {
     Row(
@@ -213,7 +212,7 @@ private fun SpacItemInternal(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             TrueText(
-                s = status,
+                s = status.description,
                 fontSize = 14,
                 textAlign = TextAlign.End,
                 color = MaterialTheme.colorScheme.primary,
