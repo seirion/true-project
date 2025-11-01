@@ -47,7 +47,7 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
 
     var accessToken by preferences.string("")
         private set
-    // 토큰 만료 예정 시각
+    // 토큰 만료 예정 시각 - Date.time 값이 저장됨
     var accessTokenExpiredAt by preferences.long(0L)
         private set
     fun setAccessToken(tokenResponse: TokenResponse?) {
