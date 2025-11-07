@@ -8,6 +8,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.GenericTypeIndicator
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.data.GoogleAccount
+import com.trueedu.project.data.model.UserRemoteConfig
 import com.trueedu.project.model.dto.firebase.AppNotice
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.firebase.StockInfoKosdaq
@@ -192,22 +193,22 @@ class FirebaseRealtimeDatabase @Inject constructor(
         }
     }
 
-    suspend fun loadUserConfig(): Map<String, String> {
+    suspend fun loadUserConfig(): UserRemoteConfig {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
             Log.d(TAG, "loadUserConfig() failed: currentUser null")
-            return emptyMap()
+            return UserRemoteConfig()
         }
         val userId = currentUser.uid
 
         val ref = database.getReference("users")
         val snapshot = ref.child(userId).child("config")
-        val m = snapshot.get().await()
-            .getValue(object : GenericTypeIndicator<Map<String, String>>() {})
-        return m ?: emptyMap()
+        val config = snapshot.get().await()
+            .getValue(UserRemoteConfig::class.java)
+        return config ?: UserRemoteConfig()
     }
 
-    suspend fun writeUserConfig(m: Map<String, String>) {
+    suspend fun writeUserConfig(config: UserRemoteConfig) {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
             Log.d(TAG, "writeUserConfig() failed: currentUser null")
@@ -217,6 +218,6 @@ class FirebaseRealtimeDatabase @Inject constructor(
 
         val ref = database.getReference("users")
         val snapshot = ref.child(userId).child("config")
-        snapshot.setValue(m)
+        snapshot.setValue(config)
     }
 }
