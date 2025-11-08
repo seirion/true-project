@@ -84,6 +84,9 @@ class OrderRemoteImpl(
             "ORD_DVSN" to "00", // 주문 구분 - 일단 지정가로 주문하기
             "ORD_QTY" to quantity, // 주문 수량
             "ORD_UNPR" to price, // 주문 단가
+            "EXCG_ID_DVSN_CD" to "SOR", // 한국거래소 : KRX (기본값)
+                                        // 대체거래소 (넥스트레이드) : NXT
+                                        // SOR (Smart Order Routing) : SOR
         )
         orderService.buy(headers, body)
     }
