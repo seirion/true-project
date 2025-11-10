@@ -35,6 +35,8 @@ import com.trueedu.project.MainViewModel
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.spac.SpacManager
+import com.trueedu.project.model.dto.firebase.SpacRefund
+import com.trueedu.project.model.dto.firebase.shouldShowRedemption
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
 import com.trueedu.project.ui.common.BottomSelectionFragment
@@ -103,9 +105,18 @@ class SpacScreen(
                 stickyHeader { SpacSectionView(vm::setSort) }
 
                 itemsIndexed(vm.stocks.value, key = { i, _ -> i }) { i, item ->
+
+                    val spacRefund = spacManager.spacRefundMap.value[item.code]
                     val redemptionValue = spacManager.redemptionValueMap[item.code]
-                    val expectedProfit = redemptionValue?.first
-                    val expectedProfitRate = redemptionValue?.second
+                    val expectedProfit: Double?
+                    val expectedProfitRate: Double?
+                    if (spacRefund?.shouldShowRedemption() == true) {
+                        expectedProfit = redemptionValue?.first
+                        expectedProfitRate = redemptionValue?.second
+                    } else {
+                        expectedProfit = null
+                        expectedProfitRate = null
+                    }
                     val userStock = mainVm.userStocks.value?.output1?.firstOrNull {
                         it.code == item.code
                     }

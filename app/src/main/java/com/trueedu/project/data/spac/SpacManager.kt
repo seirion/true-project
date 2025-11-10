@@ -6,8 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.firebase.SpacStatusManager
-import com.trueedu.project.model.dto.firebase.SpacStatus
+import com.trueedu.project.model.dto.firebase.SpacRefund
 import com.trueedu.project.model.dto.firebase.StockInfo
+import com.trueedu.project.repository.etc.readSpacRefund
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.formatter.safeDouble
@@ -39,7 +40,7 @@ class SpacManager @Inject constructor(
         private val TAG = SpacManager::class.java.simpleName
     }
 
-    val spacStatusMap = mutableStateOf<Map<String, SpacStatus>>(emptyMap())
+    val spacRefundMap = mutableStateOf<Map<String, SpacRefund>>(emptyMap())
 
     val loading = MutableStateFlow(true)
     val spacList = mutableStateOf<List<StockInfo>>(emptyList())
@@ -47,7 +48,7 @@ class SpacManager @Inject constructor(
     val priceChangeMap = mutableStateMapOf<String, Double>()
     val volumeMap = mutableStateMapOf<String, Long>() // 거래량
     val volumePriceMap = mutableStateMapOf<String, Long>() // 거래대금
-    val redemptionValueMap = mutableStateMapOf<String, Pair<Int, Double>>()
+    val redemptionValueMap = mutableStateMapOf<String, Pair<Double, Double>>()
 
     val spacAnnualProfitMode = mutableStateOf(local.spacAnnualProfit)
 
@@ -58,13 +59,19 @@ class SpacManager @Inject constructor(
         MainScope().launch {
             combine(
                 stockPool.status.filter { it == StockPool.Status.SUCCESS },
-                flow { emit(spacStatusManager.load()) }
+                flow {
+                    try {
+                        emit(readSpacRefund())
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to load spac refund", e)
+                        emit(emptyMap())
+                    }
+                }
             ) { _, spacStatuses -> spacStatuses }
                 .collect {
-                    Log.d(TAG, "spac status init: ${it.size}")
+                    Log.d(TAG, "spac refund init: ${it.size}")
                     spacList.value = stockPool.search(StockInfo::spac)
-                    spacStatusMap.value = it
-                        .associateBy(SpacStatus::code)
+                    spacRefundMap.value = it
                     init()
                 }
         }
@@ -139,11 +146,9 @@ class SpacManager @Inject constructor(
     private fun updateRedemptionValue(code: String) {
         val stock = stockPool.get(code) ?: return
         val price = priceMap[code] ?: stock.prevPrice().safeDouble()
-        val redemptionPrice = spacStatusMap.value[code]?.redemptionPrice ?: return
-        val listingDateStr = stockPool.get(code)?.listingDate() ?: return
-        val targetDate = stringToLocalDate(listingDateStr)
-            .plusYears(3)
-            .plusDays(-51)
+        val spacRefund = spacRefundMap.value[code] ?: return
+        val redemptionPrice = spacRefund.settlementAmount() ?: return
+        val targetDate = spacRefund.endDate
         val isAnnualized = spacAnnualProfitMode.value
         val (valueRate, valueRateAnnualized) = redemptionProfitRate(price, redemptionPrice, targetDate)
         val rate = if (isAnnualized) valueRateAnnualized else valueRate

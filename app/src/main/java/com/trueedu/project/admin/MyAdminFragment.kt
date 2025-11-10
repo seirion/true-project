@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.BuildConfig
-import com.trueedu.project.admin.spac.SpacAdminFragment
 import com.trueedu.project.admin.spac.SpacScheduleAdminFragment
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -47,16 +46,11 @@ class MyAdminFragment : BaseFragment() {
                     .padding(innerPadding)
             ) {
                 if (BuildConfig.DEBUG) {
-                    MenuItem(Icons.Outlined.Construction, "스팩 어드민", ::onSpacAdmin)
                     MenuItem(Icons.Outlined.Construction, "스팩 스케쥴 어드민", ::onSpacScheduleAdmin)
                     MenuItem(Icons.Outlined.QueryStats, "스팩 분석", ::onSpacAnalysis)
                 }
             }
         }
-    }
-
-    private fun onSpacAdmin() {
-        SpacAdminFragment.show(parentFragmentManager)
     }
 
     private fun onSpacScheduleAdmin() {
