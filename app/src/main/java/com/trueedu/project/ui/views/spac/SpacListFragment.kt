@@ -183,7 +183,7 @@ fun SpacItem(
     price: Double = 2000.0,
     priceChange: Double? = 10.0,
     volume: Long = 1234L,
-    expectedProfit: Int? = null, // 청산 시 기대 수익
+    expectedProfit: Double? = null, // 청산 시 기대 수익
     expectedProfitRate: Double? = null, // 청산 시 기대 수익률(%)
     holdingNum: Double = 1.0,
     hasDisclosure: Boolean = true, // 전자 공시 존재 여부

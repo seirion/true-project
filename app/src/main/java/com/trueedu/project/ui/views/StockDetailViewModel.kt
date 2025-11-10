@@ -5,11 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.ManualAssets
-import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.WatchList
-import com.trueedu.project.data.firebase.SpacStatusManager
-import com.trueedu.project.model.dto.firebase.SpacStatus
+import com.trueedu.project.data.realtime.RealPriceManager
+import com.trueedu.project.data.spac.SpacManager
+import com.trueedu.project.model.dto.firebase.SpacRefund
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
@@ -18,18 +18,15 @@ import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.numberFormatString
 import com.trueedu.project.utils.formatter.safeDouble
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class StockDetailViewModel @Inject constructor(
-    private val spacStatusManager: SpacStatusManager,
+    private val spacManager: SpacManager,
     private val priceRemote: PriceRemote,
     val priceManager: RealPriceManager,
     private val tokenKeyManager: TokenKeyManager,
@@ -47,7 +44,7 @@ class StockDetailViewModel @Inject constructor(
     // 가격 정보 (api)
     val basePrice = mutableStateOf<PriceResponse?>(null)
 
-    val spacStatus = mutableStateOf<SpacStatus?>(null)
+    val spacRefund = mutableStateOf<SpacRefund?>(null)
 
     fun init(stockInfo: StockInfo) {
         this.stockInfo = stockInfo
@@ -59,15 +56,7 @@ class StockDetailViewModel @Inject constructor(
 
         if (stockInfo.spac()) {
             viewModelScope.launch {
-                val list = spacStatusManager.load()
-                val spacStatus = list.firstOrNull { it.code == stockInfo.code }
-                withContext(Dispatchers.Main) {
-                    if (tokenKeyManager.userKey.value != null) {
-                        // walkaround: api 를 통해 현재 가격을 받을 때까지 시간 지연
-                        delay(100)
-                    }
-                    this@StockDetailViewModel.spacStatus.value = spacStatus
-                }
+                spacRefund.value = spacManager.spacRefundMap.value[stockInfo.code]
             }
         }
 

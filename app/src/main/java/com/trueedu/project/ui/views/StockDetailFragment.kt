@@ -42,8 +42,9 @@ import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.extensions.priceChangeStr
-import com.trueedu.project.model.dto.firebase.SpacStatus
+import com.trueedu.project.model.dto.firebase.SpacRefund
 import com.trueedu.project.model.dto.firebase.StockInfo
+import com.trueedu.project.model.dto.firebase.shouldShowRedemption
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
@@ -65,7 +66,6 @@ import com.trueedu.project.utils.formatter.intFormatter
 import com.trueedu.project.utils.formatter.rateFormatter
 import com.trueedu.project.utils.formatter.safeDouble
 import com.trueedu.project.utils.redemptionProfitRate
-import com.trueedu.project.utils.stringToLocalDate
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -187,8 +187,8 @@ class StockDetailFragment: BaseFragment() {
                 }
                 SettingItem("기업 공시 보기", true, ::gotoDart)
 
-                vm.spacStatus.value?.let {
-                    SpacDetailView(vm.currentPrice().toInt(), stockInfo, it)
+                vm.spacRefund.value?.let {
+                    SpacDetailView(vm.currentPrice().toInt(), it)
                 }
 
                 vm.infoList.value.forEach {
@@ -316,10 +316,13 @@ class StockDetailFragment: BaseFragment() {
 @Composable
 fun ColumnScope.SpacDetailView(
     currentPrice: Int,
-    stock: StockInfo,
-    spac: SpacStatus
+    spacRefund: SpacRefund,
 ) {
-    val redemptionPrice = spac.redemptionPrice?.toString() ?: "0"
+    if (!spacRefund.shouldShowRedemption()) {
+        return
+    }
+
+    val redemptionPrice = spacRefund.settlementAmount()?.toInt()?.toString() ?: "2100"
     val baseInputString = remember { mutableStateOf(TextFieldValue(currentPrice.toString())) }
     val targetInputString = remember { mutableStateOf(TextFieldValue(redemptionPrice)) }
 
@@ -329,11 +332,7 @@ fun ColumnScope.SpacDetailView(
         targetInput = targetInputString,
     )
 
-    val listingDateStr = stock.listingDate() ?: return
-    val targetDate = stringToLocalDate(listingDateStr)
-        .plusYears(3)
-        .plusDays(-41)
-
+    val targetDate = spacRefund.endDate
     val basePrice = baseInputString.value.text.let {
         if (it.isEmpty()) 0
         else it.toInt()
@@ -343,7 +342,7 @@ fun ColumnScope.SpacDetailView(
         else it.toInt()
     }
     val (profitRate, annualizedProfit) = redemptionProfitRate(
-        basePrice.toDouble(), targetPrice, targetDate
+        basePrice.toDouble(), targetPrice.toDouble(), targetDate
     )
     if (profitRate == null || annualizedProfit == null) {
 
