@@ -2,6 +2,7 @@ package com.trueedu.project.repository.remote
 
 import com.trueedu.project.model.dto.order.OrderModifyResponse
 import com.trueedu.project.model.dto.order.OrderResponse
+import com.trueedu.project.model.dto.order.RightsResponse
 import com.trueedu.project.model.dto.order.ScheduleOrderCancelResponse
 import com.trueedu.project.model.dto.order.ScheduleOrderResponse
 import com.trueedu.project.model.dto.order.ScheduleOrderResult
@@ -94,4 +95,17 @@ interface OrderRemote {
         price: String,
         quantity: String,
     ): Flow<ScheduleOrderCancelResponse>
+
+    /**
+     * 기간별 계좌 권리 현황 조회
+     * 특정 기간 동안의 계좌 권리(배당, 유상증자, 무상증자 등) 현황을 조회합니다.
+     */
+    fun periodRights(
+        accountNum: String,
+        fromDate: String, // yyyyMMdd
+        toDate: String, // yyyyMMdd
+        code: String = "", // 종목코드 (전체 조회 시 빈 문자열)
+        fk100: String = "",
+        nk100: String = "",
+    ): Flow<RightsResponse>
 }

@@ -2,6 +2,7 @@ package com.trueedu.project.repository.remote.service
 
 import com.trueedu.project.model.dto.order.OrderModifyResponse
 import com.trueedu.project.model.dto.order.OrderResponse
+import com.trueedu.project.model.dto.order.RightsResponse
 import com.trueedu.project.model.dto.order.ScheduleOrderCancelResponse
 import com.trueedu.project.model.dto.order.ScheduleOrderResponse
 import com.trueedu.project.model.dto.order.ScheduleOrderResult
@@ -62,4 +63,10 @@ interface OrderService {
         @HeaderMap headers: Map<String, String>,
         @Body body: Map<String, String>
     ): Response<ScheduleOrderCancelResponse>
+
+    @GET("/uapi/domestic-stock/v1/trading/period-rights")
+    suspend fun periodRights(
+        @HeaderMap headers: Map<String, String>,
+        @QueryMap queries: Map<String, String>
+    ): Response<RightsResponse>
 }
