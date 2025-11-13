@@ -320,4 +320,36 @@ class OrderRemoteImpl(
         )
         orderService.modifyScheduleOrder(headers, body)
     }
+
+    override fun periodRights(
+        accountNum: String,
+        fromDate: String,
+        toDate: String,
+        code: String,
+        fk100: String,
+        nk100: String,
+    ) = apiCallFlow {
+        val tc = if (fk100.isEmpty() || nk100.isEmpty()) "" else "N"
+        val headers = mapOf(
+            "tr_id" to "CTRGA011R", // 기간별 계좌 권리 현황 조회
+            "custtype" to "P",
+            "tr_cont" to tc,
+        )
+        val queries = mapOf(
+            "INQR_DVSN" to "03", // 고정
+            "CUST_RNCNO25" to "", // 공란
+            "HMID" to "", // 공란
+            "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
+            "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
+            "INQR_STRT_DT" to fromDate, // 조회 시작일자 (yyyyMMdd)
+            "INQR_END_DT" to toDate, // 조회 종료일자 (yyyyMMdd)
+            "PDNO" to code, // 종목코드 (6자리, 전체 조회 시 공백)
+            "RGHT_TYPE_CD" to "",
+            "PDNO" to "",
+            "PRDT_TYPE_CD" to "",
+            "CTX_AREA_FK100" to fk100, // 연속조회검색조건100
+            "CTX_AREA_NK100" to nk100, // 연속조회키100
+        )
+        orderService.periodRights(headers, queries)
+    }
 }
