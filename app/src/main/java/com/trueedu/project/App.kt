@@ -68,7 +68,6 @@ class App : Application(), LifecycleEventObserver {
         val realPriceManager = entryPointInjector(InjectModule::class.java).getRealPriceManager()
         val realOrderManager = entryPointInjector(InjectModule::class.java).getRealOrderManager()
         val stockPool = entryPointInjector(InjectModule::class.java).getStockPool()
-        val dartManager = entryPointInjector(InjectModule::class.java).getDartManager()
         val trueAnalytics = entryPointInjector(InjectModule::class.java).getTrueAnalytics()
         val admobManager = entryPointInjector(InjectModule::class.java).getAdmobManager()
 
@@ -83,7 +82,6 @@ class App : Application(), LifecycleEventObserver {
                 realPriceManager.start()
                 realOrderManager.start()
                 stockPool.loadStockInfo()
-                dartManager.init()
                 admobManager.start()
             }
 
