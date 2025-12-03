@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
@@ -45,26 +44,13 @@ class DartManager @Inject constructor(
             // yyyyMMddHHmm
             val lastUpdatedAtRemote = firebaseDartManager.lastUpdatedAt()
             Log.d(TAG, "lastUpdatedAtRemote: $lastUpdatedAtRemote")
-            val now = Date().yyyyMMddHHmm().toLong()
-            val hasApiKey = local.dartApiKey.isNotBlank()
 
-            if (hasApiKey && now - lastUpdatedAtRemote > 30) { // 30 minutes
-                // 다시 로딩
-                while (spacManager.loading.value) {
-                    //Log.d(TAG, "waiting spacManager")
-                    delay(200)
-                }
-                val list = spacManager.spacList.value
-                loadList(list.map { it.code })
-                Log.d(TAG, "lastUpdatedAt: $lastUpdatedAt")
-            } else {
-                lastUpdatedAt = lastUpdatedAtRemote
-                firebaseDartManager.loadDartList().forEach {
-                    if (it.list?.isNotEmpty() == true) {
-                        val code = it.list.first().stockCode
-                        items[code] = it.list
-                        updateSignal.emit(Unit)
-                    }
+            lastUpdatedAt = lastUpdatedAtRemote
+            firebaseDartManager.loadDartList().forEach {
+                if (it.list?.isNotEmpty() == true) {
+                    val code = it.list.first().stockCode
+                    items[code] = it.list
+                    updateSignal.emit(Unit)
                 }
             }
             Log.d(TAG, "init() completed - ${items.size}")
