@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Construction
 import androidx.compose.material.icons.outlined.QueryStats
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.Icon
@@ -43,6 +44,7 @@ import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.spac.SpacScheduleFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.home.BottomNavScreen
+import com.trueedu.project.ui.views.rights.ObservingRightsFragment
 import com.trueedu.project.ui.views.schedule.OrderScheduleFragment
 import com.trueedu.project.ui.views.setting.SettingFragment
 
@@ -85,6 +87,7 @@ class MenuScreen(
                 ) {
                     if (tokenKeyManager.userKey.value != null) {
                         MenuItem(Icons.Outlined.Timer, "예약 매매", ::onOrderSchedule)
+                        MenuItem(Icons.Outlined.Sync, "권리 현황", ::onObservingRights)
                     }
 
                     val dartCount = dartManager.getSize().let {
@@ -112,6 +115,11 @@ class MenuScreen(
     private fun onOrderSchedule() {
         trueAnalytics.clickButton("${screenName()}__order_schedule__click")
         OrderScheduleFragment.show(fragmentManager)
+    }
+
+    private fun onObservingRights() {
+        trueAnalytics.clickButton("${screenName()}__observing_rights__click")
+        ObservingRightsFragment.show(fragmentManager)
     }
 
     private fun onDartList() {

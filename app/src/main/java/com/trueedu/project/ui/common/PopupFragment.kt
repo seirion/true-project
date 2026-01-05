@@ -4,7 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,6 +20,7 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -79,6 +84,7 @@ class PopupFragment: DialogFragment() {
             popupType: PopupType,
             buttonActions: List<ButtonAction> = listOf(),
             cancellable: Boolean = true,
+            tag: String? = null,
             fragmentManager: FragmentManager,
         ): PopupFragment {
             return PopupFragment().also {
@@ -87,7 +93,7 @@ class PopupFragment: DialogFragment() {
                 it.popupType = popupType
                 it.actions.addAll(buttonActions)
                 it.isCancelable = cancellable
-                it.show(fragmentManager, null)
+                it.show(fragmentManager, tag)
             }
         }
     }
@@ -162,17 +168,27 @@ private fun PopupBody(
                 .fillMaxWidth()
         )
 
-        TrueText(
-            s = desc,
-            color = MaterialTheme.colorScheme.secondary,
-            fontSize = 14,
-            textAlign = TextAlign.Center,
-            maxLines = Int.MAX_VALUE,
+        val scrollState = rememberScrollState()
+        val screenHeightDp = LocalConfiguration.current.screenHeightDp
+        val maxBodyHeight = (screenHeightDp * 0.5f).dp
+
+        Box(
             modifier = Modifier
                 .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-                .wrapContentHeight()
+                .heightIn(max = maxBodyHeight)
+                .verticalScroll(scrollState)
                 .fillMaxWidth()
-        )
+                .wrapContentHeight()
+        ) {
+            TrueText(
+                s = desc,
+                color = MaterialTheme.colorScheme.secondary,
+                fontSize = 14,
+                textAlign = TextAlign.Center,
+                maxLines = Int.MAX_VALUE,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         Row(
             modifier = Modifier
