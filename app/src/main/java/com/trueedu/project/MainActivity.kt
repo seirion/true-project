@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
                     ButtonAction("확인") { local.disclaimerVisible = false }
                 ),
                 cancellable = true,
-                supportFragmentManager,
+                fragmentManager = supportFragmentManager,
             )
         }
     }

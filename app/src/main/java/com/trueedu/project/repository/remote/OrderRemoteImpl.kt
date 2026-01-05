@@ -345,7 +345,6 @@ class OrderRemoteImpl(
             "INQR_END_DT" to toDate, // 조회 종료일자 (yyyyMMdd)
             "PDNO" to code, // 종목코드 (6자리, 전체 조회 시 공백)
             "RGHT_TYPE_CD" to "",
-            "PDNO" to "",
             "PRDT_TYPE_CD" to "",
             "CTX_AREA_FK100" to fk100, // 연속조회검색조건100
             "CTX_AREA_NK100" to nk100, // 연속조회키100

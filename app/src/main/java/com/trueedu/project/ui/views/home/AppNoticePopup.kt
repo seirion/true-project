@@ -43,6 +43,6 @@ private fun AppNoticePopupInternal(
             }
         ),
         cancellable = cancellable,
-        fm!!,
+        fragmentManager = fm!!,
     )
 }
