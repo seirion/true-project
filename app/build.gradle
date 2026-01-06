@@ -127,7 +127,6 @@ dependencies {
     implementation(libs.retrofit.serialization)
 
     ksp(libs.bundles.ksps)
-    compileOnly(libs.ksp.gradle.plugin)
 
     implementation(libs.bundles.hilt)
     debugImplementation(libs.chucker.debug)
