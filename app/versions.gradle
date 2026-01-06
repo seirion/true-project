@@ -1,13 +1,21 @@
 /*
  * Gets the version name from the latest Git tag
  */
+import org.gradle.process.ExecOperations
+
 ext.getNeoVersionName = { ->
+    def execOps = project.services.get(ExecOperations)
     def stdout = new ByteArrayOutputStream()
-    exec {
+    def execResult = execOps.exec {
         commandLine('bash', '-c', 'git describe --tags')
         standardOutput = stdout
+        ignoreExitValue = true
     }
     ext.v = stdout.toString().trim()
+    if (execResult.exitValue != 0 || !ext.v) {
+        // Fallback for environments without git metadata (or no tags)
+        return "0.0.0"
+    }
     if (v.contains("-")) {
         ext.v = ext.v.substring(0, ext.v.indexOf('-'))
     }
@@ -15,10 +23,17 @@ ext.getNeoVersionName = { ->
 }
 
 ext.getNeoVersionCode = { ->
+    def execOps = project.services.get(ExecOperations)
     def stdout = new ByteArrayOutputStream()
-    exec {
+    def execResult = execOps.exec {
         commandLine('bash', '-c', 'git tag | wc -l')
         standardOutput = stdout
+        ignoreExitValue = true
     }
-    return stdout.toString().trim().toInteger()
+    def s = stdout.toString().trim()
+    if (execResult.exitValue != 0 || !s.isInteger()) {
+        // Fallback for environments without git metadata (or no tags)
+        return 1
+    }
+    return s.toInteger()
 }
