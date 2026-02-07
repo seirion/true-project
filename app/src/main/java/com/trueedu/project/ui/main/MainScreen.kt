@@ -12,14 +12,14 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.MainActivity
 import com.trueedu.project.analytics.TrueAnalytics
@@ -32,6 +32,7 @@ import com.trueedu.project.ui.views.home.BottomNavItem
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.HomeBottomNavigation
 import com.trueedu.project.ui.views.home.HomeDrawer
+import com.trueedu.project.ui.navigation.bottomNavItemOrNull
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -43,7 +44,7 @@ fun MainScreen(
     trueAnalytics: TrueAnalytics,
     fragmentManager: FragmentManager,
     wsMessageHandler: WsMessageHandler,
-    screenOf: (String?) -> BottomNavScreen?,
+    screenOf: (NavBackStackEntry) -> BottomNavScreen?,
     getLastBackgroundTime: () -> Long,
     setLastBackgroundTime: (Long) -> Unit,
     setOpenDrawer: ((() -> Unit)?) -> Unit,
@@ -56,7 +57,7 @@ fun MainScreen(
     val lifecycleObserver = remember {
         LifecycleEventObserver { owner, event ->
             if (owner !is NavBackStackEntry) return@LifecycleEventObserver
-            val screen = screenOf(owner.destination.route) ?: return@LifecycleEventObserver
+            val screen = screenOf(owner) ?: return@LifecycleEventObserver
 
             when (event) {
                 Lifecycle.Event.ON_START -> {
@@ -100,7 +101,7 @@ fun MainScreen(
     val login by googleAccount.loginSignal.collectAsStateWithLifecycle(initialValue = false)
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = login && navBackStackEntry?.destination?.route == BottomNavItem.Home.screenRoute,
+        gesturesEnabled = login && navBackStackEntry.bottomNavItemOrNull() == BottomNavItem.Home,
         drawerContent = {
             HomeDrawer(activity, homeDrawerVm, googleAccount, trueAnalytics, fragmentManager) {
                 scope.launch { drawerState.close() }

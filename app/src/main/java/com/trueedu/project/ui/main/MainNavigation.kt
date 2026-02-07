@@ -25,19 +25,19 @@ fun MainNavigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = BottomNavItem.Home.screenRoute,
-        modifier = Modifier.padding(innerPadding)
+        startDestination = BottomNavItem.Home,
+        modifier = Modifier.padding(innerPadding),
     ) {
-        composable(BottomNavItem.Home.screenRoute) {
+        composable<BottomNavItem.Home> {
             homeScreen.Draw()
         }
-        composable(BottomNavItem.Watch.screenRoute) {
+        composable<BottomNavItem.Watch> {
             watchScreen.Draw()
         }
-        composable(BottomNavItem.Spac.screenRoute) {
+        composable<BottomNavItem.Spac> {
             spacScreen.Draw()
         }
-        composable(BottomNavItem.Menu.screenRoute) {
+        composable<BottomNavItem.Menu> {
             menuScreen.Draw()
         }
     }

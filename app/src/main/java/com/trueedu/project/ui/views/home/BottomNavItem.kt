@@ -10,37 +10,42 @@ import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.serialization.Serializable
 
-sealed class BottomNavItem(
-    val title: String,
-    val iconSelected: ImageVector,
-    val iconNormal: ImageVector,
-    val screenRoute: String
-) {
-    data object Home : BottomNavItem(
-        "홈",
-        Icons.Filled.Home,
-        Icons.Outlined.Home,
-        "home"
-    )
-    data object Watch: BottomNavItem(
-        "관심",
-        Icons.Filled.Star,
-        Icons.Outlined.StarOutline,
-        "watch"
-    )
-    data object Spac: BottomNavItem(
-        "스팩",
-        Icons.Filled.RocketLaunch,
-        Icons.Outlined.RocketLaunch,
-        "spac"
-    )
-    data object Menu: BottomNavItem(
-        "더보기",
-        Icons.Filled.Menu,
-        Icons.Outlined.Menu,
-        "menu"
-    )
+@Serializable
+sealed class BottomNavItem {
+    abstract val title: String
 
-    fun icon(selected: Boolean) = if (selected) iconSelected else iconNormal
+    abstract fun iconSelected(): ImageVector
+    abstract fun iconNormal(): ImageVector
+
+    fun icon(selected: Boolean) = if (selected) iconSelected() else iconNormal()
+
+    @Serializable
+    data object Home : BottomNavItem() {
+        override val title: String = "홈"
+        override fun iconSelected(): ImageVector = Icons.Filled.Home
+        override fun iconNormal(): ImageVector = Icons.Outlined.Home
+    }
+
+    @Serializable
+    data object Watch : BottomNavItem() {
+        override val title: String = "관심"
+        override fun iconSelected(): ImageVector = Icons.Filled.Star
+        override fun iconNormal(): ImageVector = Icons.Outlined.StarOutline
+    }
+
+    @Serializable
+    data object Spac : BottomNavItem() {
+        override val title: String = "스팩"
+        override fun iconSelected(): ImageVector = Icons.Filled.RocketLaunch
+        override fun iconNormal(): ImageVector = Icons.Outlined.RocketLaunch
+    }
+
+    @Serializable
+    data object Menu : BottomNavItem() {
+        override val title: String = "더보기"
+        override fun iconSelected(): ImageVector = Icons.Filled.Menu
+        override fun iconNormal(): ImageVector = Icons.Outlined.Menu
+    }
 }
