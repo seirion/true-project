@@ -99,7 +99,7 @@ fun <T : Any> dragDropColumn(
                         val item = items[position]
                         Card(
                             modifier = Modifier
-                                .animateItemPlacement()
+                                .animateItem()
                                 .alpha(if (itemDragState.currentIndex.value == position) 0f else 1f),
                             shape = RectangleShape,
                             colors = CardColors(

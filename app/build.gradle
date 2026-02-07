@@ -1,13 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebase.crashlytics)
-    alias(libs.plugins.firebase.performance)
 }
 
 apply from: 'versions.gradle'
@@ -22,8 +20,8 @@ def getLocalProperty(String propertyName) {
 }
 
 android {
-    namespace 'com.trueedu.project'
-    compileSdk 34
+    namespace = 'com.trueedu.project'
+    compileSdk 36
 
     signingConfigs {
         devconfig {
@@ -49,7 +47,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
-            useSupportLibrary true
+            useSupportLibrary = true
         }
 
         resValue("string", "admob_id", "ca-app-pub-3613096182343800~8743264607")
@@ -61,15 +59,15 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.upload
+            signingConfig = signingConfigs.upload
             firebaseCrashlytics {
-                mappingFileUploadEnabled true
+                mappingFileUploadEnabled = true
             }
         }
         debug {
             debuggable true
             firebaseCrashlytics {
-                mappingFileUploadEnabled false
+                mappingFileUploadEnabled = false
             }
             resValue("string", "native_ad_unit_id", "ca-app-pub-3940256099942544/2247696110")
         }
@@ -78,15 +76,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = '17'
-    }
     buildFeatures {
-        buildConfig true
-        compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion '1.5.1'
+        buildConfig = true
+        resValues = true
+        compose = true
     }
     packaging {
         resources {
@@ -95,6 +88,12 @@ android {
     }
     hilt {
         enableAggregatingTask = false
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 
@@ -113,7 +112,7 @@ dependencies {
     implementation libs.material
     implementation libs.material.extended
     implementation libs.androidx.lifecycle.process
-    implementation libs.firebase.auth.ktx
+    implementation libs.firebase.auth
     implementation libs.androidx.room.common
     implementation libs.androidx.room.ktx
     testImplementation libs.junit
@@ -144,7 +143,7 @@ dependencies {
     implementation(libs.google.play.services)
     implementation(libs.google.play.services.ads)
     implementation(libs.play.services.appset)
-    implementation(libs.accompanist.navigation.material)
+    implementation(libs.androidx.compose.material.navigation)
     implementation(libs.navigation.compose)
     implementation(libs.navigation.fragment)
     implementation(libs.coil.compose)
