@@ -1,6 +1,7 @@
 package com.trueedu.project.ui.main
 
 import android.annotation.SuppressLint
+import android.os.SystemClock
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
@@ -8,11 +9,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -60,7 +60,7 @@ fun MainScreen(
 
             when (event) {
                 Lifecycle.Event.ON_START -> {
-                    val currentTime = System.currentTimeMillis()
+                    val currentTime = SystemClock.elapsedRealtime()
                     val elapsedTime = currentTime - getLastBackgroundTime()
 
                     logD("elapsedTime: $elapsedTime")
@@ -72,7 +72,7 @@ fun MainScreen(
                 }
                 Lifecycle.Event.ON_STOP -> {
                     screen.onStop()
-                    setLastBackgroundTime(System.currentTimeMillis())
+                    setLastBackgroundTime(SystemClock.elapsedRealtime())
                 }
                 else -> Unit
             }
@@ -89,17 +89,18 @@ fun MainScreen(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val openDrawerCallback = remember(drawerState, scope) {
-        { scope.launch { drawerState.open() }; Unit }
+    val openDrawerCallback: () -> Unit = remember(drawerState) {
+        { scope.launch { drawerState.open() } }
     }
-    LaunchedEffect(openDrawerCallback) {
+    DisposableEffect(openDrawerCallback) {
         setOpenDrawer(openDrawerCallback)
+        onDispose { setOpenDrawer(null) }
     }
 
-    val login = googleAccount.loginSignal.collectAsState(false)
+    val login by googleAccount.loginSignal.collectAsStateWithLifecycle(initialValue = false)
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = login.value && navBackStackEntry?.destination?.route == BottomNavItem.Home.screenRoute,
+        gesturesEnabled = login && navBackStackEntry?.destination?.route == BottomNavItem.Home.screenRoute,
         drawerContent = {
             HomeDrawer(activity, homeDrawerVm, googleAccount, trueAnalytics, fragmentManager) {
                 scope.launch { drawerState.close() }
