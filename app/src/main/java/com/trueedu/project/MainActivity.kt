@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavBackStackEntry
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.broadcast.DownloadCompleteReceiver
 import com.trueedu.project.data.DartManager
@@ -45,6 +46,7 @@ import com.trueedu.project.ui.views.home.BottomNavItem
 import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.ForceUpdateView
 import com.trueedu.project.ui.views.home.HomeScreen
+import com.trueedu.project.ui.navigation.bottomNavItemOrNull
 import com.trueedu.project.ui.views.menu.MenuScreen
 import com.trueedu.project.ui.views.spac.SpacScreen
 import com.trueedu.project.ui.views.spac.SpacViewModel
@@ -261,13 +263,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun screenOf(route: String?): BottomNavScreen? {
-        return when (route) {
-            BottomNavItem.Home.screenRoute -> homeScreen
-            BottomNavItem.Watch.screenRoute -> watchScreen
-            BottomNavItem.Spac.screenRoute -> spacScreen
-            BottomNavItem.Menu.screenRoute -> menuScreen
-            else -> null
+    private fun screenOf(entry: NavBackStackEntry): BottomNavScreen? {
+        return when (entry.bottomNavItemOrNull()) {
+            BottomNavItem.Home -> homeScreen
+            BottomNavItem.Watch -> watchScreen
+            BottomNavItem.Spac -> spacScreen
+            BottomNavItem.Menu -> menuScreen
+            null -> null
         }
     }
 
