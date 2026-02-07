@@ -1,6 +1,5 @@
 package com.trueedu.project.ui.views.spac
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -8,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.repository.remote.PriceRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -23,10 +23,6 @@ class SpacViewModelOld @Inject constructor(
     val tokenKeyManager: TokenKeyManager,
     private val priceRemote: PriceRemote,
 ): ViewModel() {
-
-    companion object {
-        private val TAG = SpacViewModelOld::class.java.simpleName
-    }
 
     val loading = mutableStateOf(false)
     val totalValues = mutableStateOf(SpacProfit.empty)
@@ -83,7 +79,7 @@ class SpacViewModelOld @Inject constructor(
                                 priceMap[s.code] = it.output.price.toDouble()
                                 updateTotalValues()
                             } catch (e: NumberFormatException) {
-                                Log.d(TAG, "price format error: ${it.output.price}\n$e")
+                                logD("price format error: ${it.output.price}\n$e")
                             }
                         }
                     }

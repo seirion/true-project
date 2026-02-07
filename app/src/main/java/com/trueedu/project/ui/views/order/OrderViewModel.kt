@@ -1,6 +1,5 @@
 package com.trueedu.project.ui.views.order
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.text.input.TextFieldValue
@@ -9,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.UserAssets
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.data.realtime.RealOrderManager
 import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.model.dto.firebase.StockInfo
@@ -48,8 +48,6 @@ class OrderViewModel @Inject constructor(
 ): ViewModel() {
 
     companion object {
-        private val TAG = OrderViewModel::class.java.simpleName
-
         private val empty = List(10) { 0.0 to 0.0 }
     }
 
@@ -94,7 +92,7 @@ class OrderViewModel @Inject constructor(
         // 호가 기본값
         priceRemote.currentTrade(code)
             .onEach {
-                Log.d(TAG, "호가 api: $it")
+                logD("호가 api: $it")
                 tradeBase.value = it
             }
             .launchIn(viewModelScope)
@@ -117,7 +115,7 @@ class OrderViewModel @Inject constructor(
                 .filter { it.code == this@OrderViewModel.code }
                 .collect {
                     val stock = stockPool.get(it.code)
-                    Log.d(TAG, "실시간 호가: ${it.code} ${stock?.nameKr}")
+                    logD("실시간 호가: ${it.code} ${stock?.nameKr}")
                     realTimeQuotes.value = it
                 }
         }
@@ -139,7 +137,7 @@ class OrderViewModel @Inject constructor(
     private fun buySell(isBuy: Boolean, onSuccess: () -> Unit, onFail: (String) -> Unit) {
         val userKey = tokenKeyManager.userKey.value ?: return
         if (userKey.accountNum.isNullOrEmpty()) {
-            Log.d(TAG, "order failed: empty accountNum")
+            logD("order failed: empty accountNum")
         }
 
         if (isBuy) {
@@ -162,12 +160,12 @@ class OrderViewModel @Inject constructor(
                 if (it.rtCd == "0") {
                     onSuccess()
                 } else {
-                    Log.d(TAG, "주문 실패: $it")
+                    logD("주문 실패: $it")
                     onFail(it.msg ?: it.msg1 ?: "주문 실패")
                 }
             }
             .catch {
-                Log.d(TAG, "주문 실패(예외): $it")
+                logD("주문 실패(예외): $it")
                 onFail("주문 실패")
             }
             .flowOn(Dispatchers.Main)

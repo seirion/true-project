@@ -1,6 +1,5 @@
 package com.trueedu.project.ui.views.watch
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
@@ -13,6 +12,7 @@ import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.WatchList
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
@@ -75,7 +75,7 @@ class WatchListViewModel @Inject constructor(
                     .distinctUntilChanged()
                     .collect { list ->
                         if (list.isEmpty()) return@collect
-                        Log.d(TAG, "watchList: $list")
+                        logD("watchList: $list")
                         loading.value = false
 
                         if (hasAppKey()) {
@@ -157,7 +157,7 @@ class WatchListViewModel @Inject constructor(
                         basePrices[code] = null
                     }
                     .catch {
-                        Log.d(TAG, "failed to get currentPrice: $code $it")
+                        logD("failed to get currentPrice: $code $it")
                         basePrices.remove(code)
                     }
                     .onEach {

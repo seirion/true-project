@@ -1,8 +1,8 @@
 package com.trueedu.project.data
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.data.firebase.FirebaseWatchManager
+import com.trueedu.project.data.log.logD
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,7 +18,6 @@ class WatchList @Inject constructor(
     companion object {
         // 관심 그룹 개수
         const val MAX_GROUP_SIZE = 10
-        private val TAG = WatchList::class.java.simpleName
     }
 
     val groupNames = mutableStateOf<List<String?>>(emptyList())
@@ -31,11 +30,11 @@ class WatchList @Inject constructor(
                     if (login) {
                         // 관심 그룹 이름
                         groupNames.value = firebaseWatchManager.loadGroupNames()
-                        Log.d(TAG, "loadWatchGroupNames: ${groupNames.value.toList()}")
+                        logD("loadWatchGroupNames: ${groupNames.value.toList()}")
 
                         // 관심 종목 데이터
                         val temp = firebaseWatchManager.loadWatchList()
-                        Log.d(TAG, "loadWatchList: ${temp.size}")
+                        logD("loadWatchList: ${temp.size}")
                         withContext(Dispatchers.Main) {
                             fillDefaultList(temp)
                         }
@@ -74,7 +73,7 @@ class WatchList @Inject constructor(
         require(index in list.value.indices)
 
         if (list.value[index].contains(code)) {
-            Log.d(TAG, "trying to insert already existing code: $code")
+            logD("trying to insert already existing code: $code")
             return
         }
 
@@ -112,7 +111,7 @@ class WatchList @Inject constructor(
         require(targetPage in list.value.indices)
 
         if (!list.value[targetPage].contains(code)) {
-            Log.d(TAG, "trying to remove not existing code: $code")
+            logD("trying to remove not existing code: $code")
             return
         }
 

@@ -1,8 +1,8 @@
 package com.trueedu.project.data
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.data.firebase.FirebaseAssetsManager
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.firebase.UserAsset
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,10 +17,6 @@ class ManualAssets @Inject constructor(
     private val firebaseAssets: FirebaseAssetsManager,
     private val googleAccount: GoogleAccount,
 ) {
-    companion object {
-        private val TAG = ManualAssets::class.java.simpleName
-    }
-
     val assets = mutableStateOf<List<UserAsset>>(emptyList())
     init {
         MainScope().launch {
@@ -38,10 +34,10 @@ class ManualAssets @Inject constructor(
     }
 
     private fun load() {
-        Log.d(TAG, "load()")
+        logD("load()")
         CoroutineScope(Dispatchers.IO).launch {
             val assetList = firebaseAssets.loadAssets()
-            Log.d(TAG, "assetList: $assetList")
+            logD("assetList: $assetList")
             withContext(Dispatchers.Main) {
                 assets.value = assetList
             }

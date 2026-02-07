@@ -1,7 +1,6 @@
 package com.trueedu.project.ui.views.setting
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -48,6 +47,7 @@ import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.R
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.UserAssets
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.extensions.getClipboardText
 import com.trueedu.project.model.event.TokenIssueFail
 import com.trueedu.project.model.event.TokenIssued
@@ -69,8 +69,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AppKeyInputFragment: BaseFragment() {
     companion object {
-        private val TAG = AppKeyInputFragment::class.java.simpleName
-
         fun show(
             isNewKey: Boolean,
             fragmentManager: FragmentManager
@@ -213,12 +211,12 @@ class AppKeyInputFragment: BaseFragment() {
             tokenKeyManager.observeTokenKeyEvent()
                 .onEach {
                     if (it is TokenIssued) {
-                        Log.d(TAG, "new token issued")
+                        logD("new token issued")
                         Toast.makeText(requireContext(), "토큰 정상 발급 완료", Toast.LENGTH_SHORT)
                             .show()
                         dismissAllowingStateLoss()
                     } else if (it is TokenIssueFail) {
-                        Log.d(TAG, "failed: $it")
+                        logD("failed: $it")
                         Toast.makeText(requireContext(), "토큰 발급 실패", Toast.LENGTH_SHORT).show()
                         this.cancel()
                     }

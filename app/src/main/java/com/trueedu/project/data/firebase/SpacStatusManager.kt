@@ -1,8 +1,8 @@
 package com.trueedu.project.data.firebase
 
-import android.util.Log
 import com.google.firebase.database.GenericTypeIndicator
 import com.trueedu.project.data.GoogleAccount
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.firebase.SpacSchedule
 import com.trueedu.project.model.dto.firebase.SpacStatus
 import com.trueedu.project.utils.yyyyMMdd
@@ -19,7 +19,6 @@ class SpacStatusManager @Inject constructor(
     googleAccount: GoogleAccount,
 ): FirebaseDatabaseBase(googleAccount) {
     companion object {
-        private val TAG = SpacStatusManager::class.java.simpleName
         private const val META_KEY = "meta"
         private const val SNAPSHOT_KEY = "spac"
     }
@@ -33,10 +32,10 @@ class SpacStatusManager @Inject constructor(
      * @return yyyyMMdd 포맷의 스트링
      */
     suspend fun serverLastUpdated(): Long? {
-        Log.d(TAG, "serverLastUpdated()")
+        logD("serverLastUpdated()")
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "load() failed: currentUser null")
+            logD("load() failed: currentUser null")
             return null
         }
         val ref = database.getReference(META_KEY) // spac 데이터
@@ -47,14 +46,14 @@ class SpacStatusManager @Inject constructor(
     }
 
     suspend fun load(): List<SpacStatus> {
-        Log.d(TAG, "load()")
+        logD("load()")
         if (spacList.isNotEmpty()) {
             return spacList
         }
 
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "load() failed: currentUser null")
+            logD("load() failed: currentUser null")
             return emptyList()
         }
         val ref = database.getReference(SNAPSHOT_KEY) // spac 데이터
@@ -73,7 +72,7 @@ class SpacStatusManager @Inject constructor(
     suspend fun write(list: List<SpacStatus>, onSuccess: () -> Unit, onFail: () -> Unit) {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "write() failed: currentUser null")
+            logD("write() failed: currentUser null")
             onFail()
             return
         }
@@ -94,14 +93,14 @@ class SpacStatusManager @Inject constructor(
     }
 
     suspend fun loadSpacSchedule(force: Boolean = false): Map<String, SpacSchedule> {
-        Log.d(TAG, "loadSpacSchedule()")
+        logD("loadSpacSchedule()")
         if (spacScheduleList.isNotEmpty() && !force) {
             return spacScheduleList
         }
 
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "load() failed: currentUser null")
+            logD("load() failed: currentUser null")
             return spacScheduleList
         }
         val ref = database.getReference(SNAPSHOT_KEY) // spac 데이터
@@ -119,7 +118,7 @@ class SpacStatusManager @Inject constructor(
     ) {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "write() failed: currentUser null")
+            logD("write() failed: currentUser null")
             onFail()
             return
         }

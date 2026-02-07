@@ -3,7 +3,6 @@ package com.trueedu.project.data
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -13,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.trueedu.project.R
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.data.log.logD
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -26,7 +26,6 @@ class GoogleAccount @Inject constructor(
     private val trueAnalytics: TrueAnalytics,
 ) {
     companion object {
-        private val TAG = GoogleAccount::class.java.simpleName
         const val RC_SIGN_IN = 9001
     }
 
@@ -76,7 +75,7 @@ class GoogleAccount @Inject constructor(
     fun getProfileImage() = googleSignInAccount?.photoUrl
 
     fun login(activity: Activity, action: (() -> Unit)? = null) {
-        Log.d(TAG, "login()")
+        logD("login()")
         val gso = getGoogleSignInOptions(activity.applicationContext)
         val googleSignInClient = GoogleSignIn.getClient(activity, gso)
         val signInIntent = googleSignInClient.signInIntent
@@ -93,14 +92,14 @@ class GoogleAccount @Inject constructor(
     }
 
     fun logout(context: Context, onSuccess: (() -> Unit)) {
-        Log.d(TAG, "logout()")
+        logD("logout()")
         trueAnalytics.log("google_logout")
         val gso = getGoogleSignInOptions(context)
         val googleSignInClient = GoogleSignIn.getClient(context, gso)
         googleSignInClient.signOut()
             .addOnCompleteListener {
                 setLoggedIn(null)
-                Log.d(TAG, "logout completed: ${loggedIn()}")
+                logD("logout completed: ${loggedIn()}")
                 MainScope().launch {
                     onSuccess()
                 }

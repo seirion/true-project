@@ -1,11 +1,11 @@
 package com.trueedu.project.data.firebase
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
 import com.trueedu.project.data.GoogleAccount
+import com.trueedu.project.data.log.logD
 import kotlinx.coroutines.tasks.await
 
 abstract class FirebaseDatabaseBase(
@@ -21,7 +21,7 @@ abstract class FirebaseDatabaseBase(
         }
 
         if (!googleAccount.loggedIn()) {
-            Log.d("Firebase", "cannot write values: currentUser == null")
+            logD("cannot write values: currentUser == null")
             return null
         }
         val idToken = googleAccount.getToken()

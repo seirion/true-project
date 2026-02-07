@@ -1,7 +1,6 @@
 package com.trueedu.project.admin.spac
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +35,7 @@ import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.R
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.firebase.SpacStatusManager
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.firebase.SpacSchedule
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -61,8 +61,6 @@ class SpacScheduleAdminFragment: BaseFragment() {
                 it.show(fragmentManager, "spac_schedule_admin")
             }
         }
-
-        private val TAG = SpacScheduleAdminFragment::class.java.simpleName
     }
 
     @Inject
@@ -134,7 +132,7 @@ class SpacScheduleAdminFragment: BaseFragment() {
     }
 
     private fun onUpdate(index: Int, date: String, schedule: SpacSchedule) {
-        Log.d(TAG, "onUpdate: $date - $schedule")
+        logD("onUpdate: $date - $schedule")
         list[index] = date to schedule
     }
 

@@ -1,11 +1,12 @@
 package com.trueedu.project.data.spac
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.firebase.SpacStatusManager
+import com.trueedu.project.data.log.logD
+import com.trueedu.project.data.log.logE
 import com.trueedu.project.model.dto.firebase.SpacRefund
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.repository.etc.readSpacRefund
@@ -35,11 +36,6 @@ class SpacManager @Inject constructor(
     private val spacStatusManager: SpacStatusManager,
     private val priceRemote: PriceRemote,
 ) {
-
-    companion object {
-        private val TAG = SpacManager::class.java.simpleName
-    }
-
     val spacRefundMap = mutableStateOf<Map<String, SpacRefund>>(emptyMap())
 
     val loading = MutableStateFlow(true)
@@ -63,13 +59,13 @@ class SpacManager @Inject constructor(
                     try {
                         emit(readSpacRefund())
                     } catch (e: Exception) {
-                        Log.e(TAG, "Failed to load spac refund", e)
+                        logE(e, "Failed to load spac refund")
                         emit(emptyMap())
                     }
                 }
             ) { _, spacStatuses -> spacStatuses }
                 .collect {
-                    Log.d(TAG, "spac refund init: ${it.size}")
+                    logD("spac refund init: ${it.size}")
                     spacList.value = stockPool.search(StockInfo::spac)
                     spacRefundMap.value = it
                     init()
@@ -120,8 +116,8 @@ class SpacManager @Inject constructor(
                         // 가격 변경 시 청산 시 수익률도 업데이트 필요
                         updateRedemptionValue(s.code)
                     }
-            } catch(it: Exception) {
-                Log.e(TAG, "price error: $it")
+            } catch (e: Exception) {
+                logE(e, "price error: ${e.message}")
             }
         }
     }

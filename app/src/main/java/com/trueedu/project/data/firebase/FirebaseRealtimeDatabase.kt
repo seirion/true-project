@@ -1,6 +1,5 @@
 package com.trueedu.project.data.firebase
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -8,6 +7,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.GenericTypeIndicator
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.data.GoogleAccount
+import com.trueedu.project.data.log.logD
+import com.trueedu.project.data.log.logE
 import com.trueedu.project.data.model.UserRemoteConfig
 import com.trueedu.project.model.dto.firebase.AppNotice
 import com.trueedu.project.model.dto.firebase.StockInfo
@@ -25,10 +26,6 @@ import javax.inject.Singleton
 class FirebaseRealtimeDatabase @Inject constructor(
     private val googleAccount: GoogleAccount,
 ) {
-    companion object {
-        private val TAG = FirebaseRealtimeDatabase::class.java.simpleName
-    }
-
     // Firebase Realtime Database 인스턴스 가져오기
     private val database = FirebaseDatabase.getInstance()
     private val metaRef = database.getReference("meta") // 마지막 업데이트 시각
@@ -47,7 +44,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
             return minVersion != null && compareVersions(currentVersion, minVersion) < 0
         } catch (e: Exception) {
             // 오류 처리
-            Log.e(TAG, "Error checking for update", e)
+            logE(e, "Error checking for update")
             return false
         }
     }
@@ -59,7 +56,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
             return notice ?: AppNotice()
         } catch (e: Exception) {
             // 오류 처리
-            Log.e(TAG, "Error checking for notice", e)
+            logE(e, "Error checking for notice")
             return AppNotice()
         }
     }
@@ -93,7 +90,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
     }
 
     suspend fun loadStocks(): Pair<Long, Map<String, StockInfo>> {
-        Log.d(TAG, "loadStocks()")
+        logD("loadStocks()")
         try {
             val snapshotMeta = metaRef.get().await()
             val snapshot = stocksRef.get().await()
@@ -104,15 +101,15 @@ class FirebaseRealtimeDatabase @Inject constructor(
                 ?: emptyMap()
 
             if (lastUpdatedAt == null) {
-                Log.d(TAG, "cannot read values: \"lastUpdatedAt\"")
+                logD("cannot read values: \"lastUpdatedAt\"")
                 return 0L to emptyMap()
             }
-            Log.d(TAG, "loading stocks completed - lastUpdatedAt: $lastUpdatedAt")
+            logD("loading stocks completed - lastUpdatedAt: $lastUpdatedAt")
 
             return lastUpdatedAt to (kospi + kosdaq)
         } catch (e: Exception) {
             // 오류 처리
-            Log.e(TAG, "Failed to get stocks", e)
+            logE(e, "Failed to get stocks")
             return 0L to emptyMap()
         }
     }
@@ -125,7 +122,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
         }
 
         if (!googleAccount.loggedIn()) {
-            Log.d(TAG, "cannot write values: currentUser == null")
+            logD("cannot write values: currentUser == null")
             return null
         }
         val idToken = googleAccount.getToken()
@@ -135,13 +132,13 @@ class FirebaseRealtimeDatabase @Inject constructor(
     }
 
     suspend fun loadDelistedStocks(): List<String> {
-        Log.d(TAG, "loadDelistedStocks()")
+        logD("loadDelistedStocks()")
         try {
             val snapshot = stocksRef.get().await()
             return snapshot.child("delisted").getValue(object : GenericTypeIndicator<List<String>>() {}) ?: emptyList()
         } catch (e: Exception) {
             // 오류 처리
-            Log.e(TAG, "Failed to get delisted stocks", e)
+            logE(e, "Failed to get delisted stocks")
             return emptyList()
         }
     }
@@ -152,7 +149,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
     suspend fun writeStockInfo(lastUpdatedAt: Long, stocks: Map<String, StockInfo>) {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "cannot write values: \"currentUser\"")
+            logD("cannot write values: \"currentUser\"")
             return
         }
 
@@ -163,7 +160,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
             stocksRef.child("kosdaq").setValue(kosdaq)
             metaRef.child("stockLastUpdatedAt").setValue(lastUpdatedAt)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to update stocks", e)
+            logE(e, "Failed to update stocks")
         }
     }
 
@@ -174,7 +171,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             val currentUser = firebaseCurrentUser()
             if (currentUser == null) {
-                Log.d(TAG, "deleteUser() failed: currentUser null")
+                logD("deleteUser() failed: currentUser null")
             }
             val userId = currentUser?.uid ?: return@launch
 
@@ -196,7 +193,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
     suspend fun loadUserConfig(): UserRemoteConfig {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "loadUserConfig() failed: currentUser null")
+            logD("loadUserConfig() failed: currentUser null")
             return UserRemoteConfig()
         }
         val userId = currentUser.uid
@@ -211,7 +208,7 @@ class FirebaseRealtimeDatabase @Inject constructor(
     suspend fun writeUserConfig(config: UserRemoteConfig) {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "writeUserConfig() failed: currentUser null")
+            logD("writeUserConfig() failed: currentUser null")
             return
         }
         val userId = currentUser.uid

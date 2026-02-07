@@ -1,7 +1,7 @@
 package com.trueedu.project.data
 
-import android.util.Log
 import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dao.StockInfoLocal
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.firebase.StockInfoKosdaq
@@ -26,10 +26,6 @@ class StockPool @Inject constructor(
     private val firebaseRealtimeDatabase: FirebaseRealtimeDatabase,
     private val stockInfoDownloader: StockInfoDownloader,
 ) {
-    companion object {
-        private val TAG = StockPool::class.java.simpleName
-    }
-
     private var stocks: Map<String, StockInfo> = emptyMap()
     private var delisted: Set<String> = emptySet() // 상장 폐지 종목들
 
@@ -60,19 +56,19 @@ class StockPool @Inject constructor(
             val needUpdateRemote = needUpdateRemoteData(local.stockUpdatedAt, remoteUpdatedTime)
 
             if(needUpdateRemote) {
-                Log.d(TAG, "종목 업데이트 ${local.stockUpdatedAt} < $remoteUpdatedTime")
+                logD("종목 업데이트 ${local.stockUpdatedAt} < $remoteUpdatedTime")
                 val (_, stocks) = firebaseRealtimeDatabase.loadStocks()
 
                 status.value = Status.SUCCESS
                 this@StockPool.stocks = stocks
                 local.stockUpdatedAt = remoteUpdatedTime
-                Log.d(TAG, "remote stocks(${stocks.size}) loaded")
+                logD("remote stocks(${stocks.size}) loaded")
 
                 if (stocks.isNotEmpty()) {
                     writeToLocalDatabase(stocks.values)
                 }
             } else {
-                Log.d(TAG, "종목 업데이트 불필요: ${localStocks.size}")
+                logD("종목 업데이트 불필요: ${localStocks.size}")
                 status.value = Status.SUCCESS
                 this@StockPool.stocks = localStocks
             }

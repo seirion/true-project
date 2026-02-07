@@ -1,7 +1,8 @@
 package com.trueedu.project.data
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.trueedu.project.data.log.logD
+import com.trueedu.project.data.log.logE
 import com.trueedu.project.model.dto.auth.RevokeTokenRequest
 import com.trueedu.project.model.dto.auth.TokenRequest
 import com.trueedu.project.model.dto.auth.TokenResponse
@@ -37,8 +38,6 @@ class TokenKeyManager @Inject constructor(
     private val authRemote: AuthRemote,
 ) {
     companion object {
-        private val TAG = TokenKeyManager::class.java.simpleName
-
         @OptIn(ExperimentalSerializationApi::class)
         private val json = Json {
             ignoreUnknownKeys = true
@@ -82,11 +81,11 @@ class TokenKeyManager @Inject constructor(
         val appKey = userKey.value!!.appKey!!
         val appSecret = userKey.value!!.appSecret!!
         if (local.webSocketKey.isNotEmpty()) {
-            Log.d(TAG, "websocket key exists: ${local.webSocketKey}")
+            logD("websocket key exists: ${local.webSocketKey}")
             return
         }
         if (appKey.isEmpty() || appSecret.isEmpty()) {
-            Log.d(TAG, "appKey appSecret is empty")
+            logD("appKey appSecret is empty")
             return
         }
         val request = WebSocketKeyRequest(
@@ -97,26 +96,26 @@ class TokenKeyManager @Inject constructor(
 
         authRemote.webSocketKey(request)
             .catch {
-                Log.e(TAG, "failed to get websocket key: $it")
+                logE("failed to get websocket key: $it")
             }
             .onEach {
                 local.webSocketKey = it.approvalKey
                 event.emit(WebSocketKeyIssued)
-                Log.d(TAG, "new web socket key: $it")
+                logD("new web socket key: $it")
             }
             .launchIn(MainScope())
     }
 
     private fun issueAccessToken() {
-        Log.d(TAG, "issueAccessToken()")
+        logD("issueAccessToken()")
         val appKey = userKey.value?.appKey
         val appSecret = userKey.value?.appSecret
         if (appKey.isNullOrEmpty() || appSecret.isNullOrEmpty()) {
-            Log.d(TAG, "appKey appSecret is empty")
+            logD("appKey appSecret is empty")
             return
         }
         if (hasValidToken()) {
-            Log.d(TAG, "token is valid")
+            logD("token is valid")
             MainScope().launch {
                 event.emit(TokenOk)
             }
@@ -132,13 +131,13 @@ class TokenKeyManager @Inject constructor(
         authRemote.refreshToken(request)
             .catch {
                 // service not available
-                Log.e(TAG, "failed to get AccessToken: $it")
+                logE("failed to get AccessToken: $it")
                 event.emit(TokenIssueFail)
             }
             .onEach {
                 setAccessToken(it)
                 event.emit(TokenIssued)
-                Log.d(TAG, "new token: $it")
+                logD("new token: $it")
             }
             .launchIn(MainScope())
     }
@@ -157,12 +156,12 @@ class TokenKeyManager @Inject constructor(
         )
         authRemote.revokeToken(request)
             .catch {
-                Log.e(TAG, "failed to revoke AccessToken: $it")
+                logE("failed to revoke AccessToken: $it")
                 // service not available
             }
             .onEach {
                 event.emit(TokenRevoked)
-                Log.d(TAG, "revoke ok: $it")
+                logD("revoke ok: $it")
             }
             .launchIn(MainScope())
     }
@@ -205,7 +204,7 @@ class TokenKeyManager @Inject constructor(
         val newUserKeys = userKeys.filter { it.accountNum != accountNum }
 
         if (userKeys.size == newUserKeys.size) {
-            Log.d(TAG, "not exists userKey: $accountNum")
+            logD("not exists userKey: $accountNum")
             return
         }
 

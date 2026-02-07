@@ -1,9 +1,9 @@
 package com.trueedu.project.ui.views.stock
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.price.DailyPriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.yyyyMMdd
@@ -17,10 +17,6 @@ import javax.inject.Inject
 class DailyPriceViewModel @Inject constructor(
     private val priceRemote: PriceRemote,
 ): ViewModel() {
-    companion object {
-        private val TAG = DailyPriceViewModel::class.java.simpleName
-    }
-
     val loading = mutableStateOf(true)
     val dailyPrices = mutableStateOf<DailyPriceResponse?>(null)
 
@@ -46,10 +42,10 @@ class DailyPriceViewModel @Inject constructor(
             .onEach {
                 if (it.rtCd != "0") {
                     val msg = it.msg1
-                    Log.d(TAG, "failed to get daily price: $msg")
+                    logD("failed to get daily price: $msg")
                     return@onEach
                 }
-                Log.d(TAG, "dailyPrice: $it")
+                logD("dailyPrice: $it")
                 if (dailyPrices.value == null) {
                     val prices = it.dailyPrices.filter {
                         it.date != null

@@ -1,6 +1,5 @@
 package com.trueedu.project.ui.views.watch
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.WatchList
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
@@ -34,8 +34,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class WatchEditFragment: BaseFragment() {
     companion object {
-        private val TAG = WatchEditFragment::class.java.simpleName
-
         fun show(
             page: Int,
             fragmentManager: FragmentManager
@@ -81,7 +79,7 @@ class WatchEditFragment: BaseFragment() {
             dragDropColumn(
                 items = items.value,
                 onSwap = { from, to ->
-                    Log.d(TAG, "swap $from $to")
+                    logD("swap $from $to")
                     val list = items.value.toMutableList()
                     swap(list, from, to)
                     items.value = list

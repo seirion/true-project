@@ -1,10 +1,10 @@
 package com.trueedu.project.ui.views.order
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.price.OrderModifiableDetail
 import com.trueedu.project.model.dto.price.OrderModifiableResponse
 import com.trueedu.project.repository.remote.OrderRemote
@@ -23,10 +23,6 @@ class OrderModifyViewModel @Inject constructor(
     private val tokenKeyManager: TokenKeyManager,
     private val orderRemote: OrderRemote,
 ): ViewModel() {
-
-    companion object {
-        private val TAG = OrderModifyViewModel::class.java.simpleName
-    }
     val loading = mutableStateOf(false)
     val items = mutableStateOf<OrderModifiableResponse?>(null)
 
@@ -41,7 +37,7 @@ class OrderModifyViewModel @Inject constructor(
                 loading.value = true
             }
             .onEach {
-                Log.d(TAG, "정정/취소 목록: $it")
+                logD("정정/취소 목록: $it")
                 loading.value = false
                 items.value = it.copy(
                     orderModifiableDetail = it.orderModifiableDetail.sortedBy(
@@ -50,7 +46,7 @@ class OrderModifyViewModel @Inject constructor(
                 )
             }
             .catch {
-                Log.d(TAG, "정정/취소 목록 받기 실패: $it")
+                logD("정정/취소 목록 받기 실패: $it")
             }
             .launchIn(viewModelScope)
     }
@@ -70,12 +66,12 @@ class OrderModifyViewModel @Inject constructor(
                 if (it.rtCd == "0") {
                     onSuccess()
                 } else {
-                    Log.d(TAG, "주문 수정 실패: $it")
+                    logD("주문 수정 실패: $it")
                     onFail(it.msg ?: it.msg1 ?: "주문 수정 실패")
                 }
             }
             .catch {
-                Log.d(TAG, "취소 실패: $it")
+                logD("취소 실패: $it")
                 val message = it.message ?: "주문 수정 실패"
                 onFail(message)
             }
@@ -99,12 +95,12 @@ class OrderModifyViewModel @Inject constructor(
                 if (it.rtCd == "0") {
                     onSuccess()
                 } else {
-                    Log.d(TAG, "주문 취소 실패: $it")
+                    logD("주문 취소 실패: $it")
                     onFail(it.msg ?: it.msg1 ?: "주문 실패")
                 }
             }
             .catch {
-                Log.d(TAG, "취소 실패: $it")
+                logD("취소 실패: $it")
                 onFail("주문 취소 실패")
             }
             .onCompletion {

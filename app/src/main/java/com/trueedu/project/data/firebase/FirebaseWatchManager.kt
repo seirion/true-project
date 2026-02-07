@@ -1,9 +1,9 @@
 package com.trueedu.project.data.firebase
 
-import android.util.Log
 import com.google.firebase.database.GenericTypeIndicator
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.WatchList.Companion.MAX_GROUP_SIZE
+import com.trueedu.project.data.log.logD
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,14 +13,10 @@ import javax.inject.Inject
 class FirebaseWatchManager @Inject constructor(
     googleAccount: GoogleAccount,
 ): FirebaseDatabaseBase(googleAccount) {
-    companion object {
-        private val TAG = FirebaseWatchManager::class.java.simpleName
-    }
-
     suspend fun loadGroupNames(): List<String?> {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "loadGroupNames() failed: currentUser null")
+            logD("loadGroupNames() failed: currentUser null")
         }
         val userId = currentUser?.uid ?: return emptyList()
 
@@ -40,7 +36,7 @@ class FirebaseWatchManager @Inject constructor(
             val currentUser = firebaseCurrentUser()
             val userId = currentUser?.uid
             if (userId == null) {
-                Log.d(TAG, "writeGroupNames() failed: currentUser null")
+                logD("writeGroupNames() failed: currentUser null")
             }
 
             val ref = database.getReference("users")
@@ -52,7 +48,7 @@ class FirebaseWatchManager @Inject constructor(
     suspend fun loadWatchList(): List<List<String>> {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "loadWatchList() failed: currentUser null")
+            logD("loadWatchList() failed: currentUser null")
         }
         val userId = currentUser?.uid ?: return emptyList()
 
@@ -79,7 +75,7 @@ class FirebaseWatchManager @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             val currentUser = firebaseCurrentUser()
             if (currentUser == null) {
-                Log.d(TAG, "writeWatchList() failed: currentUser null")
+                logD("writeWatchList() failed: currentUser null")
             }
             val userId = currentUser?.uid ?: return@launch
 

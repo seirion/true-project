@@ -1,6 +1,5 @@
 package com.trueedu.project
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
@@ -10,6 +9,7 @@ import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.GoogleAccount
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.UserAssets
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
 import com.trueedu.project.model.dto.account.AccountAsset
@@ -31,10 +31,6 @@ class MainViewModel @Inject constructor(
     private val trueAnalytics: TrueAnalytics,
     private val firebaseDatabase: FirebaseRealtimeDatabase,
 ): ViewModel() {
-
-    companion object {
-        private val TAG = MainViewModel::class.java.simpleName
-    }
 
     val loading = mutableStateOf(true)
     val googleSignInAccount = mutableStateOf<GoogleSignInAccount?>(null)
@@ -58,13 +54,13 @@ class MainViewModel @Inject constructor(
                         "force_update__need",
                         mapOf("version" to BuildConfig.VERSION_NAME)
                     )
-                    Log.d(TAG, "need app update")
+                    logD("need app update")
                     forceUpdateVisible.value = true
                 }
             }
             launch {
                 firebaseDatabase.appNotice().let {
-                    Log.d(TAG, "notice: $it")
+                    logD("notice: $it")
                     appNotice.value = it
                 }
             }
