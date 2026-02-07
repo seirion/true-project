@@ -1,12 +1,12 @@
 package com.trueedu.project
 
-import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
@@ -17,8 +17,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.broadcast.DownloadCompleteReceiver
@@ -38,7 +36,6 @@ import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.common.ButtonAction
 import com.trueedu.project.ui.common.PopupFragment
 import com.trueedu.project.ui.common.PopupType
-import com.trueedu.project.ui.dev.OnOffState
 import com.trueedu.project.ui.main.MainNavigation
 import com.trueedu.project.ui.main.MainScreen
 import com.trueedu.project.ui.theme.TrueProjectTheme
@@ -100,8 +97,8 @@ class MainActivity : AppCompatActivity() {
 
     private var openDrawer: (() -> Unit)? = null
 
-    // 앱이 백그라운드로 진입할 때의 시각 저장
-    private var lastBackgroundTime = System.currentTimeMillis()
+    // 앱이 백그라운드로 진입할 때의 시각(모노토닉) 저장
+    private var lastBackgroundElapsedRealtime = SystemClock.elapsedRealtime()
 
     override fun onStart() {
         super.onStart()
@@ -227,7 +224,7 @@ class MainActivity : AppCompatActivity() {
                             local.appNoticeId = vm.appNotice.value.id
                             vm.appNotice.value = AppNotice()
                         } else {
-                            Runtime.getRuntime().exit(0)
+                            finishAffinity()
                         }
                     }
                 } else {
@@ -239,14 +236,14 @@ class MainActivity : AppCompatActivity() {
                         fragmentManager = supportFragmentManager,
                         wsMessageHandler = wsMessageHandler,
                         screenOf = ::screenOf,
-                        getLastBackgroundTime = { lastBackgroundTime },
-                        setLastBackgroundTime = { lastBackgroundTime = it },
+                        getLastBackgroundTime = { lastBackgroundElapsedRealtime },
+                        setLastBackgroundTime = { lastBackgroundElapsedRealtime = it },
                         setOpenDrawer = { openDrawer = it },
                         onSessionExpired = {
                             val intent = Intent(this, MainActivity::class.java)
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(intent)
-                            Runtime.getRuntime().exit(0)
+                            finishAffinity()
                         },
                         mainNavigation = { navController, innerPadding ->
                             MainNavigation(
