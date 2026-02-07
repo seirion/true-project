@@ -1,7 +1,7 @@
 package com.trueedu.project.data.realtime
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.TransactionId
 import com.trueedu.project.model.ws.WsRequest
@@ -24,10 +24,6 @@ class RealOrderManager @Inject constructor(
     private val local: Local,
     private val wsMessageHandler: WsMessageHandler
 ) {
-    companion object {
-        private val TAG = RealOrderManager::class.java.simpleName
-    }
-
     private var job: Job? = null
 
     // 현재 처리중인 종목 코드
@@ -42,7 +38,7 @@ class RealOrderManager @Inject constructor(
                     .filter { it.header.transactionId == TransactionId.RealTimeQuotes }
                     .collect {
                         it.body
-                        Log.d(TAG, it.toString())
+                        logD(it.toString())
                     }
             }
             launch {

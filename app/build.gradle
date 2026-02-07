@@ -112,6 +112,7 @@ dependencies {
     implementation libs.material
     implementation libs.material.extended
     implementation libs.androidx.lifecycle.process
+    implementation libs.timber
     implementation libs.firebase.auth
     implementation libs.androidx.room.common
     implementation libs.androidx.room.ktx

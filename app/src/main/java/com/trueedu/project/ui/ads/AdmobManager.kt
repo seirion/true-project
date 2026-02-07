@@ -2,7 +2,6 @@ package com.trueedu.project.ui.ads
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +26,8 @@ import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.trueedu.project.R
 import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.data.log.logD
+import com.trueedu.project.data.log.logE
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,9 +43,6 @@ class AdmobManager @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
     private val trueAnalytics: TrueAnalytics,
 ) {
-    companion object {
-        private val TAG = AdmobManager::class.java.simpleName
-    }
     //private var rewardedAd: RewardedAd? = null
     val nativeAd = mutableStateOf<NativeAd?>(null)
     private lateinit var adLoader: AdLoader
@@ -64,7 +62,7 @@ class AdmobManager @Inject constructor(
                 }
             }
                 .collect {
-                    Log.d(TAG, "update ad")
+                    logD("update ad")
                     loadNativeAd()
                 }
         }
@@ -86,14 +84,14 @@ class AdmobManager @Inject constructor(
     private fun build(): AdLoader {
         return AdLoader.Builder(applicationContext, applicationContext.getString(R.string.native_ad_unit_id))
             .forNativeAd { ad: NativeAd ->
-                Log.d(TAG, "ad loaded")
+                logD("ad loaded")
                 nativeAd.value?.destroy()
                 nativeAd.value = null
                 nativeAd.value = ad
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d(TAG, "광고로딩 실패: $adError")
+                    logD("광고로딩 실패: $adError")
                     trueAnalytics.log(
                         "native_ad__load_fail",
                         mapOf(
@@ -142,7 +140,7 @@ fun BannerAd(adUnitId: String) {
                         }
 
                         override fun onAdFailedToLoad(adError: LoadAdError) {
-                            Log.e("admob", adError.toString())
+                            logE(adError.toString())
                         }
 
                         override fun onAdImpression() {

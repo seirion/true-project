@@ -1,7 +1,6 @@
 package com.trueedu.project.ui.views.watch
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -51,6 +50,7 @@ import androidx.fragment.app.FragmentManager
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
@@ -82,10 +82,6 @@ class WatchScreen(
     private val trueAnalytics: TrueAnalytics,
     private val fragmentManager: FragmentManager,
 ): BottomNavScreen {
-    companion object {
-        private val TAG = WatchScreen::class.java.simpleName
-    }
-
     private var pagerState: PagerState? = null
 
     @Composable
@@ -183,7 +179,7 @@ class WatchScreen(
                             onTradingClick = { gotoTrading(stock) },
                             onClick = { gotoStockDetail(stock) },
                         ) {
-                            Log.d(TAG, "long click: ${stock.nameKr}")
+                            logD("long click: ${stock.nameKr}")
                             selectedStock = stock
                             selectedStockIndex = index
                         }

@@ -5,7 +5,8 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
+import com.trueedu.project.data.log.logD
+import com.trueedu.project.data.log.logW
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.firebase.StockInfoKosdaq
 import com.trueedu.project.model.dto.firebase.StockInfoKospi
@@ -37,15 +38,11 @@ class StockInfoDownloader @Inject constructor(
     private val context: Context
 ) {
 
-    companion object {
-        private val TAG = StockInfoDownloader::class.java.simpleName
-    }
-
     private val downloadEvent = MutableSharedFlow<Long>(1)
 
     fun pushDownloadIntent(downloadId: Long) {
         CoroutineScope(Dispatchers.IO).launch {
-            Log.d(TAG, "download completed signal: $downloadId")
+            logD("download completed signal: $downloadId")
             downloadEvent.emit(downloadId)
         }
     }
@@ -63,7 +60,7 @@ class StockInfoDownloader @Inject constructor(
 
     @SuppressLint("Range")
     suspend fun download(exchange: String): String? {
-        Log.d(TAG, "begin download(): $exchange")
+        logD("begin download(): $exchange")
 
         val url =  "https://new.real.download.dws.co.kr/common/master/${exchange}_code.mst.zip"
         val fileName = "${exchange}_code.mst.zip"
@@ -86,7 +83,7 @@ class StockInfoDownloader @Inject constructor(
                 val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
                 if (status == DownloadManager.STATUS_SUCCESSFUL) {
                     // 다운로드 성공
-                    Log.d(TAG, "download completed: $exchange")
+                    logD("download completed: $exchange")
                     return cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
                 } else {
                     // 다운로드 실패
@@ -99,7 +96,7 @@ class StockInfoDownloader @Inject constructor(
     }
 
     private fun unzipFile(uriStr: String): String? {
-        Log.d(TAG, "unzip $uriStr")
+        logD("unzip $uriStr")
         val uri = Uri.parse(uriStr)
         val contentResolver = context.contentResolver
 
@@ -113,7 +110,7 @@ class StockInfoDownloader @Inject constructor(
                         val fileName = entry.name
                         // 파일 이름 검증
                         if (fileName.contains("../")) {
-                            Log.w(TAG, "Skipping unsafe file: $fileName")
+                            logW("Skipping unsafe file: $fileName")
                             zis.closeEntry()
                             entry = zis.nextEntry
                             continue
@@ -127,13 +124,13 @@ class StockInfoDownloader @Inject constructor(
                         val destDir = File(path!!)
                         val canonicalPath = currentFile.canonicalPath
                         if (!canonicalPath.startsWith(destDir.canonicalPath + File.separator)) {
-                            Log.w(TAG, "Skipping file outside destination directory: $fileName")
+                            logW("Skipping file outside destination directory: $fileName")
                             zis.closeEntry()
                             entry = zis.nextEntry
                             continue
                         }
 
-                        Log.d(TAG, "currentFile: $currentFile")
+                        logD("currentFile: $currentFile")
                         if (entry.isDirectory) {
                             currentFile.mkdirs()
                         } else {
@@ -149,10 +146,10 @@ class StockInfoDownloader @Inject constructor(
                         }
                         entry = zis.nextEntry
                     }
-                    Log.d(TAG, "unzip completed")
+                    logD("unzip completed")
                 }
             } catch (e: IOException) {
-                Log.d(TAG, "unzip failed: $e")
+                logD("unzip failed: $e")
                 e.printStackTrace()
             } finally {
                 deleteFile(uri)
@@ -165,14 +162,14 @@ class StockInfoDownloader @Inject constructor(
         val file = uri.path?.let { File(it) } ?: return
         try {
             file.delete()
-            Log.d(TAG, "file deleted")
+            logD("file deleted")
         } catch (e: IOException) {
-            Log.d(TAG, "file not deleted : $e")
+            logD("file not deleted : $e")
         }
     }
 
     private fun readUnzippedFile(url: String, exchange: String): List<StockInfo> {
-        Log.d(TAG, "read file: $url")
+        logD("read file: $url")
         val unzippedFile = File(url)
         val out = ArrayList<StockInfo>()
         try {
@@ -188,7 +185,7 @@ class StockInfoDownloader @Inject constructor(
             }
             return out
         } catch (e: IOException) {
-            Log.d(TAG, "file open failed: $e")
+            logD("file open failed: $e")
             e.printStackTrace()
             return emptyList()
         }

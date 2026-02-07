@@ -1,12 +1,12 @@
 package com.trueedu.project.data.firebase
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.GenericTypeIndicator
 import com.trueedu.project.data.GoogleAccount
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.firebase.UserAsset
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -19,17 +19,13 @@ import javax.inject.Singleton
 class FirebaseAssetsManager @Inject constructor(
     private val googleAccount: GoogleAccount,
 ) {
-    companion object {
-        private val TAG = FirebaseAssetsManager::class.java.simpleName
-    }
-
     private val database = FirebaseDatabase.getInstance()
 
     suspend fun loadAssets(): List<UserAsset> {
-        Log.d(TAG, "loadAssets()")
+        logD("loadAssets()")
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "loadAssets() failed: currentUser null")
+            logD("loadAssets() failed: currentUser null")
         }
         val userId = currentUser?.uid ?: return emptyList()
         val ref = database.getReference("users") // 종목 데이터
@@ -42,7 +38,7 @@ class FirebaseAssetsManager @Inject constructor(
     suspend fun writeAssets(list :List<UserAsset>) {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "loadWatchList() failed: currentUser null")
+            logD("loadWatchList() failed: currentUser null")
         }
         val userId = currentUser?.uid ?: return
 
@@ -64,7 +60,7 @@ class FirebaseAssetsManager @Inject constructor(
         }
 
         if (!googleAccount.loggedIn()) {
-            Log.d(TAG, "cannot write values: currentUser == null")
+            logD("cannot write values: currentUser == null")
             return null
         }
         val idToken = googleAccount.getToken()

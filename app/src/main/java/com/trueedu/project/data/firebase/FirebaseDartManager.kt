@@ -1,9 +1,9 @@
 package com.trueedu.project.data.firebase
 
-import android.util.Log
 import com.google.firebase.database.GenericTypeIndicator
 import com.trueedu.project.dart.model.DartListResponse
 import com.trueedu.project.data.GoogleAccount
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.utils.yyyyMMddHHmm
 import kotlinx.coroutines.tasks.await
 import java.util.Date
@@ -18,8 +18,6 @@ class FirebaseDartManager @Inject constructor(
     googleAccount: GoogleAccount,
 ): FirebaseDatabaseBase(googleAccount) {
     companion object {
-        private val TAG = FirebaseDartManager::class.java.simpleName
-
         private const val BASE_PATH = "dart"
         private const val CHILD_PATH = "list"
     }
@@ -30,7 +28,7 @@ class FirebaseDartManager @Inject constructor(
     suspend fun lastUpdatedAt(): Long {
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "lastUpdatedAt() failed: currentUser null")
+            logD("lastUpdatedAt() failed: currentUser null")
         }
         val snapshot = database.getReference("meta").get().await()
         val lastUpdatedAt = snapshot.child("dartLastUpdatedAt").getValue(Long::class.java)
@@ -38,10 +36,10 @@ class FirebaseDartManager @Inject constructor(
     }
 
     suspend fun loadDartList(): List<DartListResponse> {
-        Log.d(TAG, "loadDartList()")
+        logD("loadDartList()")
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "loadAssets() failed: currentUser null")
+            logD("loadAssets() failed: currentUser null")
         }
         val ref = database.getReference(BASE_PATH)
         val snapshot = ref.child(CHILD_PATH)
@@ -51,10 +49,10 @@ class FirebaseDartManager @Inject constructor(
     }
 
     suspend fun writeDartList(list :List<DartListResponse>) {
-        Log.d(TAG, "writeDartList(): ${list.size}")
+        logD("writeDartList(): ${list.size}")
         val currentUser = firebaseCurrentUser()
         if (currentUser == null) {
-            Log.d(TAG, "writeDartList() failed: currentUser null")
+            logD("writeDartList() failed: currentUser null")
         }
         val ref = database.getReference(BASE_PATH)
         val snapshot = ref.child(CHILD_PATH)

@@ -1,9 +1,10 @@
 package com.trueedu.project.data.realtime
 
 import android.os.SystemClock
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.log.logD
+import com.trueedu.project.data.log.logE
 import com.trueedu.project.model.event.WebSocketKeyIssued
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
@@ -31,10 +32,6 @@ class WsMessageHandler @Inject constructor(
     private val tokenKeyManager: TokenKeyManager,
     private val webSocketService: WebSocketService,
 ) {
-    companion object {
-        private val TAG = WsMessageHandler::class.java.simpleName
-    }
-
     private val event = MutableSharedFlow<WsResponse>()
     fun observeEvent() = event.asSharedFlow()
 
@@ -66,7 +63,7 @@ class WsMessageHandler @Inject constructor(
 
     // 앱이 foreground 상태가 될 때
     fun start() {
-        Log.d(TAG, "start")
+        logD("start")
         foreground = true
 
         val current = SystemClock.elapsedRealtime()
@@ -80,7 +77,7 @@ class WsMessageHandler @Inject constructor(
 
     // 앱이 background 상태가 될 때
     fun stop() {
-        Log.d(TAG, "stop")
+        logD("stop")
         foreground = false
         webSocketService.disconnect()
         stopAt = SystemClock.elapsedRealtime()
@@ -91,10 +88,10 @@ class WsMessageHandler @Inject constructor(
     }
 
     private fun startWebSocket() {
-        Log.d(TAG, "startWebSocket()")
+        logD("startWebSocket()")
 
         if (local.webSocketKey.isEmpty()) {
-            Log.d(TAG, "websocket key is empty")
+            logD("websocket key is empty")
             return
         }
 
@@ -103,18 +100,18 @@ class WsMessageHandler @Inject constructor(
         webSocketService.disconnect()
         webSocketService.connect(object: WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                Log.d(TAG, "onOpen()")
+                logD("onOpen()")
                 on.value = true
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
                 super.onMessage(webSocket, text)
-                Log.d(TAG, "onMessage: $text")
+                logD("onMessage: $text")
                 if (text[0] == '0' || text[0] == '1') { // 실시간체결 or 실시간호가
                     handleRealTimeResponse(text)
                 } else { // system message or PINGPONG
                     val res = WsResponse.from(text)
-                    Log.d(TAG, "transactionId ${res.header.transactionId}")
+                    logD("transactionId ${res.header.transactionId}")
 
                     when (res.header.transactionId) {
                         TransactionId.PingPong -> webSocketService.sendMessage(text)
@@ -133,12 +130,12 @@ class WsMessageHandler @Inject constructor(
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 super.onFailure(webSocket, t, response)
-                Log.e(TAG, "onFailure: ${t.message}")
+                logE(t, "onFailure: ${t.message}")
                 on.value = false
 
                 // 실패하였으면 다시 연결 시도 해 본다
                 if (foreground) {
-                    Log.d(TAG, "retry in 2000ms")
+                    logD("retry in 2000ms")
                     MainScope().launch {
                         delay(2000)
                         startWebSocket()

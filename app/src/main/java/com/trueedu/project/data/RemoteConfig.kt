@@ -1,8 +1,8 @@
 package com.trueedu.project.data
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
+import com.trueedu.project.data.log.logE
 import com.trueedu.project.data.model.UserRemoteConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,10 +17,6 @@ import javax.inject.Singleton
 class RemoteConfig @Inject constructor(
     private val firebaseRealtimeDatabase: FirebaseRealtimeDatabase
 ) {
-    companion object {
-        private const val TAG = "RemoteConfig"
-    }
-
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val configCache = mutableMapOf<String, String>()
 
@@ -32,7 +28,7 @@ class RemoteConfig @Inject constructor(
                 val config = firebaseRealtimeDatabase.loadUserConfig()
                 adVisible.value = config.adVisible
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to load config", e)
+                logE(e, "Failed to load config")
                 // 기본값 유지
             }
         }
@@ -48,7 +44,7 @@ class RemoteConfig @Inject constructor(
                     val config = UserRemoteConfig(adVisible = visible)
                     firebaseRealtimeDatabase.writeUserConfig(config)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Failed to save config", e)
+                    logE(e, "Failed to save config")
                     // 실패 시 상태 복원
                     adVisible.value = previousValue
                 }

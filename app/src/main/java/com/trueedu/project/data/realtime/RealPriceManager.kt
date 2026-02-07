@@ -1,8 +1,8 @@
 package com.trueedu.project.data.realtime
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshotFlow
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.model.ws.TransactionId
 import com.trueedu.project.model.ws.WsRequest
@@ -31,7 +31,6 @@ class RealPriceManager @Inject constructor(
 ) {
 
     companion object {
-        private val TAG = RealPriceManager::class.java.simpleName
         private const val MAX_SIZE = 20 // 최대 20개의 요청 가능
     }
 
@@ -96,7 +95,7 @@ class RealPriceManager @Inject constructor(
      * 웹소켓이 끊어졌다가 재연결되면 현재의 요청을 다시 시도
      */
     fun resumeRequests() {
-        Log.d(TAG, "websocket connection recovered")
+        logD("websocket connection recovered")
         MainScope().launch(Dispatchers.IO) {
             beginRequests()
         }
@@ -107,7 +106,7 @@ class RealPriceManager @Inject constructor(
      */
     fun pushRequest(name: String, codes: List<String>) {
         MainScope().launch(Dispatchers.IO) {
-            Log.d(TAG, "pushRequest: $name ${codes.size}")
+            logD("pushRequest: $name ${codes.size}")
             // 기존 처리 중단
             if (requestStack.isNotEmpty()) {
                 cancelRequests()
@@ -135,7 +134,7 @@ class RealPriceManager @Inject constructor(
      * 현재 요청을 취소하고 예전 요청을 복구
      */
     fun popRequest(name: String) {
-        Log.d(TAG, "popRequest: $name ")
+        logD("popRequest: $name ")
         if (requestStack.isEmpty()) return
         if (requestStack.last().first != name) return
 

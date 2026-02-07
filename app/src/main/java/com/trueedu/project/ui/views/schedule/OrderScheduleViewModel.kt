@@ -1,11 +1,11 @@
 package com.trueedu.project.ui.views.schedule
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.order.ScheduleOrderResult
 import com.trueedu.project.model.dto.order.ScheduleOrderResultDetail
 import com.trueedu.project.repository.local.Local
@@ -26,11 +26,6 @@ class OrderScheduleViewModel @Inject constructor(
     private val tokenKeyManager: TokenKeyManager,
     private val orderRemote: OrderRemote,
 ): ViewModel() {
-
-    companion object {
-        private val TAG = OrderScheduleViewModel::class.java.simpleName
-    }
-
     val loading = mutableStateOf(true)
     val list = mutableStateOf<ScheduleOrderResult?>(null)
 
@@ -43,7 +38,7 @@ class OrderScheduleViewModel @Inject constructor(
             val userKey = tokenKeyManager.userKey.value ?: return@launch
             orderRemote.scheduleOrderList(userKey.accountNum ?: "", fk200, nk200)
                 .collect {
-                    Log.d(TAG, "예약 데이터: $it")
+                    logD("예약 데이터: $it")
                     loading.value = false
                     list.value = it
                 }
@@ -53,7 +48,7 @@ class OrderScheduleViewModel @Inject constructor(
     fun add(item: OrderSchedule, onFailed: (String) -> Unit) {
         val userKey = tokenKeyManager.userKey.value
         if (userKey == null) {
-            Log.d(TAG, "add(): no user key")
+            logD("add(): no user key")
             return
         }
 
@@ -87,7 +82,7 @@ class OrderScheduleViewModel @Inject constructor(
     fun removeAt(index: Int, onFailed: (String) -> Unit) {
         val userKey = tokenKeyManager.userKey.value
         if (userKey == null) {
-            Log.d(TAG, "removeAt(): no user key")
+            logD("removeAt(): no user key")
             return
         }
         orderRemote.cancelScheduleOrder(
@@ -110,7 +105,7 @@ class OrderScheduleViewModel @Inject constructor(
     ) {
         val userKey = tokenKeyManager.userKey.value
         if (userKey == null) {
-            Log.d(TAG, "modify(): no user key")
+            logD("modify(): no user key")
             return
         }
         val isBuy = orderDetail.sellBuyDivisionCode == "02"
@@ -126,7 +121,7 @@ class OrderScheduleViewModel @Inject constructor(
                 load()
                 onCompleted("예약 수정 되었습니다")
             } else {
-                Log.d(TAG, "error: ${it.msg ?: it.msg1}")
+                logD("error: ${it.msg ?: it.msg1}")
                 onCompleted(it.msg ?: it.msg1 ?: "예약 취소 실패")
             }
         }.launchIn(viewModelScope)

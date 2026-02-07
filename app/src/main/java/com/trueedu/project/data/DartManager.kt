@@ -1,11 +1,12 @@
 package com.trueedu.project.data
 
-import android.util.Log
 import com.trueedu.project.dart.model.DartListItem
 import com.trueedu.project.dart.model.DartListResponse
 import com.trueedu.project.dart.repository.remote.DartRemote
 import com.trueedu.project.data.firebase.FirebaseDartManager
 import com.trueedu.project.data.spac.SpacManager
+import com.trueedu.project.data.log.logD
+import com.trueedu.project.data.log.logE
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.utils.latestWorkDay
 import com.trueedu.project.utils.yyyyMMddHHmm
@@ -29,21 +30,17 @@ class DartManager @Inject constructor(
     private val spacManager: SpacManager,
     private val firebaseDartManager: FirebaseDartManager,
 ) {
-    companion object {
-        private val TAG = DartManager::class.java.simpleName
-    }
-
     private val items = ConcurrentHashMap<String, List<DartListItem>>()
     private var lastUpdatedAt = 0L // yyyyMMddHHmm (분단위)
 
     val updateSignal = MutableSharedFlow<Unit>()
 
     fun init() {
-        Log.d(TAG, "init() - ${local.dartApiKey.take(8)}")
+        logD("init() - ${local.dartApiKey.take(8)}")
         MainScope().launch(Dispatchers.IO) {
             // yyyyMMddHHmm
             val lastUpdatedAtRemote = firebaseDartManager.lastUpdatedAt()
-            Log.d(TAG, "lastUpdatedAtRemote: $lastUpdatedAtRemote")
+            logD("lastUpdatedAtRemote: $lastUpdatedAtRemote")
 
             lastUpdatedAt = lastUpdatedAtRemote
             firebaseDartManager.loadDartList().forEach {
@@ -53,7 +50,7 @@ class DartManager @Inject constructor(
                     updateSignal.emit(Unit)
                 }
             }
-            Log.d(TAG, "init() completed - ${items.size}")
+            logD("init() completed - ${items.size}")
         }
     }
 
@@ -79,7 +76,7 @@ class DartManager @Inject constructor(
                     val response = dartRemote.list(dartInfo.corpCode, fromDate)
                     response.collect { res ->
                         if (res.list?.isNotEmpty() == true) {
-                            Log.d(TAG, "${dartInfo.nameKr} - ${res.list.first().let {"${it.receiptDate} ${it.reportName}"} }")
+                            logD("${dartInfo.nameKr} - ${res.list.first().let { "${it.receiptDate} ${it.reportName}" } }")
                             items[code] = res.list.map {
                                 it.copy(reportName = it.reportName.replace(Regex("\\s+"), " "))
                             }
@@ -87,7 +84,7 @@ class DartManager @Inject constructor(
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error loading dart list for ${dartInfo.nameKr}: ${e.message}")
+                    logE("Error loading dart list for ${dartInfo.nameKr}: ${e.message}")
                 }
             }
         }.awaitAll()
@@ -102,7 +99,7 @@ class DartManager @Inject constructor(
     }
 
     fun forceLoad() {
-        Log.d(TAG, "forceLoad()")
+        logD("forceLoad()")
         clear()
         MainScope().launch(Dispatchers.IO) {
             val list = spacManager.spacList.value

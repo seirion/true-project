@@ -1,10 +1,12 @@
 package com.trueedu.project.ui.views.rights
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.log.logD
+import com.trueedu.project.data.log.logE
+import com.trueedu.project.data.log.logW
 import com.trueedu.project.model.dto.order.RightsDetail
 import com.trueedu.project.model.dto.order.RightsResponse
 import com.trueedu.project.repository.remote.OrderRemote
@@ -21,7 +23,6 @@ class ObservingRightsViewModel @Inject constructor(
     private val orderRemote: OrderRemote,
 ): ViewModel() {
     companion object {
-        private val TAG = ObservingRightsViewModel::class.java.simpleName
         private const val MAX_PAGE_COUNT = 50
     }
 
@@ -57,7 +58,7 @@ class ObservingRightsViewModel @Inject constructor(
                 val fromDate = now.minusMonths(3).yyyyMMdd()
                 val toDate = now.yyyyMMdd()
 
-                Log.d(TAG, "권리 현황 조회 시작: $fromDate ~ $toDate")
+                logD("권리 현황 조회 시작: $fromDate ~ $toDate")
                 val response = fetchRightsAllPages(
                     accountNum = userKey?.accountNum ?: "",
                     fromDate = fromDate,
@@ -81,7 +82,7 @@ class ObservingRightsViewModel @Inject constructor(
                 )
                 lastResult.value = popup
             } catch (e: Exception) {
-                Log.e(TAG, "권리 현황 조회 에러: ${e.message}", e)
+                logE(e, "권리 현황 조회 에러: ${e.message}")
                 val popup = RightsPopup(
                     title = "권리 현황 조회 실패",
                     desc = e.message ?: "알 수 없는 오류",
@@ -133,7 +134,7 @@ class ObservingRightsViewModel @Inject constructor(
 
             // 키가 더 이상 변하지 않으면 무한 루프 방지
             if (lastFk100 == nextFk100 && lastNk100 == nextNk100) {
-                Log.w(TAG, "연속조회 키가 변하지 않아 중단합니다. page=${pageIndex + 1}, fk100=$nextFk100, nk100=$nextNk100")
+                logW("연속조회 키가 변하지 않아 중단합니다. page=${pageIndex + 1}, fk100=$nextFk100, nk100=$nextNk100")
                 return response.copy(list = combinedList)
             }
 
@@ -144,7 +145,7 @@ class ObservingRightsViewModel @Inject constructor(
         }
 
         val response = lastResponse ?: throw IllegalStateException("권리 현황 응답이 없습니다.")
-        Log.w(TAG, "연속조회 최대 페이지 수(${MAX_PAGE_COUNT})에 도달하여 중단합니다.")
+        logW("연속조회 최대 페이지 수(${MAX_PAGE_COUNT})에 도달하여 중단합니다.")
         return response.copy(list = combinedList)
     }
 

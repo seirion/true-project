@@ -1,12 +1,12 @@
 package com.trueedu.project.ui.views
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.trueedu.project.data.ManualAssets
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.WatchList
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.SpacRefund
@@ -33,10 +33,6 @@ class StockDetailViewModel @Inject constructor(
     private val assets: ManualAssets,
     val watchList: WatchList,
 ): ViewModel() {
-
-    companion object {
-        private val TAG = StockDetailViewModel::class.java.simpleName
-    }
 
     private lateinit var stockInfo: StockInfo
     val infoList = mutableStateOf<List<Pair<String, String?>>>(emptyList())
@@ -66,7 +62,7 @@ class StockDetailViewModel @Inject constructor(
                     basePrice.value = it
                 }
                 .catch {
-                    Log.d(TAG, "가격 데이터 받기 실패: $it")
+                    logD("가격 데이터 받기 실패: $it")
                 }
                 .launchIn(viewModelScope)
         }

@@ -1,7 +1,6 @@
 package com.trueedu.project.ui.views.home
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.exclude
@@ -21,6 +20,7 @@ import com.trueedu.project.MainViewModel
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
@@ -42,10 +42,6 @@ class HomeScreen(
     private val fragmentManager: FragmentManager,
     private val onUserInfo: () -> Unit,
 ): BottomNavScreen {
-    companion object {
-        private val TAG = HomeScreen::class.java.simpleName
-    }
-
     @Composable
     override fun Draw() {
         Scaffold(
@@ -111,11 +107,11 @@ class HomeScreen(
 
     override fun onStart() {
         trueAnalytics.log("${screenName()}__enter")
-        Log.d(TAG, "onStart")
+        logD("onStart")
     }
 
     override fun onStop() {
-        Log.d(TAG, "onStop")
+        logD("onStop")
     }
 
     private fun onItemClick(stockInfo: StockInfo) {

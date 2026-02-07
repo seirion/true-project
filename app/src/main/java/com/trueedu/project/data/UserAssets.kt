@@ -1,6 +1,6 @@
 package com.trueedu.project.data
 
-import android.util.Log
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.model.event.TokenIssued
 import com.trueedu.project.model.event.TokenOk
@@ -22,16 +22,12 @@ class UserAssets @Inject constructor(
     private val tokenKeyManager: TokenKeyManager,
     private val accountRemote: AccountRemote,
 ) {
-    companion object {
-        private val TAG = UserAssets::class.java.simpleName
-    }
-
     var job: Job? = null
     val assets = MutableSharedFlow<AccountResponse>(1)
 
     // 앱이 foreground 상태가 될 때
     fun start() {
-        Log.d(TAG, "start")
+        logD("start")
         loadUserStocks()
 
         job = MainScope().launch {
@@ -46,7 +42,7 @@ class UserAssets @Inject constructor(
 
     // 앱이 background 상태가 될 때
     fun stop() {
-        Log.d(TAG, "stop")
+        logD("stop")
         job?.cancel()
         job = null
     }

@@ -7,7 +7,6 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
@@ -42,6 +41,7 @@ import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.ScreenControl
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.log.logD
 import com.trueedu.project.data.realtime.WsMessageHandler
 import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.AppNotice
@@ -74,10 +74,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    companion object {
-        private val TAG = MainActivity::class.java.simpleName
-    }
-
     @Inject
     lateinit var local: Local
     @Inject
@@ -293,7 +289,7 @@ class MainActivity : AppCompatActivity() {
                         val currentTime = System.currentTimeMillis()
                         val elapsedTime = currentTime - lastBackgroundTime
 
-                        Log.d(TAG, "elapsedTime: $elapsedTime")
+                        logD("elapsedTime: $elapsedTime")
                         if (elapsedTime >= 30 * 60 * 1000) { // 30 minutes
                             val intent = Intent(this, MainActivity::class.java)
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -389,7 +385,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.d(TAG, "onActivityResult(): $requestCode $resultCode")
+        logD("onActivityResult(): $requestCode $resultCode")
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GoogleAccount.RC_SIGN_IN) {
             googleAccount.handleActivityResult(requestCode, resultCode, data, this)

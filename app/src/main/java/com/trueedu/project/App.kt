@@ -12,6 +12,8 @@ import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.UserAssets
+import com.trueedu.project.data.log.FileNameTree
+import com.trueedu.project.data.log.ReleaseTree
 import com.trueedu.project.data.realtime.RealOrderManager
 import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.data.realtime.WsMessageHandler
@@ -24,6 +26,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.android.internal.Contexts
 import dagger.hilt.components.SingletonComponent
+import timber.log.Timber
 
 @HiltAndroidApp
 class App : Application(), LifecycleEventObserver {
@@ -59,6 +62,11 @@ class App : Application(), LifecycleEventObserver {
 
         if (!BuildConfig.DEBUG) {
             FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
+        }
+        if (BuildConfig.DEBUG) {
+            Timber.plant(FileNameTree())
+        } else {
+            Timber.plant(ReleaseTree())
         }
     }
 

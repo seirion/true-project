@@ -1,6 +1,6 @@
 package com.trueedu.project.repository.etc
 
-import android.util.Log
+import com.trueedu.project.data.log.logE
 import com.trueedu.project.model.dto.firebase.SpacRefund
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,13 +26,13 @@ suspend fun readSpacRefund(): Map<String, SpacRefund> = withContext(Dispatchers.
                     val refund = SpacRefund.from(line)
                     refund.code?.let { code -> code to refund }
                 } catch (e: Exception) {
-                    Log.e("SpacRefund", "Failed to parse SpacRefund line: $line", e)
+                    logE(e, "Failed to parse SpacRefund line: $line")
                     null
                 }
             }
             .toMap()
     } catch (e: Exception) {
-        Log.e("SpacRefund","Failed to read SpacRefund data", e)
+        logE(e, "Failed to read SpacRefund data")
         emptyMap()
     }
 }
