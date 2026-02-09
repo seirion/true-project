@@ -44,10 +44,6 @@ class SpacScreenOld(
     private val trueAnalytics: TrueAnalytics,
     private val fragmentManager: FragmentManager,
 ): BottomNavScreen {
-    companion object {
-        private val TAG = SpacScreenOld::class.java.simpleName
-    }
-
     @Composable
     override fun Draw() {
         Scaffold(

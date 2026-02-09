@@ -36,7 +36,6 @@ import kotlin.time.toJavaDuration
 @InstallIn(SingletonComponent::class)
 @Module
 object NetworkModule {
-    private const val TAG = "OkHttp"
     private val connectTimeout = 20.seconds
     private val callTimeout = 20.seconds
     private val writeTimeout = 20.seconds
@@ -160,7 +159,7 @@ object NetworkModule {
 
     private class PrettyPrintLogger : HttpLoggingInterceptor.Logger {
         override fun log(message: String) {
-            Logger.t(TAG).run {
+            Logger.t("OkHttp").run {
                 try {
                     val json = Json {
                         prettyPrint = true

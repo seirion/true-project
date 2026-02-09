@@ -27,10 +27,6 @@ class SpacListViewModel @Inject constructor(
     private val spacManager: SpacManager,
     private val dartManager: DartManager,
 ): ViewModel() {
-    companion object {
-        private val TAG = SpacListViewModel::class.java.simpleName
-    }
-
     val searchInput = mutableStateOf("")
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
     val sort = mutableStateOf(SpacSort.ISSUE_DATE)

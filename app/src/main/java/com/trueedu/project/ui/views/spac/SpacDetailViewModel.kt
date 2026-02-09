@@ -18,10 +18,6 @@ class SpacDetailViewModel @Inject constructor(
     private val tokenKeyManager: TokenKeyManager,
     private val priceRemote: PriceRemote,
 ): ViewModel() {
-    companion object {
-        private val TAG = SpacDetailViewModel::class.java.simpleName
-    }
-
     val loading = mutableStateOf(true)
     val stock = mutableStateOf<StockInfo?>(null)
     val priceResponse = mutableStateOf<PriceResponse?>(null)

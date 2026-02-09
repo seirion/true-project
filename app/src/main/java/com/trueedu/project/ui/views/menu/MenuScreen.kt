@@ -55,10 +55,6 @@ class MenuScreen(
     private val dartManager: DartManager,
     private val fragmentManager: FragmentManager,
 ): BottomNavScreen {
-    companion object {
-        private val TAG = MenuScreen::class.java.simpleName
-    }
-
     @Composable
     override fun Draw() {
         TrueProjectTheme(

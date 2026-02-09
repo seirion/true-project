@@ -16,10 +16,6 @@ class SettingViewModel @Inject constructor(
     private val firebaseRealtimeDatabase: FirebaseRealtimeDatabase,
 ): ViewModel() {
 
-    companion object {
-        private val TAG = SettingViewModel::class.java.simpleName
-    }
-
     val updateAvailable = mutableStateOf(false)
     val stockUpdateLabel = mutableStateOf("로딩중")
 

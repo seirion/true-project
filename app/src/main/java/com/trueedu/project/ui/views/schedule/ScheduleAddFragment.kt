@@ -51,8 +51,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ScheduleAddFragment: BaseFragment() {
     companion object {
-        private val TAG = ScheduleAddFragment::class.java.simpleName
-
         fun show(
             fragmentManager: FragmentManager,
             onCompleted: (OrderSchedule) -> Unit,

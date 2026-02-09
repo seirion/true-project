@@ -33,8 +33,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ScheduleModifyFragment: BaseFragment() {
     companion object {
-        private val TAG = ScheduleModifyFragment::class.java.simpleName
-
         fun show(
             orderDetail: ScheduleOrderResultDetail,
             fragmentManager: FragmentManager,

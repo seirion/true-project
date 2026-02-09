@@ -28,8 +28,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ScreenSettingFragment: BaseFragment() {
     companion object {
-        private val TAG = ScreenSettingFragment::class.java.simpleName
-
         fun show(
             fragmentManager: FragmentManager
         ): ScreenSettingFragment {

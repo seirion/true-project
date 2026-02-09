@@ -35,7 +35,6 @@ import com.trueedu.project.MainViewModel
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.spac.SpacManager
-import com.trueedu.project.model.dto.firebase.SpacRefund
 import com.trueedu.project.model.dto.firebase.shouldShowRedemption
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
@@ -61,9 +60,6 @@ class SpacScreen(
     private val admobManager: AdmobManager,
     private val fragmentManager: FragmentManager,
 ): BottomNavScreen {
-    companion object {
-        private val TAG = SpacScreen::class.java.simpleName
-    }
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
