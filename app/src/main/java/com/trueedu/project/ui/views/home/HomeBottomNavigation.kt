@@ -13,7 +13,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,9 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.trueedu.project.ui.common.TrueText
-import com.trueedu.project.ui.navigation.bottomNavItemOrNull
 
 val HomeBottomNavHeight = 48.dp
 
@@ -39,10 +36,10 @@ fun HomeBottomNavigation(
     containerColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = MaterialTheme.colorScheme.primary,
     indicatorColor: Color = MaterialTheme.colorScheme.outlineVariant,
-    navController: NavHostController
+    navController: NavHostController,
+    currentTab: BottomNavItem?,
+    onTabSelected: (BottomNavItem) -> Unit,
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentItem = navBackStackEntry.bottomNavItemOrNull()
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Watch,
@@ -51,13 +48,13 @@ fun HomeBottomNavigation(
     )
 
     AnimatedVisibility(
-        visible = items.contains(currentItem)
+        visible = items.contains(currentTab)
     ) {
         NavigationBar(
             modifier = modifier.height(HomeBottomNavHeight + navigationBarHeight()),
         ) {
             items.forEach { item ->
-                val selected = currentItem == item
+                val selected = currentTab == item
                 NavigationBarItem(
                     selected = selected,
                     icon = {
@@ -82,6 +79,7 @@ fun HomeBottomNavigation(
                         }
                     },
                     onClick = {
+                        onTabSelected(item)
                         navController.navigate(item) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
