@@ -10,8 +10,10 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -53,6 +55,8 @@ fun MainScreen(
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    var currentTab by remember { mutableStateOf<BottomNavItem?>(BottomNavItem.Home) }
+    currentTab = navBackStackEntry.bottomNavItemOrNull() ?: currentTab
 
     val lifecycleObserver = remember {
         LifecycleEventObserver { owner, event ->
@@ -101,7 +105,7 @@ fun MainScreen(
     val login by googleAccount.loginSignal.collectAsStateWithLifecycle(initialValue = false)
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = login && navBackStackEntry.bottomNavItemOrNull() == BottomNavItem.Home,
+        gesturesEnabled = login && currentTab == BottomNavItem.Home,
         drawerContent = {
             HomeDrawer(activity, homeDrawerVm, googleAccount, trueAnalytics, fragmentManager) {
                 scope.launch { drawerState.close() }
@@ -109,7 +113,13 @@ fun MainScreen(
         },
         content = {
             Scaffold(
-                bottomBar = { HomeBottomNavigation(navController = navController) },
+                bottomBar = {
+                    HomeBottomNavigation(
+                        navController = navController,
+                        currentTab = currentTab,
+                        onTabSelected = { currentTab = it },
+                    )
+                },
             ) { innerPadding ->
                 // 탭 영역 제외하고 화면이 그려지도록
                 val padding = PaddingValues(bottom = innerPadding.calculateBottomPadding())
