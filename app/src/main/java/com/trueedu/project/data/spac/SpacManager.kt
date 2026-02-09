@@ -97,7 +97,7 @@ class SpacManager @Inject constructor(
 
         flow {
             while (true) {
-                delay(100)
+                delay(55)
                 emit(requestIndex++)
             }
         }.collect { i ->
