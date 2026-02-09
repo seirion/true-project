@@ -14,7 +14,7 @@ class ReleaseTree : Timber.Tree() {
             return
         }
 
-        val finalTag = tag ?: TAG
+        val finalTag = tag ?: "project"
 
         if (message.length < MAX_LOG_LENGTH) {
             if (priority == Log.ASSERT) {
@@ -47,6 +47,5 @@ class ReleaseTree : Timber.Tree() {
 
     companion object {
         private const val MAX_LOG_LENGTH = 4000
-        private const val TAG = "Mel"
     }
 }

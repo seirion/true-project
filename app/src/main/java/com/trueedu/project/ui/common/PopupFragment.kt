@@ -76,8 +76,6 @@ enum class PopupType {
 @AndroidEntryPoint
 class PopupFragment: DialogFragment() {
     companion object {
-        private val TAG = PopupFragment::class.java.simpleName
-
         fun show(
             title: String,
             desc: String,

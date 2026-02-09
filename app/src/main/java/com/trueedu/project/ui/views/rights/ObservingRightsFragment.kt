@@ -23,8 +23,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ObservingRightsFragment: BaseFragment() {
     companion object {
-        private val TAG = ObservingRightsFragment::class.java.simpleName
-
         fun show(fragmentManager: FragmentManager): ObservingRightsFragment {
             val fragment = ObservingRightsFragment()
             fragment.show(fragmentManager, "observing_rights")

@@ -40,10 +40,6 @@ class WatchListViewModel @Inject constructor(
     private val trueAnalytics: TrueAnalytics,
 ): ViewModel() {
 
-    companion object {
-        private val TAG = WatchListViewModel::class.java.simpleName
-    }
-
     val loading = mutableStateOf(true)
     val currentPage = mutableStateOf<Int?>(null)
 
@@ -139,11 +135,11 @@ class WatchListViewModel @Inject constructor(
         if (loading.value || currentPage.value == null) return
 
         val codes = watchList.get(currentPage.value!!)
-        priceManager.pushRequest(TAG, codes)
+        priceManager.pushRequest("watch", codes)
     }
 
     private fun cancelRealtimePrice() {
-        priceManager.popRequest(TAG)
+        priceManager.popRequest("watch")
     }
 
     private fun requestBasePrices() {
@@ -161,7 +157,6 @@ class WatchListViewModel @Inject constructor(
                         basePrices.remove(code)
                     }
                     .onEach {
-                        //Log.d(TAG, "currentPrice: ${it.output.nameKr} ${it.output}")
                         basePrices[code] = it
                     }
                     .launchIn(viewModelScope)

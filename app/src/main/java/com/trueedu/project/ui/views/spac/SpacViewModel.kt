@@ -33,10 +33,6 @@ class SpacViewModel @Inject constructor(
     private val watchList: WatchList,
 ): ViewModel() {
 
-    companion object {
-        private val TAG = SpacViewModel::class.java.simpleName
-    }
-
     val searchInput = mutableStateOf("")
     val stocks = mutableStateOf<List<StockInfo>>(emptyList())
     val sort = mutableStateOf(SpacSort.ISSUE_DATE)

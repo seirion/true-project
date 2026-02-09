@@ -9,7 +9,6 @@ import android.provider.Settings
 class DailyAlarmManager(private val context: Context) {
 
     companion object {
-        private val TAG = DailyAlarmManager::class.java.simpleName
         private const val ALARM_REQUEST_CODE = 3423325
     }
 

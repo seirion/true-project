@@ -19,10 +19,6 @@ class UserInfoViewModel @Inject constructor(
     private val tokenKeyManager: TokenKeyManager,
 ): ViewModel() {
 
-    companion object {
-        private val TAG = UserInfoViewModel::class.java.simpleName
-    }
-
     val userKeys = mutableStateOf<List<UserKey>>(emptyList())
 
     val selected = mutableIntStateOf(0)

@@ -19,10 +19,6 @@ class StockSearchViewModel @Inject constructor(
     val stockPool: StockPool,
 ): ViewModel() {
 
-    companion object {
-        private val TAG = StockSearchViewModel::class.java.simpleName
-    }
-
     val searchInput = mutableStateOf("")
     val searchResult = mutableStateOf<List<StockInfo>>(emptyList())
     val loading = mutableStateOf(true)

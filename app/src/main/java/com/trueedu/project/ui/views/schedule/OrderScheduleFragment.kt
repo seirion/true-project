@@ -47,8 +47,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderScheduleFragment: BaseFragment() {
     companion object {
-        private val TAG = OrderScheduleFragment::class.java.simpleName
-
         fun show(fragmentManager: FragmentManager): OrderScheduleFragment {
             val fragment = OrderScheduleFragment()
             fragment.show(fragmentManager, "order_schedule")
