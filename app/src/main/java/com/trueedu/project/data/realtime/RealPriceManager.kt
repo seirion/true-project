@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,6 +33,36 @@ class RealPriceManager @Inject constructor(
 
     companion object {
         private const val MAX_SIZE = 20 // 최대 20개의 요청 가능
+
+        /**
+         * 현재 시각이 NXT 거래 시간대인지 확인
+         *
+         * NXT 운영 시간:
+         *   - 오전 8:00 ~ 9:00 (KRX 장 시작 전)
+         *   - 오후 3:30 ~ 8:00 (KRX 장 마감 후)
+         */
+        fun isNxtTradingHour(): Boolean {
+            val cal = Calendar.getInstance()
+            val hour = cal.get(Calendar.HOUR_OF_DAY)
+            val minute = cal.get(Calendar.MINUTE)
+            val totalMinutes = hour * 60 + minute
+
+            val morningStart = 8 * 60       // 08:00
+            val morningEnd = 9 * 60         // 09:00
+            val afternoonStart = 15 * 60 + 30  // 15:30
+            val afternoonEnd = 20 * 60      // 20:00
+
+            return totalMinutes in morningStart until morningEnd ||
+                    totalMinutes in afternoonStart until afternoonEnd
+        }
+
+        fun currentTradeTransactionId(): TransactionId {
+            return if (isNxtTradingHour()) {
+                TransactionId.RealTimeTradeNxt
+            } else {
+                TransactionId.RealTimeTrade
+            }
+        }
     }
 
     private var job: Job? = null
@@ -60,7 +91,10 @@ class RealPriceManager @Inject constructor(
             }
             launch {
                 wsMessageHandler.observeEvent()
-                    .filter { it.header.transactionId == TransactionId.RealTimeTrade }
+                    .filter {
+                        it.header.transactionId == TransactionId.RealTimeTrade ||
+                        it.header.transactionId == TransactionId.RealTimeTradeNxt
+                    }
                     .collect {
                         if (it.body?.returnCode != "0") return@collect
                         val code = it.body.transactionKey ?: return@collect
@@ -171,6 +205,9 @@ class RealPriceManager @Inject constructor(
      * 요청을 위한 json 데이터 만들기
      * @param code: 종목 코드
      * @param subscribe: true - 구독, false - 해지
+     *
+     * NXT 운영 시간(08:00~09:00, 15:30~20:00)에는 H0NXCNT0 를 사용하고,
+     * 그 외 KRX 정규장 시간에는 H0STCNT0 를 사용한다.
      */
     private fun makeRequest(code: String, subscribe: Boolean): String {
         val transactionType = if (subscribe) "1" else "2"
@@ -182,7 +219,7 @@ class RealPriceManager @Inject constructor(
             contentType = "utf-8",
         )
         val input = WsRequestBodyInput(
-            transactionId = TransactionId.RealTimeTrade,
+            transactionId = currentTradeTransactionId(),
             transactionKey = code,
         )
         val body = WsRequestBody(input)

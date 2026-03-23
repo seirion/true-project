@@ -116,7 +116,8 @@ class WsMessageHandler @Inject constructor(
                     when (res.header.transactionId) {
                         TransactionId.PingPong -> webSocketService.sendMessage(text)
                         TransactionId.RealTimeQuotes,
-                        TransactionId.RealTimeTrade -> {
+                        TransactionId.RealTimeTrade,
+                        TransactionId.RealTimeTradeNxt -> {
                             CoroutineScope(Dispatchers.IO).launch {
                                 event.emit(res)
                             }
@@ -156,7 +157,8 @@ class WsMessageHandler @Inject constructor(
                     quotesSignal.emit(dto)
                 }
             }
-            TransactionId.RealTimeTrade -> {
+            TransactionId.RealTimeTrade,
+            TransactionId.RealTimeTradeNxt -> {
                 val dto = RealTimeTrade.from(data)
                 MainScope().launch {
                     tradeSignal.emit(dto)
