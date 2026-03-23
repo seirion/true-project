@@ -17,6 +17,7 @@ import com.trueedu.project.data.log.ReleaseTree
 import com.trueedu.project.data.realtime.RealOrderManager
 import com.trueedu.project.data.realtime.RealPriceManager
 import com.trueedu.project.data.realtime.WsMessageHandler
+import com.trueedu.project.notification.TradeNotificationWorker
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.worker.DailyAlarmManager
@@ -46,6 +47,7 @@ class App : Application(), LifecycleEventObserver {
         fun getDartManager(): DartManager
         fun getTrueAnalytics(): TrueAnalytics
         fun getAdmobManager(): AdmobManager
+        fun getTradeNotificationWorker(): TradeNotificationWorker
     }
 
     override fun onCreate() {
@@ -79,6 +81,7 @@ class App : Application(), LifecycleEventObserver {
         val dartManager = entryPointInjector(InjectModule::class.java).getDartManager()
         val trueAnalytics = entryPointInjector(InjectModule::class.java).getTrueAnalytics()
         val admobManager = entryPointInjector(InjectModule::class.java).getAdmobManager()
+        val tradeNotificationWorker = entryPointInjector(InjectModule::class.java).getTradeNotificationWorker()
 
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
@@ -90,6 +93,7 @@ class App : Application(), LifecycleEventObserver {
                 wsMessage.start()
                 realPriceManager.start()
                 realOrderManager.start()
+                tradeNotificationWorker.start()
                 stockPool.loadStockInfo()
                 dartManager.init()
                 admobManager.start()
@@ -101,6 +105,7 @@ class App : Application(), LifecycleEventObserver {
                 wsMessage.stop()
                 realPriceManager.stop()
                 realOrderManager.stop()
+                tradeNotificationWorker.stop()
                 admobManager.stop()
             }
 
