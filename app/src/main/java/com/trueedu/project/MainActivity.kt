@@ -3,6 +3,7 @@ package com.trueedu.project
 import android.app.DownloadManager
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -12,9 +13,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.lifecycleScope
@@ -81,6 +85,12 @@ class MainActivity : AppCompatActivity() {
     // 앱이 백그라운드로 진입할 때의 시각(모노토닉) 저장
     private var lastBackgroundElapsedRealtime = SystemClock.elapsedRealtime()
 
+    // Android 13+ 알림 권한 요청 launcher
+    private val requestNotificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            logD("POST_NOTIFICATIONS permission granted: $isGranted")
+        }
+
     override fun onStart() {
         super.onStart()
         if (screen.keepScreenOn.value) {
@@ -110,6 +120,7 @@ class MainActivity : AppCompatActivity() {
 
         googleAccount.init(this)
         trueAnalytics.enterView("main__enter")
+        requestNotificationPermissionIfNeeded()
 
         val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
         registerReceiver(downloadCompleteReceiver, filter, RECEIVER_EXPORTED)
@@ -249,6 +260,16 @@ class MainActivity : AppCompatActivity() {
                 .collectLatest {
                     keepScreenOnOff(it)
                 }
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    private fun requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val permission = android.Manifest.permission.POST_NOTIFICATIONS
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                requestNotificationPermissionLauncher.launch(permission)
+            }
         }
     }
 
