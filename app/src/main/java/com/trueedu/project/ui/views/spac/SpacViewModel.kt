@@ -28,7 +28,7 @@ class SpacViewModel @Inject constructor(
     private val manualAssets: ManualAssets,
     private val stockPool: StockPool,
     private val tokenKeyManager: TokenKeyManager,
-    private val spacManager: SpacManager,
+    val spacManager: SpacManager,
     private val dartManager: DartManager,
     private val watchList: WatchList,
 ): ViewModel() {
@@ -122,6 +122,14 @@ class SpacViewModel @Inject constructor(
 
     fun hasDisclosure(code: String): Boolean {
         return dartManager.hasDisclosure(code)
+    }
+
+    fun onStart() {
+        spacManager.onStart()
+    }
+
+    fun onStop() {
+        spacManager.onStop()
     }
 
     private fun growthRate(stock: StockInfo): Double {

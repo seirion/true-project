@@ -22,6 +22,7 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,11 +31,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.FragmentManager
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.trueedu.project.MainViewModel
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RemoteConfig
-import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.shouldShowRedemption
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.ads.NativeAdView
@@ -45,105 +51,39 @@ import com.trueedu.project.ui.common.TouchIcon24
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.spac.SpacFilterBottomSheet
 import com.trueedu.project.ui.views.StockDetailFragment
-import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.search.SearchBar
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
 import com.trueedu.project.utils.formatter.safeDouble
 
-class SpacScreen(
-    private val mainVm: MainViewModel,
-    private val vm: SpacViewModel,
-    private val spacManager: SpacManager,
-    private val trueAnalytics: TrueAnalytics,
-    private val remoteConfig: RemoteConfig,
-    private val admobManager: AdmobManager,
-    private val fragmentManager: FragmentManager,
-): BottomNavScreen {
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun SpacScreen(
+    trueAnalytics: TrueAnalytics,
+    remoteConfig: RemoteConfig,
+    admobManager: AdmobManager,
+    fragmentManager: FragmentManager,
+    mainVm: MainViewModel = hiltViewModel(LocalContext.current as ComponentActivity),
+    vm: SpacViewModel = hiltViewModel(),
+) {
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    @OptIn(ExperimentalFoundationApi::class)
-    @Composable
-    override fun Draw() {
-        Scaffold(
-            topBar = {
-                SpacScreenTopBar(vm.sort.value, ::onSortOption, ::onSpacFilter)
-            },
-            bottomBar = {
-                if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
-                    NativeAdView(admobManager.nativeAd.value!!)
-                }
-            },
-            contentWindowInsets =
-                ScaffoldDefaults.contentWindowInsets.exclude(NavigationBarDefaults.windowInsets),
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background),
-        ) { innerPadding ->
-            val loading by spacManager.loading.collectAsState()
-            if (loading) {
-                LoadingView()
-                return@Scaffold
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> vm.onStart()
+                Lifecycle.Event.ON_STOP -> vm.onStop()
+                else -> Unit
             }
-
-            val state = rememberLazyListState()
-
-            LaunchedEffect(key1 = loading) {
-                state.scrollToItem(1)
-            }
-
-            LazyColumn(
-                state = state,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                item { SearchBar(searchText = vm.searchInput) {} }
-                stickyHeader { SpacSectionView(vm::setSort) }
-
-                itemsIndexed(vm.stocks.value, key = { i, _ -> i }) { i, item ->
-
-                    val spacRefund = spacManager.spacRefundMap.value[item.code]
-                    val redemptionValue = spacManager.redemptionValueMap[item.code]
-                    val expectedProfit: Double?
-                    val expectedProfitRate: Double?
-                    if (spacRefund?.shouldShowRedemption() == true) {
-                        expectedProfit = redemptionValue?.first
-                        expectedProfitRate = redemptionValue?.second
-                    } else {
-                        expectedProfit = null
-                        expectedProfitRate = null
-                    }
-                    val userStock = mainVm.userStocks.value?.output1?.firstOrNull {
-                        it.code == item.code
-                    }
-
-                    // 한투 계좌 보유가 있으면 표시하고, 없으면 수동 보유를 표시함
-                    val holdingNum = userStock?.holdingQuantity.safeDouble().takeIf { it > 0 }
-                        ?: -vm.holdingNum(item.code)
-
-                    val hasDisclosure = vm.hasDisclosure(item.code)
-
-                    SpacItem(i, item,
-                        spacManager.priceMap[item.code] ?: 0.0,
-                        spacManager.priceChangeMap[item.code],
-                        spacManager.volumeMap[item.code] ?: 0L,
-                        expectedProfit,
-                        expectedProfitRate,
-                        holdingNum,
-                        hasDisclosure,
-                        ::onPriceClick
-                    ) {
-                        StockDetailFragment.show(item, fragmentManager)
-                    }
-                }
-            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
-    // 정렬하기
-    private fun onSortOption() {
-        trueAnalytics.clickButton("${screenName()}__sort_option__click")
-
+    fun onSortOption() {
+        trueAnalytics.clickButton("spac__sort_option__click")
         val selected = SpacSort.entries.indexOfFirst { it == vm.sort.value }
         BottomSelectionFragment.show(
             selected = selected,
@@ -152,7 +92,7 @@ class SpacScreen(
             onSelected = {
                 val option = SpacSort.entries[it]
                 trueAnalytics.clickButton(
-                    "${screenName()}__sort__click",
+                    "spac__sort__click",
                     mapOf("sort_type" to option.title)
                 )
                 vm.setSort(option)
@@ -161,9 +101,8 @@ class SpacScreen(
         )
     }
 
-    // 스팩 필터 도구
-    private fun onSpacFilter() {
-        trueAnalytics.clickButton("${screenName()}__filter__click")
+    fun onSpacFilter() {
+        trueAnalytics.clickButton("spac__filter__click")
         SpacFilterBottomSheet.show(vm.spacFilter, fragmentManager) {
             if (vm.spacFilter != it) {
                 vm.spacFilter = it
@@ -172,23 +111,85 @@ class SpacScreen(
         }
     }
 
-    private fun onPriceClick(code: String) {
-        trueAnalytics.clickButton("${screenName()}__price__click")
-        if (vm.hasAppKey()) {
-            OrderFragment.show(code, fragmentManager)
-        } else {
-            AppKeyInputFragment.show(false, fragmentManager)
+    Scaffold(
+        topBar = {
+            SpacScreenTopBar(vm.sort.value, ::onSortOption, ::onSpacFilter)
+        },
+        bottomBar = {
+            if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
+                NativeAdView(admobManager.nativeAd.value!!)
+            }
+        },
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.exclude(NavigationBarDefaults.windowInsets),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background),
+    ) { innerPadding ->
+        val loading by vm.spacManager.loading.collectAsState()
+        if (loading) {
+            LoadingView()
+            return@Scaffold
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
-        spacManager.onStart()
-    }
+        val state = rememberLazyListState()
 
-    override fun onStop() {
-        super.onStop()
-        spacManager.onStop()
+        LaunchedEffect(key1 = loading) {
+            state.scrollToItem(1)
+        }
+
+        LazyColumn(
+            state = state,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            item { SearchBar(searchText = vm.searchInput) {} }
+            stickyHeader { SpacSectionView(vm::setSort) }
+
+            itemsIndexed(vm.stocks.value, key = { i, _ -> i }) { i, item ->
+
+                val spacRefund = vm.spacManager.spacRefundMap.value[item.code]
+                val redemptionValue = vm.spacManager.redemptionValueMap[item.code]
+                val expectedProfit: Double?
+                val expectedProfitRate: Double?
+                if (spacRefund?.shouldShowRedemption() == true) {
+                    expectedProfit = redemptionValue?.first
+                    expectedProfitRate = redemptionValue?.second
+                } else {
+                    expectedProfit = null
+                    expectedProfitRate = null
+                }
+                val userStock = mainVm.userStocks.value?.output1?.firstOrNull {
+                    it.code == item.code
+                }
+
+                val holdingNum = userStock?.holdingQuantity.safeDouble().takeIf { it > 0 }
+                    ?: -vm.holdingNum(item.code)
+
+                val hasDisclosure = vm.hasDisclosure(item.code)
+
+                SpacItem(i, item,
+                    vm.spacManager.priceMap[item.code] ?: 0.0,
+                    vm.spacManager.priceChangeMap[item.code],
+                    vm.spacManager.volumeMap[item.code] ?: 0L,
+                    expectedProfit,
+                    expectedProfitRate,
+                    holdingNum,
+                    hasDisclosure,
+                    onPriceClick = { code ->
+                        trueAnalytics.clickButton("spac__price__click")
+                        if (vm.hasAppKey()) {
+                            OrderFragment.show(code, fragmentManager)
+                        } else {
+                            AppKeyInputFragment.show(false, fragmentManager)
+                        }
+                    }
+                ) {
+                    StockDetailFragment.show(item, fragmentManager)
+                }
+            }
+        }
     }
 }
 

@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavBackStackEntry
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.broadcast.DownloadCompleteReceiver
 import com.trueedu.project.data.DartManager
@@ -29,7 +28,6 @@ import com.trueedu.project.data.StockPool
 import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.log.logD
 import com.trueedu.project.data.realtime.WsMessageHandler
-import com.trueedu.project.data.spac.SpacManager
 import com.trueedu.project.model.dto.firebase.AppNotice
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
@@ -40,18 +38,9 @@ import com.trueedu.project.ui.common.PopupType
 import com.trueedu.project.ui.main.MainNavigation
 import com.trueedu.project.ui.main.MainScreen
 import com.trueedu.project.ui.theme.TrueProjectTheme
-import com.trueedu.project.ui.views.UserInfoViewModel
 import com.trueedu.project.ui.views.home.AppNoticePopup
 import com.trueedu.project.ui.views.home.BottomNavItem
-import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.ForceUpdateView
-import com.trueedu.project.ui.views.home.HomeScreen
-import com.trueedu.project.ui.navigation.bottomNavItemOrNull
-import com.trueedu.project.ui.views.menu.MenuScreen
-import com.trueedu.project.ui.views.spac.SpacScreen
-import com.trueedu.project.ui.views.spac.SpacViewModel
-import com.trueedu.project.ui.views.watch.WatchListViewModel
-import com.trueedu.project.ui.views.watch.WatchScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -76,8 +65,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var downloadCompleteReceiver: DownloadCompleteReceiver
     @Inject
-    lateinit var spacManager: SpacManager
-    @Inject
     lateinit var dartManager: DartManager
     @Inject
     lateinit var remoteConfig: RemoteConfig
@@ -88,14 +75,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var wsMessageHandler: WsMessageHandler
 
     private val vm by viewModels<MainViewModel>()
-    private val watchVm by viewModels<WatchListViewModel>()
-    private val spacVm by viewModels<SpacViewModel>()
-    private val homeDrawerVm by viewModels<UserInfoViewModel>()
-
-    private lateinit var homeScreen: HomeScreen
-    private lateinit var watchScreen: WatchScreen
-    private lateinit var spacScreen: SpacScreen
-    private lateinit var menuScreen: MenuScreen
 
     private var openDrawer: (() -> Unit)? = null
 
@@ -157,41 +136,6 @@ class MainActivity : AppCompatActivity() {
 
         enableEdgeToEdge()
 
-        homeScreen = HomeScreen(
-            activity = this,
-            vm = vm,
-            stockPool = stockPool,
-            admobManager = admobManager,
-            remoteConfig = remoteConfig,
-            trueAnalytics = trueAnalytics,
-            fragmentManager = supportFragmentManager,
-            onUserInfo = ::onUserInfo,
-        )
-        watchScreen = WatchScreen(
-            activity = this,
-            vm = watchVm,
-            admobManager = admobManager,
-            remoteConfig = remoteConfig,
-            trueAnalytics = trueAnalytics,
-            fragmentManager = supportFragmentManager,
-        )
-        spacScreen = SpacScreen(
-            mainVm = vm,
-            vm = spacVm,
-            spacManager = spacManager,
-            trueAnalytics = trueAnalytics,
-            remoteConfig = remoteConfig,
-            admobManager = admobManager,
-            fragmentManager = supportFragmentManager,
-        )
-        menuScreen = MenuScreen(
-            screen = screen,
-            trueAnalytics = trueAnalytics,
-            tokenKeyManager = tokenKeyManager,
-            dartManager = dartManager,
-            fragmentManager = supportFragmentManager,
-        )
-
         // Register the onBackPressed callback
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -233,11 +177,9 @@ class MainActivity : AppCompatActivity() {
                     MainScreen(
                         activity = this,
                         googleAccount = googleAccount,
-                        homeDrawerVm = homeDrawerVm,
                         trueAnalytics = trueAnalytics,
                         fragmentManager = supportFragmentManager,
                         wsMessageHandler = wsMessageHandler,
-                        screenOf = ::screenOf,
                         getLastBackgroundTime = { lastBackgroundElapsedRealtime },
                         setLastBackgroundTime = { lastBackgroundElapsedRealtime = it },
                         setOpenDrawer = { openDrawer = it },
@@ -251,25 +193,20 @@ class MainActivity : AppCompatActivity() {
                             MainNavigation(
                                 navController = navController,
                                 innerPadding = innerPadding,
-                                homeScreen = homeScreen,
-                                watchScreen = watchScreen,
-                                spacScreen = spacScreen,
-                                menuScreen = menuScreen,
+                                fragmentManager = supportFragmentManager,
+                                stockPool = stockPool,
+                                admobManager = admobManager,
+                                remoteConfig = remoteConfig,
+                                trueAnalytics = trueAnalytics,
+                                screen = screen,
+                                tokenKeyManager = tokenKeyManager,
+                                dartManager = dartManager,
+                                onUserInfo = ::onUserInfo,
                             )
                         },
                     )
                 }
             }
-        }
-    }
-
-    private fun screenOf(entry: NavBackStackEntry): BottomNavScreen? {
-        return when (entry.bottomNavItemOrNull()) {
-            BottomNavItem.Home -> homeScreen
-            BottomNavItem.Watch -> watchScreen
-            BottomNavItem.Spac -> spacScreen
-            BottomNavItem.Menu -> menuScreen
-            null -> null
         }
     }
 

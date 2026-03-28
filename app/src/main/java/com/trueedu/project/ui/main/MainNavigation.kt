@@ -4,9 +4,17 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.trueedu.project.analytics.TrueAnalytics
+import com.trueedu.project.data.RemoteConfig
+import com.trueedu.project.data.ScreenControl
+import com.trueedu.project.data.StockPool
+import com.trueedu.project.data.TokenKeyManager
+import com.trueedu.project.data.DartManager
+import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.views.home.BottomNavItem
 import com.trueedu.project.ui.views.home.HomeScreen
 import com.trueedu.project.ui.views.menu.MenuScreen
@@ -18,10 +26,15 @@ import com.trueedu.project.ui.views.watch.WatchScreen
 fun MainNavigation(
     navController: NavHostController,
     innerPadding: PaddingValues,
-    homeScreen: HomeScreen,
-    watchScreen: WatchScreen,
-    spacScreen: SpacScreen,
-    menuScreen: MenuScreen,
+    fragmentManager: FragmentManager,
+    stockPool: StockPool,
+    admobManager: AdmobManager,
+    remoteConfig: RemoteConfig,
+    trueAnalytics: TrueAnalytics,
+    screen: ScreenControl,
+    tokenKeyManager: TokenKeyManager,
+    dartManager: DartManager,
+    onUserInfo: () -> Unit,
 ) {
     NavHost(
         navController = navController,
@@ -29,16 +42,39 @@ fun MainNavigation(
         modifier = Modifier.padding(innerPadding),
     ) {
         composable<BottomNavItem.Home> {
-            homeScreen.Draw()
+            HomeScreen(
+                stockPool = stockPool,
+                admobManager = admobManager,
+                remoteConfig = remoteConfig,
+                trueAnalytics = trueAnalytics,
+                fragmentManager = fragmentManager,
+                onUserInfo = onUserInfo,
+            )
         }
         composable<BottomNavItem.Watch> {
-            watchScreen.Draw()
+            WatchScreen(
+                admobManager = admobManager,
+                remoteConfig = remoteConfig,
+                trueAnalytics = trueAnalytics,
+                fragmentManager = fragmentManager,
+            )
         }
         composable<BottomNavItem.Spac> {
-            spacScreen.Draw()
+            SpacScreen(
+                trueAnalytics = trueAnalytics,
+                remoteConfig = remoteConfig,
+                admobManager = admobManager,
+                fragmentManager = fragmentManager,
+            )
         }
         composable<BottomNavItem.Menu> {
-            menuScreen.Draw()
+            MenuScreen(
+                screen = screen,
+                trueAnalytics = trueAnalytics,
+                tokenKeyManager = tokenKeyManager,
+                dartManager = dartManager,
+                fragmentManager = fragmentManager,
+            )
         }
     }
 }
