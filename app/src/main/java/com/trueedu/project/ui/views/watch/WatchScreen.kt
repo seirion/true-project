@@ -1,6 +1,5 @@
 package com.trueedu.project.ui.views.watch
 
-import android.app.Activity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -30,6 +28,7 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,9 +43,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.fragment.app.FragmentManager
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.RemoteConfig
 import com.trueedu.project.data.StockPool
@@ -65,7 +69,6 @@ import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.common.DesignatedBadge
 import com.trueedu.project.ui.views.common.DisclosurePoint
 import com.trueedu.project.ui.views.common.HaltBadge
-import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
@@ -74,246 +77,250 @@ import com.trueedu.project.utils.formatter.RateFormatter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapNotNull
 
-class WatchScreen(
-    private val activity: Activity,
-    private val vm: WatchListViewModel,
-    private val admobManager: AdmobManager,
-    private val remoteConfig: RemoteConfig,
-    private val trueAnalytics: TrueAnalytics,
-    private val fragmentManager: FragmentManager,
-): BottomNavScreen {
-    private var pagerState: PagerState? = null
+@Composable
+fun WatchScreen(
+    admobManager: AdmobManager,
+    remoteConfig: RemoteConfig,
+    trueAnalytics: TrueAnalytics,
+    fragmentManager: FragmentManager,
+    vm: WatchListViewModel = hiltViewModel(),
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    @Composable
-    override fun Draw() {
-        LaunchedEffect(pagerState) {
-            snapshotFlow { pagerState?.currentPage }
-                .mapNotNull { it?.mod(vm.pageCount()) }
-                .collectLatest {
-                    vm.currentPage.value = it
-                }
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> vm.init()
+                Lifecycle.Event.ON_STOP -> vm.onStop()
+                else -> Unit
+            }
         }
-        Scaffold(
-            topBar = {
-                BackTitleTopBar(
-                    title = vm.groupName(vm.currentPage.value),
-                    onBack = null,
-                    actionIcon = Icons.Filled.Search,
-                    onAction = ::onSearch,
-                    actionIcon2 = Icons.Filled.Edit,
-                    onAction2 = ::onEdit,
-                )
-            },
-            bottomBar = {
-                if (
-                    !vm.loading.value &&
-                    vm.currentPage.value != null &&
-                    vm.getItems(vm.currentPage.value!!).isNotEmpty() &&
-                    remoteConfig.adVisible.value &&
-                    admobManager.nativeAd.value != null
-                ) {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        NativeAdView(admobManager.nativeAd.value!!)
-                    }
-                }
-            },
-            contentWindowInsets =
-                ScaffoldDefaults.contentWindowInsets.exclude(NavigationBarDefaults.windowInsets),
-            modifier = Modifier.fillMaxSize()
-        ) { innerPadding ->
-
-            if (pagerState == null) {
-                pagerState = rememberPagerState(
-                    initialPage = 100 * vm.pageCount(),
-                    initialPageOffsetFraction = 0f,
-                    pageCount = { 200 * vm.pageCount() }, // infinite loop
-                )
-            }
-
-            val status by vm.stockPool.status.collectAsState()
-            // 주식 정보와 관심 종목 정보를 모두 받아야 데이터 표시 가능
-            if (vm.loading.value || status != StockPool.Status.SUCCESS) {
-                LoadingView()
-                return@Scaffold
-            }
-
-            HorizontalPager(
-                state = pagerState!!,
-                modifier = Modifier.fillMaxSize()
-            ) { position ->
-                var selectedStock by remember { mutableStateOf<StockInfo?>(null) }
-                var selectedStockIndex by remember { mutableIntStateOf(-1) }
-                val state = rememberLazyListState()
-                LazyColumn(
-                    state = state,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    val items = vm.getItems(position % vm.pageCount())
-                    itemsIndexed(items, key = { _, item -> item }) { index, code ->
-                        val stock = vm.getStock(code) ?: return@itemsIndexed
-                        val tradeData = vm.priceManager.dataMap[code]
-                        val basePrice = vm.basePrices[code]?.output
-
-                        // appkey 가 없으면 그냥 전일 가격을 표시함
-                        val price = tradeData?.price ?: basePrice?.price?.toDouble() ?: vm.prevPrice(code)
-                        val delta = tradeData?.delta ?: basePrice?.priceChange?.toDouble()
-                        val rate = tradeData?.rate ?: basePrice?.priceChangeRate?.toDouble()
-                        val volume = tradeData?.volume ?: basePrice?.volume?.toDouble() ?: 0.0
-
-                        WatchingStockItem(
-                            nameKr = stock.nameKr,
-                            code = code,
-                            price = price,
-                            prevClose = tradeData?.previousClose ?: basePrice?.previousClosePrice?.toDouble(),
-                            open = tradeData?.open ?: basePrice?.open?.toDouble(),
-                            high = tradeData?.high ?: basePrice?.high?.toDouble(),
-                            low = tradeData?.low ?: basePrice?.low?.toDouble(),
-                            delta = delta,
-                            rate = rate,
-                            volume = volume,
-                            halt = stock.halt(),
-                            designated = stock.designated(),
-                            hasDisclosure = vm.hasDisclosure(code),
-                            onTradingClick = { gotoTrading(stock) },
-                            onClick = { gotoStockDetail(stock) },
-                        ) {
-                            logD("long click: ${stock.nameKr}")
-                            selectedStock = stock
-                            selectedStockIndex = index
-                        }
-                    }
-                } // end of LazyColumn
-
-                if (selectedStock != null) {
-                    Dialog(
-                        onDismissRequest = { selectedStock = null },
-                        properties = DialogProperties(usePlatformDefaultWidth = false) // Important for custom positioning
-                    ) {
-                        PopupBody(selectedStock!!, position, selectedStockIndex,
-                            moveTo = { index, toPage ->
-                                selectedStock = null
-                                vm.moveTo(index, toPage)
-                            },
-                            onRemove = {
-                                selectedStock = null
-                                vm.removeStock(selectedStockIndex)
-                            },
-                        )
-                    }
-                }
-            }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
-    override fun onStart() {
-        vm.init()
+    val pagerState = rememberPagerState(
+        initialPage = 100 * vm.pageCount(),
+        initialPageOffsetFraction = 0f,
+        pageCount = { 200 * vm.pageCount() }, // infinite loop
+    )
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }
+            .mapNotNull { it.mod(vm.pageCount()) }
+            .collectLatest {
+                vm.currentPage.value = it
+            }
     }
 
-    override fun onStop() {
-        vm.onStop()
-    }
-
-    private fun doAfterLogin(action: () -> Unit) {
+    fun doAfterLogin(action: () -> Unit) {
         if (vm.googleAccount.loggedIn()) {
             action()
         } else {
-            vm.googleAccount.login(activity, action)
-        }
-    }
-
-    private fun onSearch() {
-        trueAnalytics.clickButton("watch_list__search__click")
-        doAfterLogin {
-            StockSearchFragment.show(vm.currentPage.value, fragmentManager)
-        }
-    }
-
-    private fun onEdit() {
-        trueAnalytics.clickButton("watch_list__edit__click")
-        doAfterLogin {
-            if (!vm.loading.value || vm.currentPage.value != null) {
-                WatchEditFragment.show(vm.currentPage.value!!, fragmentManager)
+            val activity = context as? android.app.Activity
+            if (activity != null) {
+                vm.googleAccount.login(activity, action)
+            } else {
+                action()
             }
         }
     }
 
-    private fun gotoTrading(stockInfo: StockInfo) {
-        if (vm.hasAppKey()) {
-            OrderFragment.show(stockInfo.code, fragmentManager)
-        } else {
-            AppKeyInputFragment.show(false, fragmentManager)
-        }
-    }
-
-    private fun gotoStockDetail(stockInfo: StockInfo) {
-        StockDetailFragment.show(stockInfo, fragmentManager)
-    }
-
-    @Composable
-    fun PopupBody(
-        item: StockInfo,
-        page: Int,
-        index: Int,
-        moveTo: (Int, Int) -> Unit,
-        onRemove: () -> Unit,
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-                .background(
-                    MaterialTheme.colorScheme.background,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(16.dp)
-        ) {
-            TrueText(
-                s = "${item.nameKr} 이동",
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 18,
-                fontWeight = FontWeight.Bold,
-                maxLines = 2,
+    Scaffold(
+        topBar = {
+            BackTitleTopBar(
+                title = vm.groupName(vm.currentPage.value),
+                onBack = null,
+                actionIcon = Icons.Filled.Search,
+                onAction = {
+                    trueAnalytics.clickButton("watch_list__search__click")
+                    doAfterLogin {
+                        StockSearchFragment.show(vm.currentPage.value, fragmentManager)
+                    }
+                },
+                actionIcon2 = Icons.Filled.Edit,
+                onAction2 = {
+                    trueAnalytics.clickButton("watch_list__edit__click")
+                    doAfterLogin {
+                        if (!vm.loading.value || vm.currentPage.value != null) {
+                            WatchEditFragment.show(vm.currentPage.value!!, fragmentManager)
+                        }
+                    }
+                },
             )
-            Margin(8)
-            DividerHorizontal()
-            Column(modifier = Modifier.fillMaxWidth()) {
-                repeat(vm.pageCount()) {
-                    TrueText(
-                        s = vm.groupName(it),
-                        fontSize = 16,
-                        color = MaterialTheme.colorScheme.primary
-                            .copy(alpha = if (it == page) 0.1f else 1f),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                if (it != page) {
-                                    moveTo(index, it)
-                                }
-                            }
-                            .padding(vertical = 8.dp),
-                    )
-                    DividerHorizontal()
+        },
+        bottomBar = {
+            if (
+                !vm.loading.value &&
+                vm.currentPage.value != null &&
+                vm.getItems(vm.currentPage.value!!).isNotEmpty() &&
+                remoteConfig.adVisible.value &&
+                admobManager.nativeAd.value != null
+            ) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    NativeAdView(admobManager.nativeAd.value!!)
                 }
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onRemove() }
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                TrueText(
-                    s = "관심종목에서 삭제",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 16,
-                    style = TextStyle(textDecoration = TextDecoration.Underline),
-                    modifier = Modifier.padding(vertical = 8.dp),
-                )
-            }
-            Margin(8)
+        },
+        contentWindowInsets =
+            ScaffoldDefaults.contentWindowInsets.exclude(NavigationBarDefaults.windowInsets),
+        modifier = Modifier.fillMaxSize()
+    ) { innerPadding ->
+
+        val status by vm.stockPool.status.collectAsState()
+        // 주식 정보와 관심 종목 정보를 모두 받아야 데이터 표시 가능
+        if (vm.loading.value || status != StockPool.Status.SUCCESS) {
+            LoadingView()
+            return@Scaffold
         }
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { position ->
+            var selectedStock by remember { mutableStateOf<StockInfo?>(null) }
+            var selectedStockIndex by remember { mutableIntStateOf(-1) }
+            val state = rememberLazyListState()
+            LazyColumn(
+                state = state,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                val items = vm.getItems(position % vm.pageCount())
+                itemsIndexed(items, key = { _, item -> item }) { index, code ->
+                    val stock = vm.getStock(code) ?: return@itemsIndexed
+                    val tradeData = vm.priceManager.dataMap[code]
+                    val basePrice = vm.basePrices[code]?.output
+
+                    val price = tradeData?.price ?: basePrice?.price?.toDouble() ?: vm.prevPrice(code)
+                    val delta = tradeData?.delta ?: basePrice?.priceChange?.toDouble()
+                    val rate = tradeData?.rate ?: basePrice?.priceChangeRate?.toDouble()
+                    val volume = tradeData?.volume ?: basePrice?.volume?.toDouble() ?: 0.0
+
+                    WatchingStockItem(
+                        nameKr = stock.nameKr,
+                        code = code,
+                        price = price,
+                        prevClose = tradeData?.previousClose ?: basePrice?.previousClosePrice?.toDouble(),
+                        open = tradeData?.open ?: basePrice?.open?.toDouble(),
+                        high = tradeData?.high ?: basePrice?.high?.toDouble(),
+                        low = tradeData?.low ?: basePrice?.low?.toDouble(),
+                        delta = delta,
+                        rate = rate,
+                        volume = volume,
+                        halt = stock.halt(),
+                        designated = stock.designated(),
+                        hasDisclosure = vm.hasDisclosure(code),
+                        onTradingClick = {
+                            if (vm.hasAppKey()) {
+                                OrderFragment.show(stock.code, fragmentManager)
+                            } else {
+                                AppKeyInputFragment.show(false, fragmentManager)
+                            }
+                        },
+                        onClick = {
+                            StockDetailFragment.show(stock, fragmentManager)
+                        },
+                    ) {
+                        logD("long click: ${stock.nameKr}")
+                        selectedStock = stock
+                        selectedStockIndex = index
+                    }
+                }
+            } // end of LazyColumn
+
+            if (selectedStock != null) {
+                Dialog(
+                    onDismissRequest = { selectedStock = null },
+                    properties = DialogProperties(usePlatformDefaultWidth = false)
+                ) {
+                    PopupBody(
+                        vm = vm,
+                        item = selectedStock!!,
+                        page = position,
+                        index = selectedStockIndex,
+                        moveTo = { index, toPage ->
+                            selectedStock = null
+                            vm.moveTo(index, toPage)
+                        },
+                        onRemove = {
+                            selectedStock = null
+                            vm.removeStock(selectedStockIndex)
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PopupBody(
+    vm: WatchListViewModel,
+    item: StockInfo,
+    page: Int,
+    index: Int,
+    moveTo: (Int, Int) -> Unit,
+    onRemove: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp)
+            .background(
+                MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(16.dp)
+    ) {
+        TrueText(
+            s = "${item.nameKr} 이동",
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 18,
+            fontWeight = FontWeight.Bold,
+            maxLines = 2,
+        )
+        Margin(8)
+        DividerHorizontal()
+        Column(modifier = Modifier.fillMaxWidth()) {
+            repeat(vm.pageCount()) {
+                TrueText(
+                    s = vm.groupName(it),
+                    fontSize = 16,
+                    color = MaterialTheme.colorScheme.primary
+                        .copy(alpha = if (it == page) 0.1f else 1f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            if (it != page) {
+                                moveTo(index, it)
+                            }
+                        }
+                        .padding(vertical = 8.dp),
+                )
+                DividerHorizontal()
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onRemove() }
+                .padding(top = 8.dp),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            TrueText(
+                s = "관심종목에서 삭제",
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 16,
+                style = TextStyle(textDecoration = TextDecoration.Underline),
+                modifier = Modifier.padding(vertical = 8.dp),
+            )
+        }
+        Margin(8)
     }
 }
 
@@ -383,7 +390,6 @@ private fun WatchingStockItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            // ohlc 데이터가 있으면 캔들 표시
             if (prevClose != null && open != null && high != null && low != null) {
                 DrawCandle(
                     prevClose = prevClose,
@@ -393,7 +399,6 @@ private fun WatchingStockItem(
                     close = price,
                 )
             } else {
-                // 정렬을 위해
                 Margin(1)
             }
 

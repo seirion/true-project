@@ -14,11 +14,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.FragmentManager
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -31,7 +34,6 @@ import com.trueedu.project.data.realtime.WsMessageHandler
 import com.trueedu.project.ui.dev.OnOffState
 import com.trueedu.project.ui.views.UserInfoViewModel
 import com.trueedu.project.ui.views.home.BottomNavItem
-import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.home.HomeBottomNavigation
 import com.trueedu.project.ui.views.home.HomeDrawer
 import com.trueedu.project.ui.navigation.bottomNavItemOrNull
@@ -42,53 +44,44 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     activity: MainActivity,
     googleAccount: GoogleAccount,
-    homeDrawerVm: UserInfoViewModel,
     trueAnalytics: TrueAnalytics,
     fragmentManager: FragmentManager,
     wsMessageHandler: WsMessageHandler,
-    screenOf: (NavBackStackEntry) -> BottomNavScreen?,
     getLastBackgroundTime: () -> Long,
     setLastBackgroundTime: (Long) -> Unit,
     setOpenDrawer: ((() -> Unit)?) -> Unit,
     onSessionExpired: () -> Unit,
     mainNavigation: @Composable (navController: NavHostController, innerPadding: PaddingValues) -> Unit,
+    homeDrawerVm: UserInfoViewModel = hiltViewModel(LocalContext.current as ComponentActivity),
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     var currentTab by remember { mutableStateOf<BottomNavItem?>(BottomNavItem.Home) }
     currentTab = navBackStackEntry.bottomNavItemOrNull() ?: currentTab
 
-    val lifecycleObserver = remember {
-        LifecycleEventObserver { owner, event ->
-            if (owner !is NavBackStackEntry) return@LifecycleEventObserver
-            val screen = screenOf(owner) ?: return@LifecycleEventObserver
+    val lifecycleOwner = LocalLifecycleOwner.current
 
+    // 30분 세션 만료 체크를 navBackStackEntry lifecycle 변화로 처리
+    DisposableEffect(navBackStackEntry) {
+        val observer = LifecycleEventObserver { owner, event ->
             when (event) {
                 Lifecycle.Event.ON_START -> {
                     val currentTime = SystemClock.elapsedRealtime()
                     val elapsedTime = currentTime - getLastBackgroundTime()
-
                     logD("elapsedTime: $elapsedTime")
-                    if (elapsedTime >= 30 * 60 * 1000) { // 30 minutes
+                    if (elapsedTime >= 30 * 60 * 1000) {
                         onSessionExpired()
-                    } else {
-                        screen.onStart()
                     }
                 }
                 Lifecycle.Event.ON_STOP -> {
-                    screen.onStop()
                     setLastBackgroundTime(SystemClock.elapsedRealtime())
                 }
                 else -> Unit
             }
         }
-    }
-
-    // Lifecycle observer 등록 및 해제
-    DisposableEffect(navBackStackEntry) {
-        navBackStackEntry?.lifecycle?.addObserver(lifecycleObserver)
+        navBackStackEntry?.lifecycle?.addObserver(observer)
         onDispose {
-            navBackStackEntry?.lifecycle?.removeObserver(lifecycleObserver)
+            navBackStackEntry?.lifecycle?.removeObserver(observer)
         }
     }
 
@@ -133,4 +126,3 @@ fun MainScreen(
         OnOffState(wsMessageHandler.on.value)
     }
 }
-

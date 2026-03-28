@@ -43,98 +43,81 @@ import com.trueedu.project.ui.dart.DartListFragment
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
 import com.trueedu.project.ui.spac.SpacScheduleFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
-import com.trueedu.project.ui.views.home.BottomNavScreen
 import com.trueedu.project.ui.views.rights.ObservingRightsFragment
 import com.trueedu.project.ui.views.schedule.OrderScheduleFragment
 import com.trueedu.project.ui.views.setting.SettingFragment
 
-class MenuScreen(
-    private val screen: ScreenControl,
-    private val trueAnalytics: TrueAnalytics,
-    private val tokenKeyManager: TokenKeyManager,
-    private val dartManager: DartManager,
-    private val fragmentManager: FragmentManager,
-): BottomNavScreen {
-    @Composable
-    override fun Draw() {
-        TrueProjectTheme(
-            n = screen.theme.intValue,
-            forceDark = screen.forceDark.value
-        ) {
-            Scaffold(
-                topBar = {
-                    BackTitleTopBar(
-                        "메뉴",
-                        onBack = null,
-                        actionIcon = Icons.Outlined.Settings,
-                        onAction = ::onSettings,
-                    )
-                },
-                contentWindowInsets =
-                    ScaffoldDefaults.contentWindowInsets.exclude(NavigationBarDefaults.windowInsets),
+@Composable
+fun MenuScreen(
+    screen: ScreenControl,
+    trueAnalytics: TrueAnalytics,
+    tokenKeyManager: TokenKeyManager,
+    dartManager: DartManager,
+    fragmentManager: FragmentManager,
+) {
+    TrueProjectTheme(
+        n = screen.theme.intValue,
+        forceDark = screen.forceDark.value
+    ) {
+        Scaffold(
+            topBar = {
+                BackTitleTopBar(
+                    "메뉴",
+                    onBack = null,
+                    actionIcon = Icons.Outlined.Settings,
+                    onAction = {
+                        trueAnalytics.clickButton("menu__setting__click")
+                        SettingFragment.show(fragmentManager)
+                    },
+                )
+            },
+            contentWindowInsets =
+                ScaffoldDefaults.contentWindowInsets.exclude(NavigationBarDefaults.windowInsets),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background),
+        ) { innerPadding ->
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = MaterialTheme.colorScheme.background),
-            ) { innerPadding ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    if (tokenKeyManager.userKey.value != null) {
-                        MenuItem(Icons.Outlined.Timer, "예약 매매", ::onOrderSchedule)
-                        MenuItem(Icons.Outlined.Sync, "권리 현황", ::onObservingRights)
+                    .padding(innerPadding)
+            ) {
+                if (tokenKeyManager.userKey.value != null) {
+                    MenuItem(Icons.Outlined.Timer, "예약 매매") {
+                        trueAnalytics.clickButton("menu__order_schedule__click")
+                        OrderScheduleFragment.show(fragmentManager)
                     }
+                    MenuItem(Icons.Outlined.Sync, "권리 현황") {
+                        trueAnalytics.clickButton("menu__observing_rights__click")
+                        ObservingRightsFragment.show(fragmentManager)
+                    }
+                }
 
-                    val dartCount = dartManager.getSize().let {
-                        if (it == 0) "" else " ($it)"
+                val dartCount = dartManager.getSize().let {
+                    if (it == 0) "" else " ($it)"
+                }
+                MenuItem(Icons.Outlined.QueryStats, "스팩 공시${dartCount}") {
+                    trueAnalytics.clickButton("menu__spac_dart_list__click")
+                    DartListFragment.show(fragmentManager)
+                }
+                MenuItem(Icons.Outlined.CalendarMonth, "스팩 일정") {
+                    trueAnalytics.clickButton("menu__spac_schedule__click")
+                    SpacScheduleFragment.show(fragmentManager)
+                }
+                if (BuildConfig.DEBUG && tokenKeyManager.userKey.value != null) {
+                    MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목") {
+                        trueAnalytics.clickButton("menu__volume_ranking__click")
+                        VolumeRankingFragment.show(fragmentManager)
                     }
-                    MenuItem(Icons.Outlined.QueryStats, "스팩 공시${dartCount}", ::onDartList)
-                    MenuItem(Icons.Outlined.CalendarMonth, "스팩 일정", ::onSpacSchedule)
-                    if (BuildConfig.DEBUG && tokenKeyManager.userKey.value != null) {
-                        MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목", ::onVolumeRanking)
-                    }
-                    if (BuildConfig.DEBUG) {
-                        Margin(12)
-                        MenuItem(Icons.Outlined.Construction, "어드민 메뉴", ::onAdminMenu)
+                }
+                if (BuildConfig.DEBUG) {
+                    Margin(12)
+                    MenuItem(Icons.Outlined.Construction, "어드민 메뉴") {
+                        MyAdminFragment.show(fragmentManager)
                     }
                 }
             }
         }
-    }
-
-    private fun onSettings() {
-        trueAnalytics.clickButton("${screenName()}__setting__click")
-        SettingFragment.show(fragmentManager)
-    }
-
-    private fun onOrderSchedule() {
-        trueAnalytics.clickButton("${screenName()}__order_schedule__click")
-        OrderScheduleFragment.show(fragmentManager)
-    }
-
-    private fun onObservingRights() {
-        trueAnalytics.clickButton("${screenName()}__observing_rights__click")
-        ObservingRightsFragment.show(fragmentManager)
-    }
-
-    private fun onDartList() {
-        trueAnalytics.clickButton("${screenName()}__spac_dart_list__click")
-        DartListFragment.show(fragmentManager)
-    }
-
-    private fun onSpacSchedule() {
-        trueAnalytics.clickButton("${screenName()}__spac_schedule__click")
-        SpacScheduleFragment.show(fragmentManager)
-    }
-
-    private fun onVolumeRanking() {
-        trueAnalytics.clickButton("${screenName()}__volume_ranking__click")
-        VolumeRankingFragment.show(fragmentManager)
-    }
-
-    private fun onAdminMenu() {
-        MyAdminFragment.show(fragmentManager)
     }
 }
 
