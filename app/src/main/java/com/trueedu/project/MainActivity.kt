@@ -33,8 +33,8 @@ import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.AuthRemote
 import com.trueedu.project.ui.ads.AdmobManager
 import com.trueedu.project.ui.common.ButtonAction
-import com.trueedu.project.ui.common.PopupFragment
 import com.trueedu.project.ui.common.PopupType
+import com.trueedu.project.ui.common.TrueDialog
 import com.trueedu.project.ui.main.MainNavigation
 import com.trueedu.project.ui.main.MainScreen
 import com.trueedu.project.ui.theme.TrueProjectTheme
@@ -86,23 +86,7 @@ class MainActivity : AppCompatActivity() {
         if (screen.keepScreenOn.value) {
             keepScreenOnOff(true)
         }
-
-        if (local.disclaimerVisible) {
-            PopupFragment.show(
-                title = "투자 유의 사항",
-                desc = """
-                    본 앱에서 제공하는 정보는 투자 참고용으로만 사용되며, 투자 권유 또는 자문을 목적으로 하지 않습니다. 투자 결정은 사용자 본인의 판단에 따라 신중하게 이루어져야 하며, 투자 결과에 대한 책임은 사용자 본인에게 있습니다.
-
-                    The information provided in this app is for informational purposes only and is not intended as investment advice or a recommendation to buy or sell any securities. Investment decisions should be made based on your own judgment and research. You are solely responsible for your investment results.
-                """.trimIndent(),
-                popupType = PopupType.OK,
-                buttonActions = listOf(
-                    ButtonAction("확인") { local.disclaimerVisible = false }
-                ),
-                cancellable = true,
-                fragmentManager = supportFragmentManager,
-            )
-        }
+        // disclaimer는 setContent 내 composable로 표시
     }
 
     private fun keepScreenOnOff(on: Boolean) {
@@ -163,17 +147,42 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if (vm.forceUpdateVisible.value) {
                     ForceUpdateView(::gotoPlayStore)
-                } else if (vm.appNotice.value.available() && local.appNoticeId < vm.appNotice.value.id) {
-                    AppNoticePopup(vm.appNotice.value, supportFragmentManager) {
-                        trueAnalytics.clickButton("main__notice_close__click")
-                        if (vm.appNotice.value.cancellable) {
-                            local.appNoticeId = vm.appNotice.value.id
-                            vm.appNotice.value = AppNotice()
-                        } else {
-                            finishAffinity()
+                } else {
+                    // disclaimer 팝업 (최초 1회)
+                    if (vm.disclaimerVisible.value) {
+                        fun dismissDisclaimer() {
+                            local.disclaimerVisible = false
+                            vm.disclaimerVisible.value = false
+                        }
+                        TrueDialog(
+                            title = "투자 유의 사항",
+                            desc = """
+                                본 앱에서 제공하는 정보는 투자 참고용으로만 사용되며, 투자 권유 또는 자문을 목적으로 하지 않습니다. 투자 결정은 사용자 본인의 판단에 따라 신중하게 이루어져야 하며, 투자 결과에 대한 책임은 사용자 본인에게 있습니다.
+
+                                The information provided in this app is for informational purposes only and is not intended as investment advice or a recommendation to buy or sell any securities. Investment decisions should be made based on your own judgment and research. You are solely responsible for your investment results.
+                            """.trimIndent(),
+                            popupType = PopupType.OK,
+                            actions = listOf(
+                                ButtonAction("확인") { dismissDisclaimer() }
+                            ),
+                            cancellable = true,
+                            onDismiss = { dismissDisclaimer() },
+                        )
+                    }
+
+                    // 앱 공지 팝업
+                    if (vm.appNotice.value.available() && local.appNoticeId < vm.appNotice.value.id) {
+                        AppNoticePopup(vm.appNotice.value) {
+                            trueAnalytics.clickButton("main__notice_close__click")
+                            if (vm.appNotice.value.cancellable) {
+                                local.appNoticeId = vm.appNotice.value.id
+                                vm.appNotice.value = AppNotice()
+                            } else {
+                                finishAffinity()
+                            }
                         }
                     }
-                } else {
+
                     MainScreen(
                         activity = this,
                         googleAccount = googleAccount,

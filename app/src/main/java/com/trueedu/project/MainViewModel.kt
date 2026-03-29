@@ -42,6 +42,9 @@ class MainViewModel @Inject constructor(
     // notice
     val appNotice = mutableStateOf(AppNotice())
 
+    // disclaimer
+    val disclaimerVisible = mutableStateOf(local.disclaimerVisible)
+
     fun init() {
         if (local.getUserKeys().isEmpty()) {
             // 키가 없어서 자산을 못 불러오면 로딩 상태가 불필요함
