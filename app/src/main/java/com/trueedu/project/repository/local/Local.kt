@@ -60,6 +60,12 @@ class Local @Inject constructor(private val preferences: SharedPreferences) {
         }
     }
 
+    /** 캐시된 토큰 값을 직접 복원할 때 사용 */
+    fun setAccessToken(token: String, expiredAt: Long) {
+        accessToken = token
+        accessTokenExpiredAt = expiredAt
+    }
+
     var webSocketKey by preferences.string("")
 
     // dart 정보

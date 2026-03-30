@@ -8,4 +8,6 @@ data class UserKey(
     val appSecret: String?,
     val accountNum: String?,
     val htsId: String?,
+    val accessToken: String? = null,
+    val accessTokenExpiredAt: Long? = null,
 )

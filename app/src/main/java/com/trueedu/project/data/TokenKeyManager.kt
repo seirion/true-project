@@ -172,6 +172,41 @@ class TokenKeyManager @Inject constructor(
 
     fun setAccessToken(tokenResponse: TokenResponse) {
         local.setAccessToken(tokenResponse)
+        // 발급된 토큰을 현재 계정에 함께 저장해 두기
+        saveTokenToCurrentUserKey()
+    }
+
+    /** 현재 local 토큰을 userKeys 목록에서 현재 계정에 저장 */
+    private fun saveTokenToCurrentUserKey() {
+        val current = userKey.value ?: return
+        val list = getUserKeys()
+        val updated = list.map {
+            if (it.accountNum == current.accountNum) {
+                it.copy(
+                    accessToken = local.accessToken.takeIf { t -> t.isNotEmpty() },
+                    accessTokenExpiredAt = local.accessTokenExpiredAt.takeIf { t -> t > 0L },
+                )
+            } else it
+        }
+        local.userKeys = json.encodeToString(updated)
+    }
+
+    /** 선택된 계정의 저장된 토큰을 Local 에 복원하고, 만료됐거나 없으면 새로 발급 */
+    private fun restoreOrIssueToken(key: UserKey) {
+        val cachedToken = key.accessToken
+        val cachedExpiredAt = key.accessTokenExpiredAt ?: 0L
+
+        if (!cachedToken.isNullOrEmpty() && cachedExpiredAt > 0L) {
+            // 캐시된 토큰을 Local 에 복원
+            local.setAccessToken(cachedToken, cachedExpiredAt)
+            if (hasValidToken()) {
+                logD("restoring cached token for ${key.accountNum}")
+                MainScope().launch { event.emit(TokenOk) }
+                return
+            }
+        }
+        // 만료됐거나 없는 경우 새로 발급
+        issueAccessToken()
     }
 
     fun getUserKeys(): List<UserKey> {
@@ -184,22 +219,26 @@ class TokenKeyManager @Inject constructor(
 
     // 마지막에 추가
     fun addUserKey(userKey: UserKey) {
+        // 현재 계정의 토큰을 저장해 두기
+        saveTokenToCurrentUserKey()
+
         val list = getUserKeys().filter {
             it.accountNum != userKey.accountNum
         }
-
         val jsonString = json.encodeToString(list + userKey)
         local.userKeys = jsonString
         this.userKey.value = userKey
 
-        // 키 정보가 갱신되면 토큰을 재발급 받아야 함
-        clearToken()
         local.webSocketKey = ""
-        issueAccessToken()
+        // 선택한 계정의 캐시된 토큰 복원 or 새 발급
+        restoreOrIssueToken(userKey)
         issueWebSocketKey()
     }
 
     fun deleteUserKey(accountNum: String) {
+        // 삭제 전에 현재 계정 토큰 저장
+        saveTokenToCurrentUserKey()
+
         val userKeys = getUserKeys()
         val newUserKeys = userKeys.filter { it.accountNum != accountNum }
 
@@ -216,12 +255,12 @@ class TokenKeyManager @Inject constructor(
         if (newKey != userKey.value) {
             this.userKey.value = newKey
 
-            // 키 정보가 갱신되면 토큰을 재발급 받아야 함
-            clearToken()
             local.webSocketKey = ""
             if (newKey != null) {
-                issueAccessToken()
+                restoreOrIssueToken(newKey)
                 issueWebSocketKey()
+            } else {
+                clearToken()
             }
         }
     }
