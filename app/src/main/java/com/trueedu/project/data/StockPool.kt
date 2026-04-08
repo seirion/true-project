@@ -39,7 +39,7 @@ class StockPool @Inject constructor(
 
     /**
      * 1. local database 에서 우선 종목 정보를 먼저 로딩한다
-     * 2. 마스터파일 또는 realtime database 에 최신 데이터가 있으면 그것을 받아서
+     * 2. 현재 시각 기준으로 업데이트가 필요하면 마스터 파일을 직접 다운로드하여
      *    local database 갱신
      */
     fun loadStockInfo() {
@@ -51,27 +51,37 @@ class StockPool @Inject constructor(
             delisted = loadDelistedStocks()
             val localStocks = loadLocalStocks()
 
-            // 리모트 데이터가 필요한 지 체크
-            val remoteUpdatedTime = firebaseRealtimeDatabase.lastUpdatedTime()
-            val needUpdateRemote = needUpdateRemoteData(local.stockUpdatedAt, remoteUpdatedTime)
+            // 현재 시각 기준으로 마스터 파일 업데이트 필요 여부 체크
+            val currentTime = currentTimeToyyyyMMddHHmm()
+            val needUpdate = needUpdateRemoteData(local.stockUpdatedAt, currentTime)
 
-            if(needUpdateRemote) {
-                logD("종목 업데이트 ${local.stockUpdatedAt} < $remoteUpdatedTime")
-                val (_, stocks) = firebaseRealtimeDatabase.loadStocks()
+            logD("업데이트 체크 - 마스터 파일 직접 다운로드($needUpdate)")
 
-                status.value = Status.SUCCESS
-                this@StockPool.stocks = stocks
-                local.stockUpdatedAt = remoteUpdatedTime
-                logD("remote stocks(${stocks.size}) loaded")
-
-                if (stocks.isNotEmpty()) {
-                    writeToLocalDatabase(stocks.values)
+            if (needUpdate) {
+                logD("마스터 파일 다운로드 시작: localUpdatedAt=${local.stockUpdatedAt}, currentTime=$currentTime")
+                try {
+                    val stocksList = stockInfoDownloader.getStockInfoList()
+                    if (stocksList.isNotEmpty()) {
+                        stocks = stocksList.associateBy(StockInfo::code)
+                        local.stockUpdatedAt = currentTime
+                        writeToLocalDatabase(stocks.values)
+                        logD("마스터 파일 다운로드 완료: ${stocks.size} stocks")
+                    } else {
+                        // 다운로드 결과 없을 시 로컬 데이터 사용
+                        logD("마스터 파일 다운로드 결과 없음, 로컬 데이터 사용: ${localStocks.size}")
+                        stocks = localStocks
+                    }
+                } catch (e: Exception) {
+                    // 다운로드 실패 시 로컬 데이터 폴백
+                    logD("마스터 파일 다운로드 실패, 로컬 데이터 사용: $e")
+                    stocks = localStocks
                 }
             } else {
                 logD("종목 업데이트 불필요: ${localStocks.size}")
-                status.value = Status.SUCCESS
-                this@StockPool.stocks = localStocks
+                stocks = localStocks
             }
+
+            status.value = if (stocks.isNotEmpty()) Status.SUCCESS else Status.FAIL
         }
     }
 
