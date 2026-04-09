@@ -18,6 +18,7 @@ class OrderRemoteImpl(
         code: String,
         price: String,
         quantity: String,
+        isSpac: Boolean,
     ): Flow<OrderResponse> {
         return buySell(
             isBuy = true,
@@ -25,6 +26,7 @@ class OrderRemoteImpl(
             code = code,
             price = price,
             quantity = quantity,
+            isSpac = isSpac,
         )
     }
 
@@ -33,6 +35,7 @@ class OrderRemoteImpl(
         code: String,
         price: String,
         quantity: String,
+        isSpac: Boolean,
     ): Flow<OrderResponse> {
         return buySell(
             isBuy = false,
@@ -40,6 +43,7 @@ class OrderRemoteImpl(
             code = code,
             price = price,
             quantity = quantity,
+            isSpac = isSpac,
         )
     }
 
@@ -49,6 +53,7 @@ class OrderRemoteImpl(
         code: String,
         price: String,
         quantity: String,
+        isSpac: Boolean = false,
     ) = apiCallFlow {
 
         // 현금 매수, 현금 매도
@@ -84,9 +89,10 @@ class OrderRemoteImpl(
             "ORD_DVSN" to "00", // 주문 구분 - 일단 지정가로 주문하기
             "ORD_QTY" to quantity, // 주문 수량
             "ORD_UNPR" to price, // 주문 단가
-            "EXCG_ID_DVSN_CD" to "SOR", // 한국거래소 : KRX (기본값)
+            "EXCG_ID_DVSN_CD" to if (isSpac) "KRX" else "SOR", // 한국거래소 : KRX (기본값)
                                         // 대체거래소 (넥스트레이드) : NXT
                                         // SOR (Smart Order Routing) : SOR
+                                        // 스팩은 KRX 거래소에만 상장되므로 KRX 고정
         )
         orderService.buy(headers, body)
     }

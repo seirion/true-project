@@ -19,6 +19,7 @@ interface OrderRemote {
         code: String,
         price: String,
         quantity: String,
+        isSpac: Boolean = false,
     ): Flow<OrderResponse>
 
     fun sell(
@@ -26,6 +27,7 @@ interface OrderRemote {
         code: String,
         price: String,
         quantity: String,
+        isSpac: Boolean = false,
     ): Flow<OrderResponse>
 
     fun modifiable(accountNum: String): Flow<OrderModifiableResponse>
