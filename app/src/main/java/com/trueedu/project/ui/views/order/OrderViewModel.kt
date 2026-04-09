@@ -140,12 +140,14 @@ class OrderViewModel @Inject constructor(
             logD("order failed: empty accountNum")
         }
 
+        val isSpac = stockPool.get(code)?.spac() ?: false
         if (isBuy) {
             orderRemote.buy(
                 accountNum = userKey.accountNum!!,
                 code = code,
                 price = priceInput.value.text,
                 quantity = quantityInput.value.text,
+                isSpac = isSpac,
             )
         } else{
             orderRemote.sell(
@@ -153,6 +155,7 @@ class OrderViewModel @Inject constructor(
                 code = code,
                 price = priceInput.value.text,
                 quantity = quantityInput.value.text,
+                isSpac = isSpac,
             )
         }
             .flowOn(Dispatchers.IO)
