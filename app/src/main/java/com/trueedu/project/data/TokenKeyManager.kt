@@ -88,6 +88,20 @@ class TokenKeyManager @Inject constructor(
             logD("appKey appSecret is empty")
             return
         }
+        requestWebSocketKey(appKey, appSecret)
+    }
+
+    /** approval key 만료/무효 시 강제 재발급 */
+    fun reissueWebSocketKey() {
+        val appKey = userKey.value?.appKey ?: return
+        val appSecret = userKey.value?.appSecret ?: return
+        if (appKey.isEmpty() || appSecret.isEmpty()) return
+        logD("reissueWebSocketKey()")
+        local.webSocketKey = ""
+        requestWebSocketKey(appKey, appSecret)
+    }
+
+    private fun requestWebSocketKey(appKey: String, appSecret: String) {
         val request = WebSocketKeyRequest(
             grantType = "client_credentials",
             appKey = appKey,
