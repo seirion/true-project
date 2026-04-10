@@ -41,3 +41,7 @@ annotation class KisOkHttp
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class DartOkHttp
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class WebSocketOkHttp

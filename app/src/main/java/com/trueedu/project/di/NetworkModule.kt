@@ -182,11 +182,40 @@ object NetworkModule {
 
     // websocket 관련
 
+    /**
+     * 웹소켓 전용 OkHttpClient
+     * - callTimeout/readTimeout/writeTimeout 을 0(무제한)으로 설정해야 long-lived connection 유지 가능
+     * - KisOkHttp 클라이언트(20초 타임아웃)를 그대로 사용하면 비활성 구간에 timeout onFailure 발생
+     */
+    @Provides
+    @Singleton
+    @WebSocketOkHttp
+    fun provideWebSocketOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        chuckerInterceptor: ChuckerInterceptor,
+        flipperOkhttpInterceptor: FlipperOkhttpInterceptor,
+    ): OkHttpClient {
+        return OkHttpClient.Builder()
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    addHttpLoggingInterceptor()
+                }
+            }
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(chuckerInterceptor)
+            .addNetworkInterceptor(flipperOkhttpInterceptor)
+            .connectTimeout(connectTimeout.toJavaDuration())
+            .callTimeout(0, java.util.concurrent.TimeUnit.SECONDS)   // 무제한
+            .readTimeout(0, java.util.concurrent.TimeUnit.SECONDS)    // 무제한
+            .writeTimeout(writeTimeout.toJavaDuration())
+            .build()
+    }
+
     @Provides
     @Singleton
     fun provideWebSocketService(
         @WebSocketUrl webSocketUrl: String,
-        @KisOkHttp okHttpClient: OkHttpClient,
+        @WebSocketOkHttp okHttpClient: OkHttpClient,
     ): WebSocketService {
         return MyWebSocketService(webSocketUrl, okHttpClient)
     }
