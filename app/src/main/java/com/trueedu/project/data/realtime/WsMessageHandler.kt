@@ -97,6 +97,12 @@ class WsMessageHandler @Inject constructor(
 
         if (!foreground) return
 
+        // 이미 연결된 상태면 재연결 불필요
+        if (on.value) {
+            logD("already connected, skip")
+            return
+        }
+
         webSocketService.disconnect()
         webSocketService.connect(object: WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
