@@ -1,6 +1,7 @@
 package com.trueedu.project.data.realtime
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.TransactionId
@@ -50,6 +51,16 @@ class RealOrderManager @Inject constructor(
     fun start() {
         job = MainScope().launch(Dispatchers.IO) {
             launch {
+                // 웹소켓 연결/재연결 시 자동으로 호가 구독 재시도
+                snapshotFlow { wsMessageHandler.on.value }
+                    .collect { isConnected ->
+                        if (isConnected && code != null) {
+                            logD("websocket reconnected - resume quotes request for $code")
+                            beginRequests(code!!)
+                        }
+                    }
+            }
+            launch {
                 wsMessageHandler.observeEvent()
                     .filter {
                         it.header.transactionId == TransactionId.RealTimeQuotes ||
@@ -67,9 +78,6 @@ class RealOrderManager @Inject constructor(
                         data.value = it
                     }
             }
-        }
-        if (code != null) {
-            beginRequests(code!!)
         }
     }
 
