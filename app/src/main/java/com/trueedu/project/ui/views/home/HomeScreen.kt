@@ -36,6 +36,7 @@ import com.trueedu.project.ui.views.StockDetailFragment
 import com.trueedu.project.ui.views.order.OrderFragment
 import com.trueedu.project.ui.views.search.StockSearchFragment
 import com.trueedu.project.ui.views.setting.AppKeyInputFragment
+import com.trueedu.project.utils.toAccountNumFormat
 
 @Composable
 fun HomeScreen(
@@ -91,6 +92,9 @@ fun HomeScreen(
             return@Scaffold
         }
 
+        val rawAccountNum = vm.accountNum.value.replace("-", "")
+        val isPension = vm.isPensionAccount(rawAccountNum)
+
         val state = rememberLazyListState()
         LazyColumn(
             state = state,
@@ -99,49 +103,36 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            vm.userStocks.value?.output2?.firstOrNull()?.let {
-                item {
-                    AccountInfo(
-                        it,
-                        vm.marketPriceMode.value,
-                        onRefresh = {
-                            trueAnalytics.clickButton("home__refresh__click")
-                            vm.refresh {
-                                Toast.makeText(
-                                    context,
-                                    "자산 정보를 갱신했습니다.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        },
-                        vm::onChangeMarketPriceMode
-                    )
-                }
-            } ?: item {
-                Margin(32)
-                EmptyHome()
-            }
+            if (isPension) {
+                // IRP 계좌
+                val pensionData = vm.pensionStocks.value
+                val pensionItems = pensionData?.output1
+                    ?.filter { it.holdingQuantity.toDouble() > 0 }
+                    ?: emptyList()
 
-            vm.userStocks.value?.output1?.let {
-                val items = it.filter { it.holdingQuantity.toDouble() > 0 }
-                // 광고
-                if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
-                    item { NativeAdView(admobManager.nativeAd.value!!) }
+                pensionData?.output2?.let { detail ->
+                    item {
+                        PensionAccountInfo(
+                            accountDetail = detail,
+                            items = pensionItems,
+                            onRefresh = {
+                                trueAnalytics.clickButton("home__refresh__click")
+                                vm.refreshPension(rawAccountNum) {
+                                    Toast.makeText(context, "자산 정보를 갱신했습니다.", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        )
+                    }
+                } ?: item {
+                    Margin(32)
+                    EmptyHome()
                 }
-                itemsIndexed(items, { _, item -> item.code} ) { _, item ->
+
+                itemsIndexed(pensionItems, { _, item -> item.code }) { _, item ->
                     val stock = stockPool.get(item.code)
-                    HomeStockItem(
+                    PensionStockItem(
                         item = item,
                         stock = stock,
-                        marketPriceMode = vm.marketPriceMode.value,
-                        onPriceClick = { code ->
-                            trueAnalytics.clickButton("home__price__click")
-                            if (stockPool.get(code) == null) {
-                                Toast.makeText(context, "상장 폐지 종목입니다", Toast.LENGTH_SHORT).show()
-                                return@HomeStockItem
-                            }
-                            OrderFragment.show(code, fragmentManager)
-                        },
                         onItemClick = { code ->
                             stockPool.get(code)?.let { stockInfo ->
                                 trueAnalytics.clickButton("home__item__click")
@@ -149,6 +140,60 @@ fun HomeScreen(
                             }
                         },
                     )
+                }
+            } else {
+                // 일반 계좌
+                vm.userStocks.value?.output2?.firstOrNull()?.let {
+                    item {
+                        AccountInfo(
+                            it,
+                            vm.marketPriceMode.value,
+                            onRefresh = {
+                                trueAnalytics.clickButton("home__refresh__click")
+                                vm.refresh {
+                                    Toast.makeText(
+                                        context,
+                                        "자산 정보를 갱신했습니다.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            },
+                            vm::onChangeMarketPriceMode
+                        )
+                    }
+                } ?: item {
+                    Margin(32)
+                    EmptyHome()
+                }
+
+                vm.userStocks.value?.output1?.let {
+                    val items = it.filter { it.holdingQuantity.toDouble() > 0 }
+                    // 광고
+                    if (remoteConfig.adVisible.value && admobManager.nativeAd.value != null) {
+                        item { NativeAdView(admobManager.nativeAd.value!!) }
+                    }
+                    itemsIndexed(items, { _, item -> item.code }) { _, item ->
+                        val stock = stockPool.get(item.code)
+                        HomeStockItem(
+                            item = item,
+                            stock = stock,
+                            marketPriceMode = vm.marketPriceMode.value,
+                            onPriceClick = { code ->
+                                trueAnalytics.clickButton("home__price__click")
+                                if (stockPool.get(code) == null) {
+                                    Toast.makeText(context, "상장 폐지 종목입니다", Toast.LENGTH_SHORT).show()
+                                    return@HomeStockItem
+                                }
+                                OrderFragment.show(code, fragmentManager)
+                            },
+                            onItemClick = { code ->
+                                stockPool.get(code)?.let { stockInfo ->
+                                    trueAnalytics.clickButton("home__item__click")
+                                    StockDetailFragment.show(stockInfo, fragmentManager)
+                                }
+                            },
+                        )
+                    }
                 }
             }
         }

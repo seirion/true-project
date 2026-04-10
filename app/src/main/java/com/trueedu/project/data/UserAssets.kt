@@ -2,6 +2,7 @@ package com.trueedu.project.data
 
 import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.account.AccountResponse
+import com.trueedu.project.model.dto.account.PensionAccountResponse
 import com.trueedu.project.model.event.TokenIssued
 import com.trueedu.project.model.event.TokenOk
 import com.trueedu.project.repository.remote.AccountRemote
@@ -24,20 +25,84 @@ class UserAssets @Inject constructor(
 ) {
     var job: Job? = null
     val assets = MutableSharedFlow<AccountResponse>(1)
+    val pensionAssets = MutableSharedFlow<PensionAccountResponse>(1)
+
+    private fun isPensionAccount(accountNum: String): Boolean {
+        return accountNum.length >= 2 && accountNum.takeLast(2) == "29"
+    }
+
+    private fun loadAccountData(accountNum: String) {
+        if (isPensionAccount(accountNum)) {
+            loadPensionStocks(accountNum)
+        } else {
+            loadUserStocks()
+        }
+    }
 
     // 앱이 foreground 상태가 될 때
     fun start() {
         logD("start")
-        loadUserStocks()
+        val accountNum = tokenKeyManager.userKey.value?.accountNum ?: ""
+        loadAccountData(accountNum)
 
         job = MainScope().launch {
             tokenKeyManager.observeTokenKeyEvent()
                 .collect {
                     if (it is TokenOk || it is TokenIssued) {
-                        loadUserStocks()
+                        val num = tokenKeyManager.userKey.value?.accountNum ?: ""
+                        loadAccountData(num)
                     }
                 }
         }
+    }
+
+    fun loadPensionStocks(
+        accountNum: String,
+        onSuccess: () -> Unit = {},
+        onFail: (Throwable) -> Unit = {},
+    ) {
+        accountRemote.getPensionStocks(accountNum)
+            .flowOn(Dispatchers.IO)
+            .catch {
+                onFail(it)
+            }
+            .onEach {
+                if (it.fk100.isNotEmpty() && it.nk100.isNotEmpty() && it.output1.size >= 50) {
+                    loadPensionNext(it, accountNum, it.fk100, it.nk100, onSuccess, onFail)
+                } else {
+                    pensionAssets.emit(it)
+                    onSuccess()
+                }
+            }
+            .flowOn(Dispatchers.Main)
+            .launchIn(MainScope())
+    }
+
+    private fun loadPensionNext(
+        prevResult: PensionAccountResponse,
+        accountNum: String,
+        fk100: String,
+        nk100: String,
+        onSuccess: () -> Unit = {},
+        onFail: (Throwable) -> Unit = {},
+    ) {
+        accountRemote.getPensionStocks(accountNum, fk100, nk100)
+            .flowOn(Dispatchers.IO)
+            .catch {
+                onFail(it)
+            }
+            .onEach {
+                val output1 = prevResult.output1 + it.output1
+                val result = it.copy(output1 = output1)
+                if (it.fk100.isNotEmpty() && it.nk100.isNotEmpty() && it.output1.size >= 50) {
+                    loadPensionNext(result, accountNum, it.fk100, it.nk100, onSuccess, onFail)
+                } else {
+                    pensionAssets.emit(result)
+                    onSuccess()
+                }
+            }
+            .flowOn(Dispatchers.Main)
+            .launchIn(MainScope())
     }
 
     // 앱이 background 상태가 될 때

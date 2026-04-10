@@ -38,4 +38,25 @@ class AccountRemoteImpl(
         )
         accountService.getAccount(headers, queries)
     }
+
+    override fun getPensionStocks(
+        accountNum: String,
+        fk100: String,
+        nk100: String,
+    ) = apiCallFlow {
+        val tc = if (fk100.isEmpty() || nk100.isEmpty()) "" else "N"
+        val headers = mapOf(
+            "tr_id" to "TTTC2208R", // 거래 ID - 퇴직연금 잔고 조회
+            "tr_cont" to tc,
+        )
+        val queries = mapOf(
+            "CANO" to accountNum.take(8), // 종합계좌번호
+            "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌상품코드 (IRP: 29)
+            "ACCA_DVSN_CD" to "00", // 적립금구분코드
+            "INQR_DVSN" to "00", // 조회구분
+            "CTX_AREA_FK100" to fk100,
+            "CTX_AREA_NK100" to nk100,
+        )
+        accountService.getPensionAccount(headers, queries)
+    }
 }

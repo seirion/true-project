@@ -11,6 +11,7 @@ import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.UserAssets
 import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.account.AccountResponse
+import com.trueedu.project.model.dto.account.PensionAccountResponse
 import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
 import com.trueedu.project.model.dto.account.AccountAsset
 import com.trueedu.project.model.dto.firebase.AppNotice
@@ -36,6 +37,7 @@ class MainViewModel @Inject constructor(
     val googleSignInAccount = mutableStateOf<GoogleSignInAccount?>(null)
     val accountNum = mutableStateOf("")
     val userStocks = mutableStateOf<AccountResponse?>(null)
+    val pensionStocks = mutableStateOf<PensionAccountResponse?>(null)
     val marketPriceMode = mutableStateOf(local.marketPriceMode)
     val forceUpdateVisible = mutableStateOf(false)
 
@@ -74,6 +76,11 @@ class MainViewModel @Inject constructor(
                 }
             }
             launch {
+                userAssets.pensionAssets.collectLatest {
+                    pensionStocks.value = it
+                }
+            }
+            launch {
                 googleAccount.loginSignal
                     .collect {
                         googleSignInAccount.value = googleAccount.googleSignInAccount
@@ -100,6 +107,19 @@ class MainViewModel @Inject constructor(
             onFail = {
             }
         )
+    }
+
+    fun refreshPension(accountNum: String, onSuccess: () -> Unit = {}) {
+        userAssets.loadPensionStocks(
+            accountNum = accountNum,
+            onSuccess = onSuccess,
+            onFail = {},
+        )
+    }
+
+    fun isPensionAccount(accountNum: String): Boolean {
+        // 계좌번호 끝 2자리가 29이면 IRP 계좌
+        return accountNum.length >= 2 && accountNum.takeLast(2) == "29"
     }
 
     fun onChangeMarketPriceMode(selected: Int) {
