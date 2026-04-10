@@ -4,6 +4,7 @@ import com.trueedu.project.di.NormalService
 import com.trueedu.project.network.apiCallFlow
 import com.trueedu.project.repository.remote.service.AccountService
 
+
 class AccountRemoteImpl(
     @NormalService
     private val accountService: AccountService
@@ -58,5 +59,25 @@ class AccountRemoteImpl(
             "CTX_AREA_NK100" to nk100,
         )
         accountService.getPensionAccount(headers, queries)
+    }
+
+    override fun getPensionFundStocks(
+        accountNum: String,
+        fk100: String,
+        nk100: String,
+    ) = apiCallFlow {
+        val tc = if (fk100.isEmpty() || nk100.isEmpty()) "" else "N"
+        val headers = mapOf(
+            "tr_id" to "TTTC2202R", // 거래 ID - 퇴직연금 펀드 잔고 조회
+            "tr_cont" to tc,
+        )
+        val queries = mapOf(
+            "CANO" to accountNum.take(8), // 종합계좌번호
+            "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌상품코드 (IRP: 29)
+            "USER_DVSN_CD" to "00", // 사용자구분코드
+            "CTX_AREA_FK100" to fk100,
+            "CTX_AREA_NK100" to nk100,
+        )
+        accountService.getPensionFundAccount(headers, queries)
     }
 }

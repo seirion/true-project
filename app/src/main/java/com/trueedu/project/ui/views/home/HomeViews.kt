@@ -21,6 +21,7 @@ import com.trueedu.project.model.dto.account.AccountAsset
 import com.trueedu.project.model.dto.account.AccountDetail
 import com.trueedu.project.model.dto.account.PensionAsset
 import com.trueedu.project.model.dto.account.PensionDetail
+import com.trueedu.project.model.dto.account.PensionFundAsset
 import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TouchIconWithSizeRotating
@@ -354,6 +355,57 @@ fun PensionStockItem(
             val profit = item.profitLossAmount.toDouble()
             val profitRate = try {
                 item.evaluationEarningsRate.toDouble()
+            } catch (_: NumberFormatException) {
+                0.0
+            }
+            TrueText(
+                s = formatter.format(evalAmount),
+                fontSize = 14,
+                fontWeight = FontWeight.W600,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            TrueText(
+                s = "${formatter.format(profit, true)} (${rateFormatter.format(profitRate, true)})",
+                fontSize = 12,
+                color = ChartColor.color(profit),
+            )
+        }
+    }
+}
+
+@Composable
+fun PensionFundItem(
+    item: PensionFundAsset,
+) {
+    val formatter = CashFormatter()
+    val rateFormatter = RateFormatter()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            TrueText(
+                s = item.nameKr,
+                fontSize = 14,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+            )
+            val priceString = intFormatter.format(item.purchaseAveragePrice.toDouble())
+            TrueText(
+                s = "${priceString}원 • ${item.holdingQuantity}좌",
+                fontSize = 13,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+        }
+
+        Column(horizontalAlignment = Alignment.End) {
+            val evalAmount = item.evaluationAmount.toDouble()
+            val profit = item.profitLossAmount.toDouble()
+            val profitRate = try {
+                item.profitLossRate.toDouble()
             } catch (_: NumberFormatException) {
                 0.0
             }

@@ -12,6 +12,7 @@ import com.trueedu.project.data.UserAssets
 import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.model.dto.account.PensionAccountResponse
+import com.trueedu.project.model.dto.account.PensionFundResponse
 import com.trueedu.project.data.firebase.FirebaseRealtimeDatabase
 import com.trueedu.project.model.dto.account.AccountAsset
 import com.trueedu.project.model.dto.firebase.AppNotice
@@ -38,6 +39,7 @@ class MainViewModel @Inject constructor(
     val accountNum = mutableStateOf("")
     val userStocks = mutableStateOf<AccountResponse?>(null)
     val pensionStocks = mutableStateOf<PensionAccountResponse?>(null)
+    val pensionFundStocks = mutableStateOf<PensionFundResponse?>(null)
     val marketPriceMode = mutableStateOf(local.marketPriceMode)
     val forceUpdateVisible = mutableStateOf(false)
 
@@ -81,6 +83,11 @@ class MainViewModel @Inject constructor(
                 }
             }
             launch {
+                userAssets.pensionFundAssets.collectLatest {
+                    pensionFundStocks.value = it
+                }
+            }
+            launch {
                 googleAccount.loginSignal
                     .collect {
                         googleSignInAccount.value = googleAccount.googleSignInAccount
@@ -113,6 +120,10 @@ class MainViewModel @Inject constructor(
         userAssets.loadPensionStocks(
             accountNum = accountNum,
             onSuccess = onSuccess,
+            onFail = {},
+        )
+        userAssets.loadPensionFundStocks(
+            accountNum = accountNum,
             onFail = {},
         )
     }

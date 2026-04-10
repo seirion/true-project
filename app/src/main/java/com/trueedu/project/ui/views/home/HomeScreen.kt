@@ -141,6 +141,14 @@ fun HomeScreen(
                         },
                     )
                 }
+
+                // 펀드 목록
+                val fundItems = vm.pensionFundStocks.value?.output1
+                    ?.filter { it.holdingQuantity.toDoubleOrNull()?.let { q -> q > 0 } == true }
+                    ?: emptyList()
+                itemsIndexed(fundItems, { _, item -> item.code }) { _, item ->
+                    PensionFundItem(item = item)
+                }
             } else {
                 // 일반 계좌
                 vm.userStocks.value?.output2?.firstOrNull()?.let {

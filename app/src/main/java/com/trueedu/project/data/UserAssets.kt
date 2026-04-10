@@ -3,6 +3,7 @@ package com.trueedu.project.data
 import com.trueedu.project.data.log.logD
 import com.trueedu.project.model.dto.account.AccountResponse
 import com.trueedu.project.model.dto.account.PensionAccountResponse
+import com.trueedu.project.model.dto.account.PensionFundResponse
 import com.trueedu.project.model.event.TokenIssued
 import com.trueedu.project.model.event.TokenOk
 import com.trueedu.project.repository.remote.AccountRemote
@@ -26,6 +27,7 @@ class UserAssets @Inject constructor(
     var job: Job? = null
     val assets = MutableSharedFlow<AccountResponse>(1)
     val pensionAssets = MutableSharedFlow<PensionAccountResponse>(1)
+    val pensionFundAssets = MutableSharedFlow<PensionFundResponse>(1)
 
     private fun isPensionAccount(accountNum: String): Boolean {
         return accountNum.length >= 2 && accountNum.takeLast(2) == "29"
@@ -34,6 +36,7 @@ class UserAssets @Inject constructor(
     private fun loadAccountData(accountNum: String) {
         if (isPensionAccount(accountNum)) {
             loadPensionStocks(accountNum)
+            loadPensionFundStocks(accountNum)
         } else {
             loadUserStocks()
         }
@@ -71,6 +74,51 @@ class UserAssets @Inject constructor(
                     loadPensionNext(it, accountNum, it.fk100, it.nk100, onSuccess, onFail)
                 } else {
                     pensionAssets.emit(it)
+                    onSuccess()
+                }
+            }
+            .flowOn(Dispatchers.Main)
+            .launchIn(MainScope())
+    }
+
+    fun loadPensionFundStocks(
+        accountNum: String,
+        onSuccess: () -> Unit = {},
+        onFail: (Throwable) -> Unit = {},
+    ) {
+        accountRemote.getPensionFundStocks(accountNum)
+            .flowOn(Dispatchers.IO)
+            .catch { onFail(it) }
+            .onEach {
+                if (it.fk100.isNotEmpty() && it.nk100.isNotEmpty() && it.output1.size >= 50) {
+                    loadPensionFundNext(it, accountNum, it.fk100, it.nk100, onSuccess, onFail)
+                } else {
+                    pensionFundAssets.emit(it)
+                    onSuccess()
+                }
+            }
+            .flowOn(Dispatchers.Main)
+            .launchIn(MainScope())
+    }
+
+    private fun loadPensionFundNext(
+        prevResult: PensionFundResponse,
+        accountNum: String,
+        fk100: String,
+        nk100: String,
+        onSuccess: () -> Unit = {},
+        onFail: (Throwable) -> Unit = {},
+    ) {
+        accountRemote.getPensionFundStocks(accountNum, fk100, nk100)
+            .flowOn(Dispatchers.IO)
+            .catch { onFail(it) }
+            .onEach {
+                val output1 = prevResult.output1 + it.output1
+                val result = it.copy(output1 = output1)
+                if (it.fk100.isNotEmpty() && it.nk100.isNotEmpty() && it.output1.size >= 50) {
+                    loadPensionFundNext(result, accountNum, it.fk100, it.nk100, onSuccess, onFail)
+                } else {
+                    pensionFundAssets.emit(result)
                     onSuccess()
                 }
             }
