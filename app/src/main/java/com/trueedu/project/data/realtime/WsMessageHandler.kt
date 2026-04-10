@@ -113,6 +113,16 @@ class WsMessageHandler @Inject constructor(
                     val res = WsResponse.from(text)
                     logD("transactionId ${res.header.transactionId}")
 
+                    // approval key 만료/무효 시 키 재발급 후 재연결
+                    if (res.body?.returnCode == "1" && res.body.msgCode == "OPSP0011") {
+                        logD("invalid approval key - reissue and reconnect")
+                        local.webSocketKey = ""
+                        MainScope().launch {
+                            tokenKeyManager.reissueWebSocketKey()
+                        }
+                        return
+                    }
+
                     when (res.header.transactionId) {
                         TransactionId.PingPong -> webSocketService.sendMessage(text)
                         TransactionId.RealTimeQuotes,
