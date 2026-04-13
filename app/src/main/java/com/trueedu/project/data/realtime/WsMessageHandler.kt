@@ -8,8 +8,10 @@ import com.trueedu.project.data.log.logE
 import com.trueedu.project.model.event.WebSocketKeyIssued
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
+import com.trueedu.project.model.ws.TradeNotification
 import com.trueedu.project.model.ws.TransactionId
 import com.trueedu.project.model.ws.WsResponse
+import com.trueedu.project.utils.decryptAes
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.service.WebSocketService
 import kotlinx.coroutines.CoroutineScope
@@ -40,10 +42,16 @@ class WsMessageHandler @Inject constructor(
     private var foreground = false
     private var stopAt = 0L // background 로 진입한 시각
 
-    // 거래 데이터
+    // 거래 데이터 (시세 체결 - 구독 종목 전체)
     val tradeSignal = MutableSharedFlow<RealTimeTrade>()
     // 호가 데이터
     val quotesSignal = MutableSharedFlow<RealTimeOrder>()
+    // 내 주문 체결 통보 (H0STCNI0)
+    val orderExecutionSignal = MutableSharedFlow<TradeNotification>()
+
+    // 체결통보 AES 복호화 키/IV (구독 응답에서 수신)
+    private var tradeNotificationKey: String? = null
+    private var tradeNotificationIv: String? = null
 
     init {
         MainScope().launch {
@@ -107,7 +115,9 @@ class WsMessageHandler @Inject constructor(
             override fun onMessage(webSocket: WebSocket, text: String) {
                 super.onMessage(webSocket, text)
                 logD("onMessage: $text")
-                if (text[0] == '0' || text[0] == '1') { // 실시간체결 or 실시간호가
+                if (text[0] == '1') { // 암호화된 실시간 데이터 (체결통보)
+                    handleEncryptedRealTimeResponse(text)
+                } else if (text[0] == '0') { // 비암호화 실시간 데이터 (시세체결, 호가)
                     handleRealTimeResponse(text)
                 } else { // system message or PINGPONG
                     val res = WsResponse.from(text)
@@ -123,8 +133,16 @@ class WsMessageHandler @Inject constructor(
                                 event.emit(res)
                             }
                         }
-                        TransactionId.TradeNotification -> {
-                            // TODO
+                        TransactionId.TradeNotification,
+                        TransactionId.TradeNotificationTest -> {
+                            // 체결통보 구독 응답: AES key/iv 저장
+                            val iv = res.body?.output?.iv
+                            val key = res.body?.output?.key
+                            if (!iv.isNullOrEmpty() && !key.isNullOrEmpty()) {
+                                tradeNotificationIv = iv
+                                tradeNotificationKey = key
+                                logD("TradeNotification AES key/iv saved")
+                            }
                         }
                     }
                 }
@@ -145,6 +163,44 @@ class WsMessageHandler @Inject constructor(
                 }
             }
         })
+    }
+
+    /**
+     * 암호화된 실시간 데이터 처리 (첫 번째 문자가 '1')
+     * 현재는 체결통보(H0STCNI0)만 암호화됨
+     */
+    private fun handleEncryptedRealTimeResponse(text: String) {
+        val org = text.split("|")
+        val transactionId = TransactionId.entries.firstOrNull { it.value == org[1] }
+        val encryptedData = org[3]
+
+        when (transactionId) {
+            TransactionId.TradeNotification,
+            TransactionId.TradeNotificationTest -> {
+                val key = tradeNotificationKey
+                val iv = tradeNotificationIv
+                if (key.isNullOrEmpty() || iv.isNullOrEmpty()) {
+                    logE("TradeNotification AES key/iv not ready, skipping")
+                    return
+                }
+                val decrypted = decryptAes(encryptedData, key, iv)
+                if (decrypted.isEmpty()) {
+                    logE("TradeNotification AES decryption failed")
+                    return
+                }
+                val notification = TradeNotification.from(decrypted)
+                // pValue[13] == "2" 인 경우만 실제 체결 통보
+                if (TradeNotification.isExecution(notification.data)) {
+                    logD("OrderExecution: ${notification.code} ${notification.execQty}주 @${notification.execPrice}")
+                    MainScope().launch {
+                        orderExecutionSignal.emit(notification)
+                    }
+                }
+            }
+            else -> {
+                logD("Unknown encrypted transactionId: ${org[1]}")
+            }
+        }
     }
 
     private fun handleRealTimeResponse(text: String) {

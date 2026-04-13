@@ -16,5 +16,7 @@ enum class TransactionId(val value: String) {
     @SerialName("H0NXCNT0")
     RealTimeTradeNxt("H0NXCNT0"), // 실시간 체결 (NXT)
     @SerialName("H0STCNI0")
-    TradeNotification("H0STCNI0"), // 체결 통보
+    TradeNotification("H0STCNI0"), // 체결 통보 (실전)
+    @SerialName("H0STCNI9")
+    TradeNotificationTest("H0STCNI9"), // 체결 통보 (모의)
 }

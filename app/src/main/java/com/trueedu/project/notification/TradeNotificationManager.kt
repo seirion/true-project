@@ -11,6 +11,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.trueedu.project.MainActivity
 import com.trueedu.project.R
 import com.trueedu.project.model.ws.RealTimeTrade
+import com.trueedu.project.model.ws.TradeNotification
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -44,7 +45,48 @@ class TradeNotificationManager @Inject constructor(
     }
 
     /**
-     * 실시간 체결 이벤트를 notification으로 표시
+     * 내 주문 체결 통보(H0STCNI0)를 notification으로 표시
+     */
+    fun showOrderExecutionNotification(notification: TradeNotification, stockName: String? = null) {
+        val notificationManager = NotificationManagerCompat.from(context)
+        if (!notificationManager.areNotificationsEnabled()) return
+
+        val displayName = if (!stockName.isNullOrEmpty()) stockName else notification.code
+        val buySell = if (notification.isBuy) "매수" else "매도"
+        val title = "[$buySell 체결] $displayName"
+        val body = buildString {
+            append("${formatQty(notification.execQty)}주")
+            append(" @")
+            append(formatPrice(notification.execPrice))
+            append("  |  ")
+            append(formatTime(notification.execTime))
+        }
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("code", notification.code)
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            notification.code.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+        val notif = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification_trade)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        notificationManager.notify(notificationIdCounter.getAndIncrement(), notif)
+    }
+
+    /**
+     * 실시간 체결 이벤트를 notification으로 표시 (시세 체결용 - 현재 미사용)
      */
     fun showTradeNotification(trade: RealTimeTrade, stockName: String? = null) {
         val notificationManager = NotificationManagerCompat.from(context)
@@ -86,6 +128,10 @@ class TradeNotificationManager @Inject constructor(
 
     private fun formatPrice(price: Double): String {
         return "%,.0f원".format(price)
+    }
+
+    private fun formatQty(qty: Double): String {
+        return "%,.0f".format(qty)
     }
 
     private fun formatRate(rate: Double): String {
