@@ -11,6 +11,7 @@ import com.orhanobut.logger.Logger
 import com.trueedu.project.BuildConfig
 import com.trueedu.project.network.TokenAuthenticator
 import com.trueedu.project.network.TokenInterceptor
+import com.trueedu.project.network.TokenRefreshInterceptor
 import com.trueedu.project.network.addHttpLoggingInterceptor
 import com.trueedu.project.repository.local.Local
 import com.trueedu.project.repository.remote.service.AuthService
@@ -113,6 +114,8 @@ object NetworkModule {
         loggingInterceptor: HttpLoggingInterceptor,
         chuckerInterceptor: ChuckerInterceptor,
         tokenInterceptor: TokenInterceptor,
+        tokenRefreshInterceptor: TokenRefreshInterceptor,
+        tokenAuthenticator: TokenAuthenticator,
         flipperOkhttpInterceptor: FlipperOkhttpInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
@@ -121,7 +124,9 @@ object NetworkModule {
                     addHttpLoggingInterceptor()
                 }
             }
-            .addInterceptor(tokenInterceptor)
+            .addInterceptor(tokenInterceptor)         // 요청에 토큰 헤더 삽입
+            .addInterceptor(tokenRefreshInterceptor)  // 응답 body에서 토큰 만료 감지 → 갱신 + 재시도
+            .authenticator(tokenAuthenticator)        // 혹시 401이 오는 경우 대비
             .addInterceptor(loggingInterceptor)
             .addInterceptor(chuckerInterceptor)
             .addNetworkInterceptor(flipperOkhttpInterceptor)
