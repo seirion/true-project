@@ -49,7 +49,9 @@ class TradeNotificationWorker @Inject constructor(
             wsMessageHandler.orderExecutionSignal.collect { notification ->
                 Log.d(TAG, "order execution received: ${notification.code} ${notification.execQty}주 @${notification.execPrice}")
                 val stockName = stockPool.get(notification.code)?.nameKr
-                tradeNotificationManager.showOrderExecutionNotification(notification, stockName)
+                // profileImageUrl: 종목 로고 URL이 있을 때 넘기면 헤즈업 팝업 좌측에 표시됨
+                // 현재는 별도 로고 URL이 없으므로 null (로고 URL 데이터 추가 시 여기에 연결)
+                tradeNotificationManager.showOrderExecutionNotification(notification, stockName, profileImageUrl = null)
             }
         }
     }
