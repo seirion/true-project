@@ -1,6 +1,7 @@
 package com.trueedu.project.repository.remote.service
 
 import com.trueedu.project.model.dto.price.DailyPriceResponse
+import com.trueedu.project.model.dto.price.IndexResponse
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
 import retrofit2.Response
@@ -26,4 +27,10 @@ interface PriceService {
         @HeaderMap headers: Map<String, String>,
         @QueryMap queries: Map<String, String>
     ): Response<DailyPriceResponse>
+
+    @GET("uapi/domestic-stock/v1/quotations/inquire-index-price")
+    suspend fun indexPrice(
+        @HeaderMap headers: Map<String, String>,
+        @QueryMap queries: Map<String, String>
+    ): Response<IndexResponse>
 }

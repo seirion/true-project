@@ -19,4 +19,6 @@ enum class TransactionId(val value: String) {
     TradeNotification("H0STCNI0"), // 체결 통보 (실전)
     @SerialName("H0STCNI9")
     TradeNotificationTest("H0STCNI9"), // 체결 통보 (모의)
+    @SerialName("H0UPCNT0")
+    RealTimeIndex("H0UPCNT0"), // 실시간 업종지수
 }
