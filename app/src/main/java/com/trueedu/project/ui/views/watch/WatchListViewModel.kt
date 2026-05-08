@@ -56,6 +56,15 @@ class WatchListViewModel @Inject constructor(
             loading.value = false
         }
 
+        // 화면 복귀 시 즉시 재구독
+        // combine + distinctUntilChanged 조합은 list/page 가 변경되지 않으면 emit 을 막기 때문에,
+        // onStop() 에서 해제된 구독이 복귀 시 자동으로 복구되지 않는다.
+        // 또한 makeRequest() 는 호출 시점의 currentTradeTransactionId() 를 사용하므로
+        // 재구독 시 NXT 여부도 자동으로 반영된다.
+        if (!loading.value && currentPage.value != null && hasAppKey()) {
+            requestRealtimePrice()
+        }
+
         job = viewModelScope.launch {
             launch {
                 combine(
