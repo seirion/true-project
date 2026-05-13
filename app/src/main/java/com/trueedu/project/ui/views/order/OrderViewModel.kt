@@ -95,6 +95,7 @@ class OrderViewModel @Inject constructor(
                 logD("호가 api: $it")
                 tradeBase.value = it
             }
+            .catch { logD("호가 api 오류: $it") }
             .launchIn(viewModelScope)
 
         // 가격 기본값
@@ -107,6 +108,7 @@ class OrderViewModel @Inject constructor(
                     )
                 }
             }
+            .catch { logD("현재가 api 오류: $it") }
             .launchIn(viewModelScope)
 
         viewModelScope.launch {

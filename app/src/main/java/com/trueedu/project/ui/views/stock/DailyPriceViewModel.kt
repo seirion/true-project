@@ -8,6 +8,7 @@ import com.trueedu.project.model.dto.price.DailyPriceResponse
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.yyyyMMdd
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.time.LocalDate
@@ -63,6 +64,7 @@ class DailyPriceViewModel @Inject constructor(
                 }
                 loading.value = false
             }
+            .catch { logD("일별 시세 api 오류: $it") }
             .launchIn(viewModelScope)
     }
 }
