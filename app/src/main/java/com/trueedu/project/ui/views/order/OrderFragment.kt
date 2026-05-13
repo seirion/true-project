@@ -36,18 +36,22 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class OrderFragment: BaseFragment() {
     companion object {
+        private const val KEY_CODE = "code"
+
         fun show(
             code: String,
             fragmentManager: FragmentManager
         ): OrderFragment {
             val fragment = OrderFragment()
-            fragment.code = code
+            fragment.arguments = Bundle().apply { putString(KEY_CODE, code) }
             fragment.show(fragmentManager, "trading")
             return fragment
         }
     }
 
-    lateinit var code: String
+    private val code: String by lazy {
+        requireArguments().getString(KEY_CODE)!!
+    }
     private val vm by viewModels<OrderViewModel>()
     private val modifyVm by viewModels<OrderModifyViewModel>()
     private val executionVm by viewModels<OrderExecutionViewModel>()
