@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -67,6 +69,7 @@ class OrderFragment: BaseFragment() {
     private lateinit var balanceDrawer: BalanceDrawer
 
     private val currentTab = mutableStateOf(OrderTab.Order)
+    private val showSearch = mutableStateOf(false)
 
     private fun setOrderTab(tab: OrderTab) {
         currentTab.value = tab
@@ -172,10 +175,20 @@ class OrderFragment: BaseFragment() {
 
     @Composable
     override fun BodyScreen() {
+        if (showSearch.value) {
+            StockSearchScreen(vm = vm, onClose = { showSearch.value = false })
+            return
+        }
+
         Scaffold(
             topBar = {
                 val stockName = vm.nameKr.value
-                BackTitleTopBar(stockName, ::dismissAllowingStateLoss)
+                BackTitleTopBar(
+                    title = stockName,
+                    onBack = ::dismissAllowingStateLoss,
+                    actionIcon = Icons.Default.Search,
+                    onAction = { showSearch.value = true },
+                )
             },
             modifier = Modifier
                 .fillMaxSize()

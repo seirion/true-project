@@ -15,8 +15,10 @@ import com.trueedu.project.model.dto.firebase.StockInfo
 import com.trueedu.project.model.dto.price.OrderModifiableDetail
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
+import com.trueedu.project.model.dao.StockInfoLocal
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
+import com.trueedu.project.repository.local.StockLocal
 import com.trueedu.project.repository.remote.OrderRemote
 import com.trueedu.project.repository.remote.PriceRemote
 import com.trueedu.project.utils.decreasePrice
@@ -45,10 +47,22 @@ class OrderViewModel @Inject constructor(
     private val priceManager: RealPriceManager,
     private val orderManager: RealOrderManager,
     val userAssets: UserAssets,
+    private val stockLocal: StockLocal,
 ): ViewModel() {
 
     companion object {
         private val empty = List(10) { 0.0 to 0.0 }
+    }
+
+    // 종목 검색용
+    private var allStocks: List<StockInfoLocal> = emptyList()
+    val searchQuery = mutableStateOf("")
+    val searchResults = mutableStateOf<List<StockInfoLocal>>(emptyList())
+
+    init {
+        viewModelScope.launch {
+            allStocks = stockLocal.getAllStocks()
+        }
     }
 
     var code: String = ""
@@ -126,6 +140,25 @@ class OrderViewModel @Inject constructor(
     fun destroy() {
         priceManager.popRequest(code)
         orderManager.cancelRequests()
+    }
+
+    fun updateSearchQuery(query: String) {
+        searchQuery.value = query
+        val keyword = query.trim()
+        if (keyword.isEmpty()) {
+            searchResults.value = emptyList()
+            return
+        }
+        searchResults.value = allStocks.filter {
+            it.nameKr.contains(keyword, ignoreCase = true) ||
+                it.code.contains(keyword, ignoreCase = true)
+        }
+    }
+
+    fun selectStock(stock: StockInfoLocal) {
+        searchQuery.value = ""
+        searchResults.value = emptyList()
+        init(stock.code, null)
     }
 
     fun buy(onSuccess: () -> Unit, onFail: (String) -> Unit) {
