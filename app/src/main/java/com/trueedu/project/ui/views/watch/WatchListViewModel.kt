@@ -71,6 +71,7 @@ class WatchListViewModel @Inject constructor(
                     .distinctUntilChanged()
                     .collect { list ->
                         if (list.isEmpty()) return@collect
+                        if (currentPage.value == null) return@collect
                         logD("watchList: $list")
                         loading.value = false
 

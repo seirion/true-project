@@ -16,6 +16,8 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.Calendar
@@ -66,6 +68,7 @@ class RealPriceManager @Inject constructor(
     }
 
     private var job: Job? = null
+    private val mutex = Mutex()
 
     /**
      * screenName to List<ticker>
@@ -140,27 +143,29 @@ class RealPriceManager @Inject constructor(
      */
     fun pushRequest(name: String, codes: List<String>) {
         MainScope().launch(Dispatchers.IO) {
-            logD("pushRequest: $name ${codes.size}")
-            // 기존 처리 중단
-            if (requestStack.isNotEmpty()) {
-                cancelRequests()
+            mutex.withLock {
+                logD("pushRequest: $name ${codes.size}")
+                // 기존 처리 중단
+                if (requestStack.isNotEmpty()) {
+                    cancelRequests()
+                }
+
+                // 최대 개수까지만
+                val codesRequested = codes.take(MAX_SIZE)
+
+                // 데이터 추가
+                requests.clear()
+                requests.addAll(codesRequested)
+
+                val topName = requestStack.lastOrNull()?.first
+                if (topName == name) {
+                    // 이미 존재하는 name 이면 replace
+                    requestStack.removeLast()
+                }
+                requestStack.add(name to codesRequested)
+
+                beginRequests()
             }
-
-            // 최대 개수까지만
-            val codesRequested = codes.take(MAX_SIZE)
-
-            // 데이터 추가
-            requests.clear()
-            requests.addAll(codesRequested)
-
-            val topName = requestStack.lastOrNull()?.first
-            if (topName == name) {
-                // 이미 존재하는 name 이면 replace
-                requestStack.removeLast()
-            }
-            requestStack.add(name to codesRequested)
-
-            beginRequests()
         }
     }
 
@@ -174,13 +179,16 @@ class RealPriceManager @Inject constructor(
 
         // 현재 요청 취소
         MainScope().launch(Dispatchers.IO) {
-            cancelRequests()
+            mutex.withLock {
+                cancelRequests()
 
-            requestStack.removeLast()
+                requestStack.removeLast()
 
-            if (requestStack.isNotEmpty()) {
-                requests.addAll(requestStack.last().second)
-                beginRequests()
+                if (requestStack.isNotEmpty()) {
+                    requests.clear()
+                    requests.addAll(requestStack.last().second)
+                    beginRequests()
+                }
             }
         }
     }
