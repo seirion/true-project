@@ -41,7 +41,7 @@ android {
     defaultConfig {
         applicationId "com.trueedu.project"
         minSdk 29
-        targetSdk 35
+        targetSdk 36
         versionCode getNeoVersionCode()
         versionName getNeoVersionName()
 
