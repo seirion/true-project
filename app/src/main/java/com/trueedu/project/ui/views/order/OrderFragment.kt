@@ -29,6 +29,8 @@ import com.trueedu.project.ui.BaseFragment
 import com.trueedu.project.ui.common.BackTitleTopBar
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.views.common.TopStockInfoView
+import com.trueedu.project.ui.views.schedule.OrderScheduleViewModel
+import com.trueedu.project.ui.views.schedule.ScheduleAddFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,6 +57,8 @@ class OrderFragment: BaseFragment() {
     private val vm by viewModels<OrderViewModel>()
     private val modifyVm by viewModels<OrderModifyViewModel>()
     private val executionVm by viewModels<OrderExecutionViewModel>()
+    // 예약주문 진입 시점에 생성 (lazy)
+    private val scheduleVm by viewModels<OrderScheduleViewModel>()
 
     @Inject
     lateinit var local: Local
@@ -80,7 +84,9 @@ class OrderFragment: BaseFragment() {
 
     override fun init() {
         super.init()
-        orderViewDrawer = OrderViewDrawer(vm, modifyVm, ::buy, ::sell, ::modifyOrder, vm::setQuantity)
+        orderViewDrawer = OrderViewDrawer(
+            vm, modifyVm, ::buy, ::sell, ::modifyOrder, vm::setQuantity, ::gotoSchedule
+        )
         modifiableViewDrawer = ModifiableViewDrawer(modifyVm, ::cancelOrder, ::gotoOrder)
         orderExecutionDrawer = OrderExecutionDrawer(executionVm, ::gotoOrder)
         balanceDrawer = BalanceDrawer(userAssets, ::gotoOrder)
@@ -109,6 +115,26 @@ class OrderFragment: BaseFragment() {
         }
         setOrderTab(OrderTab.Order)
         vm.init(code, originalOrder)
+    }
+
+    private fun gotoSchedule() {
+        trueAnalytics.clickButton("${screenName()}__schedule__click")
+        ScheduleAddFragment.show(
+            fragmentManager = parentFragmentManager,
+            code = vm.code,
+            price = vm.priceInput.value.text,
+            quantity = vm.quantityInput.value.text,
+        ) { order ->
+            scheduleVm.add(
+                item = order,
+                onSuccess = {
+                    Toast.makeText(requireContext(), "예약 주문이 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                },
+                onFailed = { msg ->
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                },
+            )
+        }
     }
 
     override fun onDestroy() {

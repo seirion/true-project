@@ -6,12 +6,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.trueedu.project.base.ComposableDrawer
 import com.trueedu.project.model.dto.account.AccountAsset
@@ -31,6 +36,7 @@ class OrderViewDrawer(
     private val sell: () -> Unit,
     private val modify: (OrderModifiableDetail) -> Unit, // original order
     private val setOrderQuantity: (Double) -> Unit,
+    private val schedule: () -> Unit,
 ): ComposableDrawer {
     @Composable
     override fun Draw() {
@@ -91,6 +97,7 @@ class OrderViewDrawer(
             }
 
             if (vm.originalOrder.value == null) {
+                ScheduleOrderLabel(schedule)
                 SellBuyButtons(buy, sell)
             } else {
                 // 01 매도, 02 매수
@@ -99,6 +106,34 @@ class OrderViewDrawer(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScheduleOrderLabel(
+    onClick: () -> Unit = {},
+) {
+    Row(
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clickable { onClick() }
+            .padding(vertical = 8.dp)
+    ) {
+        TrueText(
+            s = "예약주문",
+            fontSize = 14,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Icon(
+            modifier = Modifier.size(20.dp),
+            imageVector = Icons.Outlined.ChevronRight,
+            tint = MaterialTheme.colorScheme.primary,
+            contentDescription = "예약주문",
+        )
     }
 }
 

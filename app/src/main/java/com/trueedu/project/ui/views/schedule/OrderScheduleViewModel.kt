@@ -45,7 +45,7 @@ class OrderScheduleViewModel @Inject constructor(
         }
     }
 
-    fun add(item: OrderSchedule, onFailed: (String) -> Unit) {
+    fun add(item: OrderSchedule, onSuccess: () -> Unit = {}, onFailed: (String) -> Unit) {
         val userKey = tokenKeyManager.userKey.value
         if (userKey == null) {
             logD("add(): no user key")
@@ -73,6 +73,7 @@ class OrderScheduleViewModel @Inject constructor(
         ).onEach {
             if (it.rtCd == "0") {
                 load()
+                onSuccess()
             } else {
                 onFailed(it.msg ?: "예약 주문 실패")
             }

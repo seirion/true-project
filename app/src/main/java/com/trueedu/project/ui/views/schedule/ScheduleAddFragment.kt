@@ -51,11 +51,26 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ScheduleAddFragment: BaseFragment() {
     companion object {
+        private const val KEY_CODE = "code"
+        private const val KEY_PRICE = "price"
+        private const val KEY_QUANTITY = "quantity"
+
+        /**
+         * code 를 넘기면 종목 검색을 건너뛰고 가격/수량 입력 상태로 시작한다
+         */
         fun show(
             fragmentManager: FragmentManager,
+            code: String? = null,
+            price: String? = null,
+            quantity: String? = null,
             onCompleted: (OrderSchedule) -> Unit,
         ): ScheduleAddFragment {
             return ScheduleAddFragment().also {
+                it.arguments = Bundle().apply {
+                    putString(KEY_CODE, code)
+                    putString(KEY_PRICE, price)
+                    putString(KEY_QUANTITY, quantity)
+                }
                 it.onCompleted = onCompleted
                 it.show(fragmentManager, "schedule_add")
             }
@@ -87,6 +102,18 @@ class ScheduleAddFragment: BaseFragment() {
     @OptIn(FlowPreview::class)
     override fun init() {
         super.init()
+
+        val initialCode = arguments?.getString(KEY_CODE)
+        if (!initialCode.isNullOrEmpty()) {
+            // selectStock() 이 가격을 채우기 전에 넘겨받은 값을 먼저 넣는다
+            arguments?.getString(KEY_PRICE)?.takeIf { it.isNotBlank() }?.let {
+                priceInput.value = TextFieldValue(AnnotatedString(it))
+            }
+            arguments?.getString(KEY_QUANTITY)?.takeIf { it.isNotBlank() }?.let {
+                quantityInput.value = TextFieldValue(AnnotatedString(it))
+            }
+            selectStock(initialCode)
+        }
 
         lifecycleScope.launch {
             snapshotFlow { searchInput.value }
@@ -126,17 +153,7 @@ class ScheduleAddFragment: BaseFragment() {
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    SearchView(searchInput, searchResult.value) {
-                        code.value = it
-                        if (priceInput.value.text.isEmpty()) {
-                            stockPool.get(it)?.prevPrice()?.let { price ->
-                                priceInput.value = TextFieldValue(
-                                    AnnotatedString(price.safeLong().toString())
-                                )
-                            }
-                        }
-                        searchMode.value = false
-                    }
+                    SearchView(searchInput, searchResult.value, ::selectStock)
                 }
             } else {
                 Column(
@@ -168,6 +185,18 @@ class ScheduleAddFragment: BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun selectStock(code: String) {
+        this.code.value = code
+        if (priceInput.value.text.isEmpty()) {
+            stockPool.get(code)?.prevPrice()?.let { price ->
+                priceInput.value = TextFieldValue(
+                    AnnotatedString(price.safeLong().toString())
+                )
+            }
+        }
+        searchMode.value = false
     }
 
     private fun onSearch() {
