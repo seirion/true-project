@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -72,6 +74,7 @@ class OrderViewDrawer(
                     horizontalAlignment = Alignment.End,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .fillMaxHeight()
                         .padding(top = 8.dp)
                         .padding(horizontal = 2.dp)
                 ) {
@@ -93,11 +96,15 @@ class OrderViewDrawer(
                         StockHoldingView(asset, setOrderQuantity)
                     }
                     vm.stockInfo()?.let { MarketCapView(it) }
+
+                    if (vm.originalOrder.value == null) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        ScheduleOrderLabel(schedule)
+                    }
                 }
             }
 
             if (vm.originalOrder.value == null) {
-                ScheduleOrderLabel(schedule)
                 SellBuyButtons(buy, sell)
             } else {
                 // 01 매도, 02 매수
@@ -115,13 +122,11 @@ private fun ScheduleOrderLabel(
     onClick: () -> Unit = {},
 ) {
     Row(
-        horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 4.dp)
             .clickable { onClick() }
-            .padding(vertical = 8.dp)
+            .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
     ) {
         TrueText(
             s = "예약주문",
