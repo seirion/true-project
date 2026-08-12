@@ -1,6 +1,7 @@
 package com.trueedu.project.repository.remote
 
 import com.trueedu.project.di.NormalService
+import com.trueedu.project.model.dto.price.IndexResponse
 import com.trueedu.project.model.dto.price.TradeResponse
 import com.trueedu.project.network.apiCallFlow
 import com.trueedu.project.repository.remote.service.PriceService
@@ -52,5 +53,17 @@ class PriceRemoteImpl(
             "FID_ORG_ADJ_PRC" to "1", // 	0:수정주가 1:원주가
         )
         priceService.dailyPrice(headers, queries)
+    }
+
+    override fun indexPrice(code: String) = apiCallFlow {
+        val headers = mapOf(
+            "tr_id" to "FHPUP02100000",
+            "custtype" to "P",
+        )
+        val queries = mapOf(
+            "FID_COND_MRKT_DIV_CODE" to "U",
+            "FID_INPUT_ISCD" to code,
+        )
+        priceService.indexPrice(headers, queries)
     }
 }

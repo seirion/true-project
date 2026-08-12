@@ -6,6 +6,7 @@ import com.trueedu.project.data.TokenKeyManager
 import com.trueedu.project.data.log.logD
 import com.trueedu.project.data.log.logE
 import com.trueedu.project.model.event.WebSocketKeyIssued
+import com.trueedu.project.model.ws.RealTimeIndex
 import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.model.ws.TradeNotification
@@ -48,6 +49,8 @@ class WsMessageHandler @Inject constructor(
     val quotesSignal = MutableSharedFlow<RealTimeOrder>()
     // 내 주문 체결 통보 (H0STCNI0)
     val orderExecutionSignal = MutableSharedFlow<TradeNotification>()
+    // 실시간 업종지수 (H0UPCNT0)
+    val indexSignal = MutableSharedFlow<RealTimeIndex>()
 
     // 체결통보 AES 복호화 키/IV (구독 응답에서 수신)
     private var tradeNotificationKey: String? = null
@@ -236,6 +239,12 @@ class WsMessageHandler @Inject constructor(
                 val dto = RealTimeTrade.from(data)
                 MainScope().launch {
                     tradeSignal.emit(dto)
+                }
+            }
+            TransactionId.RealTimeIndex -> {
+                val dto = RealTimeIndex.from(data)
+                MainScope().launch {
+                    indexSignal.emit(dto)
                 }
             }
             else -> {

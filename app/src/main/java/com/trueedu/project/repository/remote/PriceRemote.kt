@@ -1,6 +1,7 @@
 package com.trueedu.project.repository.remote
 
 import com.trueedu.project.model.dto.price.DailyPriceResponse
+import com.trueedu.project.model.dto.price.IndexResponse
 import com.trueedu.project.model.dto.price.PriceResponse
 import com.trueedu.project.model.dto.price.TradeResponse
 import kotlinx.coroutines.flow.Flow
@@ -18,4 +19,7 @@ interface PriceRemote {
      * 일 별 시세 - 최대 30건
      */
     fun dailyPrice(code: String, from: String, to: String): Flow<DailyPriceResponse>
+
+    // 업종지수 (코스피: "0001", 코스닥: "1001")
+    fun indexPrice(code: String): Flow<IndexResponse>
 }
