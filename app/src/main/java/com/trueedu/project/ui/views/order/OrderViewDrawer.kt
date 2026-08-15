@@ -1,5 +1,6 @@
 package com.trueedu.project.ui.views.order
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,8 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.HorizontalDivider
@@ -81,12 +84,14 @@ class OrderViewDrawer(
                     InputSet("가격", vm.priceInput, vm::increasePrice, vm::decreasePrice)
                     Margin(24)
                     InputSet("수량", vm.quantityInput, vm::increaseQuantity, vm::decreaseQuantity)
+                    Margin(8)
+                    QuantityAddButtons(vm::addQuantity, vm::clearQuantity)
 
                     val userAssets = vm.userAssets.assets.collectAsState(null)
                     val asset = userAssets.value?.output1?.let {
                         it.firstOrNull { it.code == vm.code }
                     }
-                    Margin(36)
+                    Margin(28)
                     if (asset != null) {
                         HorizontalDivider(
                             color = MaterialTheme.colorScheme.outlineVariant,
@@ -113,6 +118,62 @@ class OrderViewDrawer(
                 }
             }
         }
+    }
+}
+
+/**
+ * 수량 빠른 입력 버튼 (+1, +5, +10, 초기화)
+ */
+@Preview(showBackground = true)
+@Composable
+private fun QuantityAddButtons(
+    onAdd: (Long) -> Unit = {},
+    onClear: () -> Unit = {},
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp)
+    ) {
+        listOf(1L, 5L, 10L).forEach { amount ->
+            QuantityButton(
+                label = amount.toString(),
+                modifier = Modifier.weight(1f),
+                onClick = { onAdd(amount) },
+            )
+        }
+        QuantityButton(
+            label = "x",
+            modifier = Modifier.weight(1f),
+            onClick = onClear,
+        )
+    }
+}
+
+@Composable
+private fun QuantityButton(
+    label: String,
+    modifier: Modifier,
+    onClick: () -> Unit,
+) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .height(32.dp)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant,
+                shape = RoundedCornerShape(4.dp),
+            )
+            .clickable { onClick() },
+    ) {
+        TrueText(
+            s = label,
+            fontSize = 14,
+            color = MaterialTheme.colorScheme.primary,
+        )
     }
 }
 

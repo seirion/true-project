@@ -2,6 +2,7 @@ package com.trueedu.project.ui.views.order
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ import com.trueedu.project.model.ws.RealTimeOrder
 import com.trueedu.project.model.ws.RealTimeTrade
 import com.trueedu.project.repository.remote.OrderRemote
 import com.trueedu.project.repository.remote.PriceRemote
+import com.trueedu.project.utils.addQuantity
 import com.trueedu.project.utils.decreasePrice
 import com.trueedu.project.utils.decreaseQuantity
 import com.trueedu.project.utils.formatter.safeLong
@@ -213,6 +215,19 @@ class OrderViewModel @Inject constructor(
         quantityInput.value = quantityInput.value.copy(
             text = decreaseQuantity(quantityInput.value.text)
         )
+    }
+
+    fun addQuantity(amount: Long) {
+        setQuantityText(addQuantity(quantityInput.value.text, amount))
+    }
+
+    fun clearQuantity() {
+        setQuantityText("0")
+    }
+
+    private fun setQuantityText(text: String) {
+        // 자릿수가 줄어들 수 있어서 커서를 끝으로 옮겨 줌
+        quantityInput.value = TextFieldValue(text, TextRange(text.length))
     }
 
     fun stockInfo(): StockInfo? {

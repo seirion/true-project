@@ -62,20 +62,21 @@ private fun decreasePrice(base: Long): Long {
 }
 
 fun increaseQuantity(base: String): String {
-    if (base.isEmpty()) return "1"
-    try {
-        val v = base.toLong()
-        return (v + 1).toString()
-    } catch (e: NumberFormatException) {
-        return base
-    }
+    return addQuantity(base, 1L)
 }
 
 fun decreaseQuantity(base: String): String {
-    if (base.isEmpty()) return "0"
+    return addQuantity(base, -1L)
+}
+
+/**
+ * 수량을 amount 만큼 증감 (음수가 되지 않도록 0 으로 보정)
+ */
+fun addQuantity(base: String, amount: Long): String {
+    if (base.isEmpty()) return amount.coerceAtLeast(0L).toString()
     try {
         val v = base.toLong()
-        return (v - 1).coerceAtLeast(0L).toString()
+        return (v + amount).coerceAtLeast(0L).toString()
     } catch (e: NumberFormatException) {
         return base
     }
