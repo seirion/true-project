@@ -4,6 +4,7 @@ import com.trueedu.project.di.NormalService
 import com.trueedu.project.model.dto.order.OrderResponse
 import com.trueedu.project.network.apiCallFlow
 import com.trueedu.project.repository.remote.service.OrderService
+import com.trueedu.project.utils.limitOrderDivision
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -57,7 +58,7 @@ class OrderRemoteImpl(
     ) = apiCallFlow {
 
         // 현금 매수, 현금 매도
-        val transactionId = if (isBuy) "TTTC0802U" else "TTTC0801U"
+        val transactionId = if (isBuy) "TTTC0012U" else "TTTC0011U"
         val headers = mapOf(
             "tr_id" to transactionId,
             "custtype" to "P",
@@ -70,8 +71,7 @@ class OrderRemoteImpl(
          * 03 : 최유리지정가
          * 04 : 최우선지정가
          * 05 : 장전 시간외 (08:20~08:40)
-         * 06 : 장후 시간외 (15:30~16:00)
-         * 07 : 시간외 단일가(16:00~18:00)
+         * 06 : 장후 시간외
          * 08 : 자기주식
          * 09 : 자기주식S-Option
          * 10 : 자기주식금전신탁
@@ -81,12 +81,13 @@ class OrderRemoteImpl(
          * 14 : FOK시장가 (즉시체결,전량취소)
          * 15 : IOC최유리 (즉시체결,잔량취소)
          * 16 : FOK최유리 (즉시체결,전량취소)
+         * 41 : KRX애프터마켓지정가 (16:00~20:00)
          */
         val body = mapOf(
             "CANO" to accountNum.take(8), // 계좌번호 체계(8-2)의 앞 8자리
             "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
             "PDNO" to code, // 종목번호
-            "ORD_DVSN" to "00", // 주문 구분 - 일단 지정가로 주문하기
+            "ORD_DVSN" to limitOrderDivision(), // 주문 구분 - 지정가
             "ORD_QTY" to quantity, // 주문 수량
             "ORD_UNPR" to price, // 주문 단가
             "EXCG_ID_DVSN_CD" to "KRX", // 한국거래소 고정 (NXT 지원 여부 파악 전까지)
@@ -124,7 +125,7 @@ class OrderRemoteImpl(
         quantityString: String,
     ) = apiCallFlow {
         val headers = mapOf(
-            "tr_id" to "TTTC0803U", // 주식 정정 취소 주문
+            "tr_id" to "TTTC0013U", // 주식 정정 취소 주문
             "custtype" to "P",
         )
         val body = mapOf(
@@ -132,7 +133,7 @@ class OrderRemoteImpl(
             "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
             "KRX_FWDG_ORD_ORGNO" to "", // 주문시 한국투자증권 시스템에서 지정된 영업점코드
             "ORGN_ODNO" to originalOrderCode, // 원주문번호
-            "ORD_DVSN" to "00", // 주문 구분 - 일단 지정가로 주문하기
+            "ORD_DVSN" to limitOrderDivision(), // 주문 구분 - 지정가
             "RVSE_CNCL_DVSN_CD" to "01", // 정정 : 01 취소 : 02
 
             /**
@@ -162,7 +163,7 @@ class OrderRemoteImpl(
         originalOrderCode: String,
     ) = apiCallFlow {
         val headers = mapOf(
-            "tr_id" to "TTTC0803U", // 주식 정정 취소 주문
+            "tr_id" to "TTTC0013U", // 주식 정정 취소 주문
             "custtype" to "P",
         )
         val body = mapOf(
@@ -170,7 +171,7 @@ class OrderRemoteImpl(
             "ACNT_PRDT_CD" to accountNum.drop(8), // 계좌번호 체계(8-2)의 뒤 2자리
             "KRX_FWDG_ORD_ORGNO" to "", // 주문시 한국투자증권 시스템에서 지정된 영업점코드
             "ORGN_ODNO" to originalOrderCode, // 원주문번호
-            "ORD_DVSN" to "00", // 주문 구분 - 일단 지정가로 주문하기
+            "ORD_DVSN" to limitOrderDivision(), // 주문 구분 - 지정가
             "RVSE_CNCL_DVSN_CD" to "02", // 정정 : 01 취소 : 02
 
             /**
