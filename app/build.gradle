@@ -21,7 +21,7 @@ def getLocalProperty(String propertyName) {
 
 android {
     namespace = 'com.trueedu.project'
-    compileSdk 36
+    compileSdk 37
 
     signingConfigs {
         devconfig {
