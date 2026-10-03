@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -94,3 +96,14 @@ private val holidays = setOf(
     LocalDate.of(2027, 10, 11), // 대체공휴일(한글날)
     LocalDate.of(2027, 12, 27), // 대체공휴일(크리스마스)
 )
+
+private val seoulZone = ZoneId.of("Asia/Seoul")
+
+/** KRX 애프터마켓(16:00~20:00)은 정규장과 주문구분 코드가 다르다 */
+fun isKrxAfterMarket(): Boolean {
+    val now = LocalTime.now(seoulZone)
+    return now >= LocalTime.of(16, 0) && now < LocalTime.of(20, 0)
+}
+
+/** 지정가 주문구분: 정규장 00, KRX 애프터마켓 41 */
+fun limitOrderDivision(): String = if (isKrxAfterMarket()) "41" else "00"
