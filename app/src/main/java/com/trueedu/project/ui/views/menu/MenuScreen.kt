@@ -41,7 +41,8 @@ import com.trueedu.project.ui.common.Margin
 import com.trueedu.project.ui.common.TrueText
 import com.trueedu.project.ui.dart.DartListFragment
 import com.trueedu.project.ui.ranking.VolumeRankingFragment
-import com.trueedu.project.ui.spac.SpacScheduleFragment
+import com.trueedu.project.ui.spac.SpacMergeScheduleFragment
+import com.trueedu.project.ui.spac.SpacRefundScheduleFragment
 import com.trueedu.project.ui.theme.TrueProjectTheme
 import com.trueedu.project.ui.views.rights.ObservingRightsFragment
 import com.trueedu.project.ui.views.schedule.OrderScheduleFragment
@@ -100,9 +101,13 @@ fun MenuScreen(
                     trueAnalytics.clickButton("menu__spac_dart_list__click")
                     DartListFragment.show(fragmentManager)
                 }
-                MenuItem(Icons.Outlined.CalendarMonth, "스팩 일정") {
-                    trueAnalytics.clickButton("menu__spac_schedule__click")
-                    SpacScheduleFragment.show(fragmentManager)
+                MenuItem(Icons.Outlined.CalendarMonth, "스팩 청산 일정") {
+                    trueAnalytics.clickButton("menu__spac_refund_schedule__click")
+                    SpacRefundScheduleFragment.show(fragmentManager)
+                }
+                MenuItem(Icons.Outlined.CalendarMonth, "스팩 합병 일정") {
+                    trueAnalytics.clickButton("menu__spac_merge_schedule__click")
+                    SpacMergeScheduleFragment.show(fragmentManager)
                 }
                 if (BuildConfig.DEBUG && tokenKeyManager.userKey.value != null) {
                     MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목") {
