@@ -193,7 +193,7 @@ class StockInfoKosdaq(
 
     fun kosdaq150() = getAttribute("KOSDAQ150지수여부 (Y,N)")
 
-    override fun spac() = nameKr.contains("스팩")
+    override fun spac() = nameKr.contains("스팩") || nameKr.contains("기업인수목적")
     override fun halt() = getAttribute("거래정지 여부") == "Y"
     override fun designated() = getAttribute("관리 종목 여부") == "Y"
     override fun parValue() = getAttribute("주식 액면가")
