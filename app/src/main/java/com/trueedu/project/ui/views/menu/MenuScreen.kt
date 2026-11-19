@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.Construction
 import androidx.compose.material.icons.outlined.QueryStats
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Sync
@@ -30,7 +29,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import com.trueedu.project.BuildConfig
-import com.trueedu.project.admin.MyAdminFragment
 import com.trueedu.project.analytics.TrueAnalytics
 import com.trueedu.project.data.DartManager
 import com.trueedu.project.data.ScreenControl
@@ -113,12 +111,6 @@ fun MenuScreen(
                     MenuItem(Icons.Outlined.TrendingUp, "거래량 상위 종목") {
                         trueAnalytics.clickButton("menu__volume_ranking__click")
                         VolumeRankingFragment.show(fragmentManager)
-                    }
-                }
-                if (BuildConfig.DEBUG) {
-                    Margin(12)
-                    MenuItem(Icons.Outlined.Construction, "어드민 메뉴") {
-                        MyAdminFragment.show(fragmentManager)
                     }
                 }
             }
